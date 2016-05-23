@@ -59,7 +59,7 @@ public class StayPointDetector {
 
 	public StayPoint computeStayPoint(int i, int j, List<GPSPoint> gpsTrajectory) {
 		StayPoint stayPoint;
-		int count = j - i;
+		int count = j - i + 1;
 		int k = count;
 		double latitudeSum = 0.0;
 		double longitudeSum = 0.0;

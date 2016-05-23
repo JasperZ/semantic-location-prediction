@@ -3,11 +3,20 @@ package test.stay;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.PlacesApi;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
+import com.google.maps.model.PlaceDetails;
+
+import main.Main;
 import main.stay.GPSPoint;
 import main.stay.StayPoint;
 import main.stay.StayPointDetector;
@@ -44,14 +53,24 @@ public class StayPointDetectorTest {
 		gpsTrajectory.add(new GPSPoint(49.011, 8.418, 1463565600000L + 1000 * 60 * 99));
 
 		List<StayPoint> stayPoints = stayPointDetector.detectStayPoints(gpsTrajectory);
-		System.out.println(stayPoints);
 
 		assertEquals(2, stayPoints.size());
 	}
 
-	/*
-	 * @Test public void testComputeStayPoint() { fail("Not yet implemented"); }
-	 */
+	@Test
+	public void testComputeStayPointLatLng() {
+		ArrayList<GPSPoint> gpsTrajectory = new ArrayList<>();
+
+		gpsTrajectory.add(new GPSPoint(41, 51, 1463565600000L));
+		gpsTrajectory.add(new GPSPoint(42, 52, 1463565600000L + 1000 * 60 * 10));
+		gpsTrajectory.add(new GPSPoint(43, 53, 1463565600000L + 1000 * 60 * 20));
+		gpsTrajectory.add(new GPSPoint(44, 54, 1463565600000L + 1000 * 60 * 35));
+
+		StayPoint stayPoint = stayPointDetector.computeStayPoint(0, 3, gpsTrajectory);
+
+		assertEquals(42.5, stayPoint.getLatitude(), 0.0);
+		assertEquals(52.5, stayPoint.getLongitude(), 0.0);
+	}
 
 	@Test
 	public void testDistanceSame() {
