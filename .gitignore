@@ -66,3 +66,6 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+
+### Google API Key ###
+src/main/GoogleAPIKey.java

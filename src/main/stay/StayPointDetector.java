@@ -40,8 +40,9 @@ public class StayPointDetector {
 				j = j + 1;
 			}
 		}
-		
-		//fix to get stay point if the last gps point is in range and the time is ok too 
+
+		// fix to get stay point if the last gps point is in range and the time
+		// is ok too
 		j--;
 
 		if (dist <= DISTANCE_THRESHOLD) {

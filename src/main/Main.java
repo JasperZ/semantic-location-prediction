@@ -18,8 +18,6 @@ import main.stay.StayPoint;
 import main.stay.StayPointDetector;
 
 public class Main {
-	public static final String GOOGLE_API_KEY = "AIzaSyASr8k1vTbjah5Pu4XUiHuUHOi789Iceq8";
-
 	public static final String GEOLIFE_TRAJECTORY_PATH = "/home/jasper/SemanticLocationPredictionData/Geolife Trajectories 1.3/Data/172/Trajectory/20080627154405.plt";
 
 	public static final String STAY_POINTS_PATH = "/home/jasper/SemanticLocationPredictionData/staypoints.csv";
@@ -43,7 +41,7 @@ public class Main {
 	}
 
 	public static void addLocationInfo(List<StayPoint> stayPoints) {
-		GeoApiContext context = new GeoApiContext().setApiKey(GOOGLE_API_KEY);
+		GeoApiContext context = new GeoApiContext().setApiKey(GoogleAPIKey.GOOGLE_API_KEY);
 		Iterator<StayPoint> iterator = stayPoints.iterator();
 
 		while (iterator.hasNext()) {

@@ -84,7 +84,7 @@ public class StayPointDetectorTest {
 	}
 
 	// used for distance
-	// calculationshttp://www.sunearthtools.com/tools/distance.php
+	// calculations http://www.sunearthtools.com/tools/distance.php
 	@Test
 	public void testDistance613() {
 		// TECO
