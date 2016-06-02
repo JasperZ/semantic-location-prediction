@@ -56,7 +56,7 @@ public class VenueSearchRequest {
 	}
 
 	private String buildQuery() {
-		String query = String.format(Locale.ENGLISH, "%s?client_id=%s&client_secret=%s&v=%s", BASE_URL, clientId,
+		String query = String.format(Locale.ENGLISH, "%s?client_id=%s&client_secret=%s&v=%s&intent=browse", BASE_URL, clientId,
 				clientSecret, version);
 
 		if (latitudeLongitudeSet) {
@@ -86,8 +86,6 @@ public class VenueSearchRequest {
 			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 
 			try {
-
-				System.out.println("****** Content of the URL ********");
 				BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
 				Gson gson = new GsonBuilder().create();
@@ -95,13 +93,12 @@ public class VenueSearchRequest {
 
 				VenueResponse[] response = gson.fromJson(((JsonObject) jsonObject.get("response")).get("venues"),
 						VenueResponse[].class);
-
-				for (int i = 0; i < response.length; i++) {
-					System.out.println(response[i].name);
-					System.out.println(response[i].categories[0].name);
-					System.out.println();
-				}
-
+				/*
+				 * for (int i = 0; i < response.length; i++) {
+				 * System.out.println(response[i].name);
+				 * System.out.println(response[i].categories[0].name);
+				 * System.out.println(); }
+				 */
 				return response;
 
 			} catch (IOException e) {

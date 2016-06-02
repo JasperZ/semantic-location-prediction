@@ -74,11 +74,11 @@ public class StayPoint {
 
 		if (types != null) {
 			for (int i = 0; i < types.length; i++) {
-				typesStr += types[i];
-
-				if (i != types.length - 1) {
+				if (i != 0) {
 					typesStr += ", ";
 				}
+				
+				typesStr += types[i];
 			}
 		}
 
