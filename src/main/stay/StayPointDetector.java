@@ -6,7 +6,7 @@ import java.util.List;
 
 public class StayPointDetector {
 	// distance threshold in meter
-	private static final double DISTANCE_THRESHOLD = 200.0;
+	private static final double RADIUS_THRESHOLD = 100.0;
 	// time threshold in milliseconds
 	private static final long TIME_TRHESHOLD = 30 * 60 * 1000;
 
@@ -24,7 +24,7 @@ public class StayPointDetector {
 			while (j < gpsTrajectory.size()) {
 				dist = distance(gpsTrajectory.get(i), gpsTrajectory.get(j));
 
-				if (dist > DISTANCE_THRESHOLD) {
+				if (dist > RADIUS_THRESHOLD) {
 					deltaTime = gpsTrajectory.get(j).getTime() - gpsTrajectory.get(i).getTime();
 
 					if (deltaTime > TIME_TRHESHOLD) {
@@ -45,7 +45,7 @@ public class StayPointDetector {
 		// is ok too
 		j--;
 
-		if (dist <= DISTANCE_THRESHOLD) {
+		if (dist <= RADIUS_THRESHOLD) {
 			deltaTime = gpsTrajectory.get(j).getTime() - gpsTrajectory.get(i).getTime();
 
 			if (deltaTime > TIME_TRHESHOLD) {
