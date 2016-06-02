@@ -4,11 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
 import com.google.maps.PlacesApi;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlaceDetails;
+import com.google.maps.model.PlacesSearchResponse;
+import com.google.maps.model.PlacesSearchResult;
+import com.google.maps.model.RankBy;
 
 import main.files.read.GeolifeReader;
 import main.files.read.TrajectoryReader;
@@ -18,7 +20,7 @@ import main.stay.StayPoint;
 import main.stay.StayPointDetector;
 
 public class Main {
-	public static final String GEOLIFE_TRAJECTORY_PATH = "/home/jasper/SemanticLocationPredictionData/Geolife Trajectories 1.3/Data/172/Trajectory/20080627154405.plt";
+	public static final String GEOLIFE_TRAJECTORY_PATH = "/home/jasper/SemanticLocationPredictionData/Geolife Trajectories 1.3/Data/172/Trajectory/20080627013141.plt";
 
 	public static final String STAY_POINTS_PATH = "/home/jasper/SemanticLocationPredictionData/staypoints.csv";
 
@@ -41,7 +43,7 @@ public class Main {
 	}
 
 	public static void addLocationInfo(List<StayPoint> stayPoints) {
-		GeoApiContext context = new GeoApiContext().setApiKey(GoogleAPIKey.GOOGLE_API_KEY);
+		GeoApiContext context = new GeoApiContext().setApiKey(APIKeys.GOOGLE_API_KEY);
 		Iterator<StayPoint> iterator = stayPoints.iterator();
 
 		while (iterator.hasNext()) {
@@ -49,15 +51,26 @@ public class Main {
 			StayPoint stayPoint = iterator.next();
 
 			try {
-				results = GeocodingApi
-						.reverseGeocode(context, new LatLng(stayPoint.getLatitude(), stayPoint.getLongitude()))
-						.language("en").await();
-				String googlePlaceID = results[0].placeId;
-				String address = results[0].formattedAddress;
+				PlacesSearchResponse r = PlacesApi
+						.nearbySearchQuery(context, new LatLng(stayPoint.getLatitude(), stayPoint.getLongitude()))
+						.rankby(RankBy.DISTANCE).keyword("*").language("en").await();
 
-				stayPoint.setGooglePlaceID(googlePlaceID);
-				stayPoint.setAddress(address);
+				PlacesSearchResult c = r.results[0];
+				PlaceDetails d = PlacesApi.placeDetails(context, c.placeId).language("en").await();
 
+				stayPoint.setGooglePlaceID(d.placeId);
+				stayPoint.setName(d.name);
+				stayPoint.setTypes(d.types);
+				stayPoint.setAddress(d.formattedAddress);
+/*
+				for (PlacesSearchResult e : r.results) {
+					PlaceDetails f = PlacesApi.placeDetails(context, c.placeId).await();
+
+					System.out.println(e.placeId);
+					System.out.println(f.name);
+					System.out.println(f.types[0]);
+				}
+*/
 				System.out.println(stayPoint.toString());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

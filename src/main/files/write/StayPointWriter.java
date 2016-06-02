@@ -27,8 +27,8 @@ public class StayPointWriter {
 	}
 
 	private String stayPointToCSVFormat(StayPoint stayPoint) {
-		return String.format(Locale.ENGLISH, "%f;%f;%d;%d;%s;%s", stayPoint.getLatitude(), stayPoint.getLongitude(),
-				stayPoint.getArriveTime(), stayPoint.getLeaveTime(), stayPoint.getGooglePlaceID(),
-				stayPoint.getAddress());
+		return String.format(Locale.ENGLISH, "%f;%f;%d;%d;%s,%s;%s;%s", stayPoint.getLatitude(),
+				stayPoint.getLongitude(), stayPoint.getArriveTime(), stayPoint.getLeaveTime(), stayPoint.getName(),
+				stayPoint.getGooglePlaceID(), stayPoint.getAddress(), stayPoint.getTypesAsString());
 	}
 }
