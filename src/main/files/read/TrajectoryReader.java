@@ -24,7 +24,7 @@ public abstract class TrajectoryReader {
 			while ((line = br.readLine()) != null) {
 
 				if (i >= getDataStartLine()) {
-					gpsTrajectory.add(parseLineToGPSPoint(line));
+					parseLineToGPSPoint(line, gpsTrajectory);
 				}
 
 				i++;
@@ -49,5 +49,5 @@ public abstract class TrajectoryReader {
 
 	protected abstract int getDataStartLine();
 
-	protected abstract GPSPoint parseLineToGPSPoint(String line);
+	protected abstract void parseLineToGPSPoint(String line, ArrayList<GPSPoint> gpsTrajectory);
 }
