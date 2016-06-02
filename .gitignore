@@ -68,4 +68,4 @@ local.properties
 .recommenders/
 
 ### Google API Key ###
-src/main/GoogleAPIKey.java
+src/main/APIKeys.java
