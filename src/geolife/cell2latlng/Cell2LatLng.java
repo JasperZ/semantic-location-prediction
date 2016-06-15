@@ -1,224 +1,84 @@
 package geolife.cell2latlng;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Locale;
+
+import geolife.cell2latlng.cellnames.Cellname;
+import geolife.cell2latlng.cellnames.CellnameReader;
+import geolife.cell2latlng.location_fusion.LocFusionWriter;
+import geolife.cell2latlng.locs.Loc;
+import geolife.cell2latlng.locs.LocReader;
+import geolife.cell2latlng.provider.ProviderReader;
+import geolife.cell2latlng.user.User;
+import open_cell_id.TowerRecord;
 
 public class Cell2LatLng {
-	public final static String BASE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining";
-
-	public static int chacheSize = 0;
-	public static int chacheHits = 0;
-
 	public static void main(String[] args) {
-		ArrayList<GeolifeLocLine>[] locs = (ArrayList<GeolifeLocLine>[]) new ArrayList[107];
-		ArrayList<GeolifeCacheElement> towerCache = new ArrayList<>();
+		User users[] = new User[107];
+		CellTowerCache cellTowerCache = new CellTowerCache();
 
-		int test = 3;
+		int test = 6;
 		int start = test;
 		int end = test;
 
-		for (int i = start; i <= end; i++) {
-			ArrayList<GeolifeLocLine> lines = readLocs(i);
+		// read locs and cellnames from users
+		System.out.println("\nread locs, cellnames and provider from files...");
 
-			locs[i] = lines;
+		for (int i = start; i <= end; i++) {
+			ArrayList<Loc> locLines = LocReader.readLocs(i);
+			ArrayList<Cellname> cellnameLines = CellnameReader.readCellnames(i);
+			String provider = ProviderReader.readProvider(i);
+
+			users[i] = new User(i, locLines, cellnameLines, provider);
 		}
 
+		// build cache of cell-towers to avoid multiple requests for the same
+		// tower
+		System.out.println("\nbuild cache for cell towers...");
+
 		for (int i = start; i <= end; i++) {
-			for (GeolifeLocLine l : locs[i]) {
-				GeolifeCacheElement e = new GeolifeCacheElement();
-
-				e.locationAreaCode = l.locationAreaCode;
-				e.cellId = l.cellId;
-				e.accuracy = l.accuracy;
-
-				addToCache(e, towerCache);
-			}
+			cellTowerCache.add(users[i]);
 		}
 
-		System.out.println("Cache size: " + chacheSize);
-		System.out.println("Cache hits: " + chacheHits);
+		// try to get cell-tower location of all elements in the cache from
+		// google api
 
-		int matchesFound = queryCacheElements(towerCache);
+		// System.out.println("try to get location date for cell towers...");
+		// cellTowerCache.queryAllElementsFromGoogle();
 
-		System.out.println("Matches Found: " + matchesFound);
+		System.out.println("try to get location date for cell towers...");
+		cellTowerCache.queryAllElementsFromOpenCellId();
+
+		// fusion of local available data
+		System.out.println("fusion of data from cellnames and cell tower cache...");
 
 		for (int i = start; i <= end; i++) {
-			for (GeolifeLocLine l : locs[i]) {
-				GeolifeCacheElement e;
+			users[i].offlineFusion();
+			users[i].cacheFusion(cellTowerCache);
+		}
 
-				e = findInCache(towerCache, l);
+		// calculate number of unresolved locs
+		System.out.println("calculate locs without label and position...");
 
-				if (e != null && e.locationFound) {
-					l.lat = e.lat;
-					l.lng = e.lng;
-					l.accuracy = e.accuracy;
+		int rest = 0;
+
+		for (int i = start; i <= end; i++) {
+			if (users[i].locFusionsAvailable()) {
+				for (GeolifeCacheElement c : cellTowerCache.getCache()) {
+					if (c.userLabel == null && c.lng == null && c.lat == null) {
+						rest++;
+					}
 				}
 			}
 		}
 
+		System.out.println("\tunresolved locs: " + rest);
+
+		// write results back to files
+		System.out.println("\nwrite results of fusion back to files...");
+
 		for (int i = start; i <= end; i++) {
-			writeNewLocs(locs[i], i);
-		}
-		
-	}
-
-	public static GeolifeCacheElement findInCache(ArrayList<GeolifeCacheElement> towerCache, GeolifeLocLine line) {
-		GeolifeCacheElement result = null;
-
-		for (GeolifeCacheElement c : towerCache) {
-			if (c.locationAreaCode == line.locationAreaCode && c.cellId == line.cellId) {
-				return c;
-			}
+			LocFusionWriter.writeLocFusions(users[i]);
 		}
 
-		return null;
-
-	}
-
-	public static int queryCacheElements(ArrayList<GeolifeCacheElement> towerCache) {
-		int matches = 0;
-
-		for (GeolifeCacheElement c : towerCache) {
-			LocationResponse response = GoogleGeolocationService.getCellTowerLocation(c.locationAreaCode, c.cellId);
-
-			if (response != null) {
-				c.lat = response.location.lat;
-				c.lng = response.location.lng;
-				c.accuracy = response.accuracy;
-				c.locationFound = true;
-
-				matches++;
-
-				System.out.println(c);
-			}
-		}
-
-		return matches;
-	}
-
-	public static void addToCache(GeolifeCacheElement e, ArrayList<GeolifeCacheElement> towerCache) {
-		boolean newElement = true;
-
-		for (GeolifeCacheElement c : towerCache) {
-			if (e.locationAreaCode == -1 || e.cellId == -1) {
-				newElement = false;
-				continue;
-			}
-
-			if (c.locationAreaCode == e.locationAreaCode && c.cellId == e.cellId) {
-				newElement = false;
-				chacheHits++;
-				break;
-			}
-		}
-
-		if (newElement) {
-			towerCache.add(e);
-			chacheSize++;
-		}
-	}
-
-	public static void writeNewLocs(ArrayList<GeolifeLocLine> lines, int user) {
-		try {
-			String path = String.format("%s/%d/locs_new.csv", BASE_PATH, user);
-
-			FileWriter writer = new FileWriter(path);
-			Iterator<GeolifeLocLine> iterator = lines.iterator();
-
-			writer.append("Var1\tVar2\n");
-
-			while (iterator.hasNext()) {
-				GeolifeLocLine line = iterator.next();
-
-				writer.append(newLocLineToCSV(line));
-				writer.append('\n');
-			}
-
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static String newLocLineToCSV(GeolifeLocLine line) {
-		String result = "";
-
-		result += String.format(Locale.ENGLISH, "%s\t", line.timestamp);
-
-		if (line.locationAreaCode == -1 || line.cellId == -1) {
-			result += "0";
-		} else {
-			result += String.format(Locale.ENGLISH, "%d.%d\t%f\t%f\t%f", line.locationAreaCode, line.cellId, line.lat,
-					line.lng, line.accuracy);
-		}
-
-		return result;
-	}
-
-	public static ArrayList<GeolifeLocLine> readLocs(int user) {
-		ArrayList<GeolifeLocLine> lines = new ArrayList<>();
-		BufferedReader br = null;
-
-		// System.out.println("readLocs:");
-
-		try {
-			String path = String.format("%s/%d/locs.csv", BASE_PATH, user);
-			String line;
-			int i = 0;
-
-			br = new BufferedReader(new FileReader(path));
-
-			while ((line = br.readLine()) != null) {
-
-				if (i >= 1) {
-					GeolifeLocLine geoLine = parse(line);
-					lines.add(geoLine);
-
-					// System.out.println(i + ":\t" + geoLine);
-				}
-
-				i++;
-			}
-		} catch (
-
-		FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return lines;
-	}
-
-	public static GeolifeLocLine parse(String line) {
-		GeolifeLocLine result = new GeolifeLocLine();
-		String seperator = "\t";
-		String[] splitLine = line.split(seperator);
-
-		result.timestamp = splitLine[0];
-
-		String cellInfo = splitLine[1];
-		String[] splitLineCell = cellInfo.split("\\.");
-
-		if (splitLineCell.length == 2) {
-			result.locationAreaCode = Integer.valueOf(splitLineCell[0]);
-			result.cellId = Integer.valueOf(splitLineCell[1]);
-		}
-
-		return result;
 	}
 }
