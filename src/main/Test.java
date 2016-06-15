@@ -1,17 +1,16 @@
 package main;
 
-import main.foursquare.venue.FoursquareVenuesService;
-import main.foursquare.venue.VenueSearchRequest;
+import geolife.cell2latlng.GoogleGeolocationService;
+import geolife.cell2latlng.LocationResponse;
 
 public class Test {
 	public static void main(String[] args) {
-		VenueSearchRequest request = FoursquareVenuesService.search(APIKeys.FOURSQUARE_CLIENT_ID,
-				APIKeys.FOURSQUARE_CLIENT_SECRET);
+		LocationResponse response = GoogleGeolocationService.getCellTowerLocation(5123, 48732);
 
-		request.latitudeLongitude(49.0119199, 8.4148416);
-		request.radius(100);
-		request.limit(10);
-		
-		request.execute();
+		if (response != null) {
+			System.out.println("Latitude: " + response.location.lat + ", Longitude: " + response.location.lng);
+		} else {
+			System.out.println("No match");
+		}
 	}
 }
