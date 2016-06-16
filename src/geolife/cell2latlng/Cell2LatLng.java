@@ -17,8 +17,8 @@ public class Cell2LatLng {
 		CellTowerCache cellTowerCache = new CellTowerCache();
 
 		int test = 6;
-		int start = test;
-		int end = test;
+		int start = 61;
+		int end = 106;
 
 		// read locs and cellnames from users
 		System.out.println("\nread locs, cellnames and provider from files...");
@@ -39,25 +39,31 @@ public class Cell2LatLng {
 			cellTowerCache.add(users[i]);
 		}
 
+		System.out.println("\t\tcache size: " + cellTowerCache.getCache().size());
+
 		// try to get cell-tower location of all elements in the cache from
 		// google api
 
-		// System.out.println("try to get location date for cell towers...");
+		System.out.println("\ntry to get location date for cell towers...");
 		// cellTowerCache.queryAllElementsFromGoogle();
 
-		System.out.println("try to get location date for cell towers...");
 		cellTowerCache.queryAllElementsFromOpenCellId();
 
 		// fusion of local available data
-		System.out.println("fusion of data from cellnames and cell tower cache...");
+		System.out.println("\nfusion of data from cellnames and cell tower cache...");
 
 		for (int i = start; i <= end; i++) {
+			System.out.println("\n\tprocessing data of user " + i);
+
 			users[i].offlineFusion();
 			users[i].cacheFusion(cellTowerCache);
+
+			System.out.println("\twrite fusion data of user " + i);
+			LocFusionWriter.writeLocFusions(users[i]);
 		}
 
 		// calculate number of unresolved locs
-		System.out.println("calculate locs without label and position...");
+		System.out.println("\ncalculate locs without label and position...");
 
 		int rest = 0;
 
@@ -72,13 +78,13 @@ public class Cell2LatLng {
 		}
 
 		System.out.println("\tunresolved locs: " + rest);
-
+/*
 		// write results back to files
 		System.out.println("\nwrite results of fusion back to files...");
 
 		for (int i = start; i <= end; i++) {
 			LocFusionWriter.writeLocFusions(users[i]);
 		}
-
+*/
 	}
 }

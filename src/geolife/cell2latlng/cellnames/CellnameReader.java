@@ -28,7 +28,10 @@ public class CellnameReader {
 
 				if (i >= 1) {
 					Cellname cellnameLine = parse(line);
-					lines.add(cellnameLine);
+
+					if (cellnameLine != null) {
+						lines.add(cellnameLine);
+					}
 
 					// System.out.println(i + ":\t" + cellnameLine);
 				}
@@ -69,10 +72,14 @@ public class CellnameReader {
 			cellId = Integer.valueOf(splitLineCell[1]);
 		}
 
-		userLabel = splitLine[1];
-
-		result = new Cellname(locationAreaCode, cellId, userLabel);
+		if (splitLine.length > 1) {
+			userLabel = splitLine[1];
+			result = new Cellname(locationAreaCode, cellId, userLabel);
+		} else {
+			result = null;
+		}
 
 		return result;
+
 	}
 }

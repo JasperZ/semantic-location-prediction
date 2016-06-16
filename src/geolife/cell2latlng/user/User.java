@@ -137,7 +137,7 @@ public class User {
 							String label;
 
 							// remove provider from label if available
-							if (providerAvailable) {
+							if (providerAvailable && c.userLabel.toLowerCase().contains(provider.toLowerCase())) {
 								int providerStart = c.userLabel.toLowerCase().indexOf(provider.toLowerCase());
 								int providerEnd = providerStart + provider.length();
 
