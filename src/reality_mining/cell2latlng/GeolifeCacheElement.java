@@ -1,4 +1,4 @@
-package geolife.cell2latlng;
+package reality_mining.cell2latlng;
 
 public class GeolifeCacheElement {
 	public String timestamp;

@@ -1,23 +1,27 @@
-package geolife.cell2latlng.user;
+package reality_mining.user;
 
 import java.util.ArrayList;
 
-import geolife.cell2latlng.CellTowerCache;
-import geolife.cell2latlng.GeolifeCacheElement;
-import geolife.cell2latlng.cellnames.Cellname;
-import geolife.cell2latlng.location_fusion.LocFusion;
-import geolife.cell2latlng.locs.Loc;
+import com.google.gson.annotations.Expose;
+
+import reality_mining.cell2latlng.CellTowerCache;
+import reality_mining.cell2latlng.GeolifeCacheElement;
 
 public class User {
+	@Expose
 	private int id;
-	private boolean locsAvailable;
-	private ArrayList<Loc> locs;
 	private boolean cellnamesAvailable;
+	@Expose
 	private ArrayList<Cellname> cellnames;
 	private boolean providerAvailable;
+	@Expose
 	private String provider;
-	private boolean locFusionsAvailable;
-	private ArrayList<LocFusion> locFusions;
+	private boolean predictabilityAvailable;
+	@Expose
+	private String predictability;
+	private boolean locsAvailable;
+	@Expose
+	private ArrayList<Loc> locs;
 
 	public User(int id) {
 		this.id = id;
@@ -27,16 +31,17 @@ public class User {
 		this.cellnames = null;
 		this.providerAvailable = false;
 		this.provider = null;
-		this.locFusionsAvailable = false;
-		this.locFusions = null;
+		this.predictabilityAvailable = false;
+		this.predictability = null;
 	}
 
-	public User(int id, ArrayList<Loc> locs, ArrayList<Cellname> cellnames, String provider) {
+	public User(int id, ArrayList<Loc> locs, ArrayList<Cellname> cellnames, String provider, String predictability) {
 		this.id = id;
 
 		setLocs(locs);
 		setCellnames(cellnames);
 		setProvider(provider);
+		setPredictability(predictability);
 	}
 
 	public int getId() {
@@ -55,8 +60,6 @@ public class User {
 		if (locs != null) {
 			this.locsAvailable = true;
 			this.locs = locs;
-
-			initLocFusions();
 		} else {
 			this.locsAvailable = false;
 			this.locs = null;
@@ -99,54 +102,25 @@ public class User {
 		}
 	}
 
-	public boolean locFusionsAvailable() {
-		return this.locFusionsAvailable;
-	}
-
-	public ArrayList<LocFusion> getLocFusions() {
-		return this.locFusions;
-	}
-
-	private void initLocFusions() {
-		ArrayList<LocFusion> locFusions = new ArrayList<>();
-
-		if (!locFusionsAvailable) {
-			for (Loc l : locs) {
-				LocFusion locFusion = new LocFusion();
-
-				locFusion.setTimestamp(l.getTimestamp());
-				locFusion.setLocationAreaCode(l.getLocationAreaCode());
-				locFusion.setCellId(l.getCellId());
-
-				locFusions.add(locFusion);
-			}
+	public void setPredictability(String predictability) {
+		if (predictability != null && !predictability.equals("")) {
+			this.predictabilityAvailable = true;
+			this.predictability = predictability;
+		} else {
+			this.predictabilityAvailable = false;
+			this.predictability = "";
 		}
-
-		this.locFusionsAvailable = true;
-		this.locFusions = locFusions;
 	}
 
 	public void offlineFusion() {
-		if (locsAvailable && locFusionsAvailable) {
+		if (locsAvailable) {
 			if (cellnamesAvailable) {
-				for (LocFusion f : locFusions) {
+				for (Loc f : locs) {
 					for (Cellname c : cellnames) {
 						if (f.getLocationAreaCode() != null && f.getCellId() != null
 								&& f.getLocationAreaCode().equals(c.locationAreaCode)
 								&& f.getCellId().equals(c.cellId)) {
-							String label;
-
-							// remove provider from label if available
-							if (providerAvailable && c.userLabel.toLowerCase().contains(provider.toLowerCase())) {
-								int providerStart = c.userLabel.toLowerCase().indexOf(provider.toLowerCase());
-								int providerEnd = providerStart + provider.length();
-
-								label = c.userLabel.substring(providerEnd, c.userLabel.length());
-							} else {
-								label = c.userLabel;
-							}
-
-							f.setUserLabel(label);
+							f.setUserLabel(c.userLabel);
 							break;
 						}
 					}
@@ -156,9 +130,9 @@ public class User {
 	}
 
 	public void cacheFusion(CellTowerCache cache) {
-		if (locsAvailable && locFusionsAvailable) {
+		if (locsAvailable) {
 			if (cache != null) {
-				for (LocFusion f : locFusions) {
+				for (Loc f : locs) {
 					if (f.getLocationAreaCode() != null && f.getCellId() != null) {
 						GeolifeCacheElement c = cache.find(f.getLocationAreaCode(), f.getCellId());
 

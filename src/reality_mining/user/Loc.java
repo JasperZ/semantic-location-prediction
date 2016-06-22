@@ -1,16 +1,25 @@
-package geolife.cell2latlng.location_fusion;
+package reality_mining.user;
 
-public class LocFusion {
-	private String timestamp;
+import com.google.gson.annotations.Expose;
+
+public class Loc {
+	@Expose
+	private Long timestamp;
+	@Expose
 	private Integer locationAreaCode;
+	@Expose
 	private Integer cellId;
+	@Expose
 	private Double lat;
+	@Expose
 	private Double lng;
+	@Expose
 	private Double accuracy;
+	@Expose
 	private String userLabel;
 
-	public LocFusion(String timestamp, Integer locationAreaCode, Integer cellId, Double lat, Double lng,
-			Double accuracy, String userLabel) {
+	public Loc(long timestamp, Integer locationAreaCode, Integer cellId, Double lat, Double lng, Double accuracy,
+			String userLabel) {
 		this.timestamp = timestamp;
 		this.locationAreaCode = locationAreaCode;
 		this.cellId = cellId;
@@ -20,7 +29,17 @@ public class LocFusion {
 		this.userLabel = userLabel;
 	}
 
-	public LocFusion() {
+	public Loc(long timestamp, Integer locationAreaCode, Integer cellId) {
+		this.timestamp = timestamp;
+		this.locationAreaCode = locationAreaCode;
+		this.cellId = cellId;
+		this.lat = null;
+		this.lng = null;
+		this.accuracy = null;
+		this.userLabel = null;
+	}
+
+	public Loc() {
 		this.timestamp = null;
 		this.locationAreaCode = null;
 		this.cellId = null;
@@ -30,11 +49,11 @@ public class LocFusion {
 		this.userLabel = null;
 	}
 
-	public String getTimestamp() {
+	public Long getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(String timestamp) {
+	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
 

@@ -1,4 +1,4 @@
-package geolife.cell2latlng;
+package reality_mining.cell2latlng;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -8,11 +8,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import geolife.cell2latlng.location_fusion.LocFusion;
-import geolife.cell2latlng.locs.Loc;
-import geolife.cell2latlng.user.User;
 import open_cell_id.OpenCellIdReader;
 import open_cell_id.TowerRecord;
+import reality_mining.user.Loc;
+import reality_mining.user.User;
 
 public class CellTowerCache {
 	private ArrayList<GeolifeCacheElement> cache = new ArrayList<>();
@@ -42,8 +41,8 @@ public class CellTowerCache {
 	}
 
 	public void add(User user) {
-		if (user.locFusionsAvailable()) {
-			for (LocFusion f : user.getLocFusions()) {
+		if (user.locsAvailable()) {
+			for (Loc f : user.getLocs()) {
 				GeolifeCacheElement e = new GeolifeCacheElement();
 
 				e.locationAreaCode = f.getLocationAreaCode();
@@ -119,6 +118,9 @@ public class CellTowerCache {
 
 				if (i >= 1) {
 					TowerRecord record = parse(line);
+
+					// only look for matches in GSM records since the data from
+					// the geolife dataset contains only GSM cells
 					if (record.getRadio().equals("GSM")) {
 						GeolifeCacheElement c = find(record.getArea(), record.getCell());
 

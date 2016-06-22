@@ -1,34 +1,32 @@
-package geolife.cell2latlng;
+package reality_mining.cell2latlng;
 
 import java.util.ArrayList;
 
-import geolife.cell2latlng.cellnames.Cellname;
-import geolife.cell2latlng.cellnames.CellnameReader;
-import geolife.cell2latlng.location_fusion.LocFusionWriter;
-import geolife.cell2latlng.locs.Loc;
-import geolife.cell2latlng.locs.LocReader;
-import geolife.cell2latlng.provider.ProviderReader;
-import geolife.cell2latlng.user.User;
-import open_cell_id.TowerRecord;
+import reality_mining.user.AttributeReader;
+import reality_mining.user.Cellname;
+import reality_mining.user.Loc;
+import reality_mining.user.User;
+import reality_mining.user.UserWriter;
 
 public class Cell2LatLng {
 	public static void main(String[] args) {
 		User users[] = new User[107];
 		CellTowerCache cellTowerCache = new CellTowerCache();
 
-		int test = 6;
-		int start = 61;
-		int end = 106;
+		int test = 7;
+		int start = test;
+		int end = test;
 
 		// read locs and cellnames from users
 		System.out.println("\nread locs, cellnames and provider from files...");
 
 		for (int i = start; i <= end; i++) {
-			ArrayList<Loc> locLines = LocReader.readLocs(i);
-			ArrayList<Cellname> cellnameLines = CellnameReader.readCellnames(i);
-			String provider = ProviderReader.readProvider(i);
+			ArrayList<Loc> locLines = AttributeReader.readLocs(i);
+			ArrayList<Cellname> cellnameLines = AttributeReader.readCellnames(i);
+			String provider = AttributeReader.readProvider(i);
+			String predictability = AttributeReader.readPredictability(i);
 
-			users[i] = new User(i, locLines, cellnameLines, provider);
+			users[i] = new User(i, locLines, cellnameLines, provider, predictability);
 		}
 
 		// build cache of cell-towers to avoid multiple requests for the same
@@ -47,7 +45,7 @@ public class Cell2LatLng {
 		System.out.println("\ntry to get location date for cell towers...");
 		// cellTowerCache.queryAllElementsFromGoogle();
 
-		cellTowerCache.queryAllElementsFromOpenCellId();
+//		cellTowerCache.queryAllElementsFromOpenCellId();
 
 		// fusion of local available data
 		System.out.println("\nfusion of data from cellnames and cell tower cache...");
@@ -59,7 +57,9 @@ public class Cell2LatLng {
 			users[i].cacheFusion(cellTowerCache);
 
 			System.out.println("\twrite fusion data of user " + i);
-			LocFusionWriter.writeLocFusions(users[i]);
+			// LocWriter.writeLocFusions(users[i]);
+			UserWriter.writeUserToJson("/home/jasper/SemanticLocationPredictionData/RealityMining/users/user_"
+					+ users[i].getId() + ".json", users[i]);
 		}
 
 		// calculate number of unresolved locs
@@ -68,23 +68,20 @@ public class Cell2LatLng {
 		int rest = 0;
 
 		for (int i = start; i <= end; i++) {
-			if (users[i].locFusionsAvailable()) {
-				for (GeolifeCacheElement c : cellTowerCache.getCache()) {
-					if (c.userLabel == null && c.lng == null && c.lat == null) {
-						rest++;
-					}
+			for (GeolifeCacheElement c : cellTowerCache.getCache()) {
+				if (c.userLabel == null && c.lng == null && c.lat == null) {
+					rest++;
 				}
 			}
 		}
 
 		System.out.println("\tunresolved locs: " + rest);
-/*
-		// write results back to files
-		System.out.println("\nwrite results of fusion back to files...");
-
-		for (int i = start; i <= end; i++) {
-			LocFusionWriter.writeLocFusions(users[i]);
-		}
-*/
+		/*
+		 * // write results back to files System.out.println(
+		 * "\nwrite results of fusion back to files...");
+		 * 
+		 * for (int i = start; i <= end; i++) {
+		 * LocFusionWriter.writeLocFusions(users[i]); }
+		 */
 	}
 }
