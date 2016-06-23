@@ -14,7 +14,7 @@ import reality_mining.user.User;
 public class UserWriter {
 	public static void writeUserToJson(String path, User user) {
 
-		Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(user);
 
 		/*

@@ -2,54 +2,53 @@ package reality_mining.user;
 
 import java.util.ArrayList;
 
-import com.google.gson.annotations.Expose;
-
 import reality_mining.cell2latlng.CellTowerCache;
 import reality_mining.cell2latlng.GeolifeCacheElement;
 
 public class User {
-	@Expose
 	private int id;
-	private boolean cellnamesAvailable;
-	@Expose
 	private ArrayList<Cellname> cellnames;
-	private boolean providerAvailable;
-	@Expose
 	private String provider;
-	private boolean predictabilityAvailable;
-	@Expose
 	private String predictability;
-	private boolean locsAvailable;
-	@Expose
 	private ArrayList<Loc> locs;
+	private ArrayList<String> hangouts;
+	private String researchGroup;
+	private String neighborhood;
 
 	public User(int id) {
 		this.id = id;
-		this.locsAvailable = false;
 		this.locs = null;
-		this.cellnamesAvailable = false;
 		this.cellnames = null;
-		this.providerAvailable = false;
 		this.provider = null;
-		this.predictabilityAvailable = false;
 		this.predictability = null;
+		this.hangouts = null;
+		this.researchGroup = null;
+		this.neighborhood = null;
 	}
 
-	public User(int id, ArrayList<Loc> locs, ArrayList<Cellname> cellnames, String provider, String predictability) {
+	public User(int id, ArrayList<Loc> locs, ArrayList<Cellname> cellnames, String provider, String predictability,
+			ArrayList<String> hangouts, String researchGroup, String neighborhood) {
 		this.id = id;
 
 		setLocs(locs);
 		setCellnames(cellnames);
 		setProvider(provider);
 		setPredictability(predictability);
+		setHangouts(hangouts);
+		setResearchGroup(researchGroup);
+		setNeighborhood(neighborhood);
 	}
 
 	public int getId() {
 		return this.id;
 	}
 
-	public boolean locsAvailable() {
-		return this.locsAvailable;
+	public boolean areLocsAvailable() {
+		if (locs != null && locs.size() != 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public ArrayList<Loc> getLocs() {
@@ -58,16 +57,10 @@ public class User {
 
 	public void setLocs(ArrayList<Loc> locs) {
 		if (locs != null) {
-			this.locsAvailable = true;
 			this.locs = locs;
 		} else {
-			this.locsAvailable = false;
 			this.locs = null;
 		}
-	}
-
-	public boolean cellnamesAvailable() {
-		return this.cellnamesAvailable;
 	}
 
 	public ArrayList<Cellname> getCellnames() {
@@ -75,17 +68,19 @@ public class User {
 	}
 
 	public void setCellnames(ArrayList<Cellname> cellnames) {
-		if (cellnames != null) {
-			this.cellnamesAvailable = true;
+		if (cellnames != null && !cellnames.isEmpty()) {
 			this.cellnames = cellnames;
 		} else {
-			this.cellnamesAvailable = false;
 			this.cellnames = null;
 		}
 	}
 
-	public boolean providerAvailable() {
-		return this.providerAvailable;
+	public boolean isProviderAvailable() {
+		if (provider != null && !provider.equals("")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public String getProvider() {
@@ -94,27 +89,104 @@ public class User {
 
 	public void setProvider(String provider) {
 		if (provider != null && !provider.equals("")) {
-			this.providerAvailable = true;
 			this.provider = provider;
 		} else {
-			this.providerAvailable = false;
-			this.provider = "";
+			this.provider = null;
 		}
 	}
 
 	public void setPredictability(String predictability) {
 		if (predictability != null && !predictability.equals("")) {
-			this.predictabilityAvailable = true;
 			this.predictability = predictability;
 		} else {
-			this.predictabilityAvailable = false;
-			this.predictability = "";
+			this.predictability = null;
 		}
 	}
 
+	private void setHangouts(ArrayList<String> hangouts) {
+		if (hangouts != null && !hangouts.isEmpty()) {
+			this.hangouts = hangouts;
+		} else {
+			this.hangouts = null;
+		}
+
+	}
+
+	public void setResearchGroup(String researchGroup) {
+		if (researchGroup != null && !researchGroup.equals("")) {
+			this.researchGroup = researchGroup;
+		} else {
+			this.researchGroup = null;
+		}
+	}
+
+	public void setNeighborhood(String neighborhood) {
+		if (neighborhood != null && !neighborhood.equals("")) {
+			this.neighborhood = researchGroup;
+		} else {
+			this.neighborhood = null;
+		}
+	}
+
+	public boolean isNeighborhoodAvailable() {
+		if (neighborhood != null && !neighborhood.equals("")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean areCellnamesAvailable() {
+		if (cellnames != null && cellnames.size() != 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isPredictabilityAvailable() {
+		if (predictability != null && !predictability.equals("")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public String getPredictability() {
+		return predictability;
+	}
+
+	public ArrayList<String> getHangouts() {
+		return hangouts;
+	}
+
+	public boolean areHangoutsAvailable() {
+		if (hangouts != null && hangouts.size() != 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isResearchGroupAvailable() {
+		if (researchGroup != null && !researchGroup.equals("")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public String getResearchGroup() {
+		return researchGroup;
+	}
+
+	public String getNeighborhood() {
+		return neighborhood;
+	}
+
 	public void offlineFusion() {
-		if (locsAvailable) {
-			if (cellnamesAvailable) {
+		if (areLocsAvailable()) {
+			if (areCellnamesAvailable()) {
 				for (Loc f : locs) {
 					for (Cellname c : cellnames) {
 						if (f.getLocationAreaCode() != null && f.getCellId() != null
@@ -130,7 +202,7 @@ public class User {
 	}
 
 	public void cacheFusion(CellTowerCache cache) {
-		if (locsAvailable) {
+		if (areLocsAvailable()) {
 			if (cache != null) {
 				for (Loc f : locs) {
 					if (f.getLocationAreaCode() != null && f.getCellId() != null) {

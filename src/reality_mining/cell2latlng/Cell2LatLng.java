@@ -13,7 +13,7 @@ public class Cell2LatLng {
 		User users[] = new User[107];
 		CellTowerCache cellTowerCache = new CellTowerCache();
 
-		int test = 7;
+		int test = 2;
 		int start = test;
 		int end = test;
 
@@ -25,8 +25,12 @@ public class Cell2LatLng {
 			ArrayList<Cellname> cellnameLines = AttributeReader.readCellnames(i);
 			String provider = AttributeReader.readProvider(i);
 			String predictability = AttributeReader.readPredictability(i);
+			ArrayList<String> hangouts = AttributeReader.readHangouts(i);
+			String researchGroup = AttributeReader.readResearchGroup(i);
+			String neighborhood = AttributeReader.readNeighborhood(i);
 
-			users[i] = new User(i, locLines, cellnameLines, provider, predictability);
+			users[i] = new User(i, locLines, cellnameLines, provider, predictability, hangouts, researchGroup,
+					neighborhood);
 		}
 
 		// build cache of cell-towers to avoid multiple requests for the same
@@ -45,7 +49,7 @@ public class Cell2LatLng {
 		System.out.println("\ntry to get location date for cell towers...");
 		// cellTowerCache.queryAllElementsFromGoogle();
 
-//		cellTowerCache.queryAllElementsFromOpenCellId();
+	//	cellTowerCache.queryAllElementsFromOpenCellId();
 
 		// fusion of local available data
 		System.out.println("\nfusion of data from cellnames and cell tower cache...");

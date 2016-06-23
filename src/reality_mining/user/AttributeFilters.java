@@ -1,9 +1,9 @@
 package reality_mining.user;
 
-public class ProviderFilter {
+public class AttributeFilters {
 	private final static String AVAILABLE_PROVIDERS[] = { "AT&TWirel", "AT&T", "T-Mobile", "TMO" };
 
-	public static String removeProviderFromStart(String text) {
+	public static String filterProviderFromStart(String text) {
 		String filteredText = text;
 		String lowerText = text.toLowerCase();
 
@@ -17,5 +17,9 @@ public class ProviderFilter {
 		}
 
 		return filteredText;
+	}
+
+	public static String filterStarFromString(String text) {
+		return text.replace("*", "");
 	}
 }

@@ -1,21 +1,12 @@
 package reality_mining.user;
 
-import com.google.gson.annotations.Expose;
-
 public class Loc {
-	@Expose
 	private Long timestamp;
-	@Expose
 	private Integer locationAreaCode;
-	@Expose
 	private Integer cellId;
-	@Expose
 	private Double lat;
-	@Expose
 	private Double lng;
-	@Expose
 	private Double accuracy;
-	@Expose
 	private String userLabel;
 
 	public Loc(long timestamp, Integer locationAreaCode, Integer cellId, Double lat, Double lng, Double accuracy,

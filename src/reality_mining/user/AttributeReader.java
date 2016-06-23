@@ -11,6 +11,136 @@ import main.MatlabHelpers;
 public class AttributeReader {
 	public final static String BASE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining";
 
+	public static String readNeighborhood(int user) {
+		// System.out.println("readLocs:");
+		String neighborhood = "";
+		BufferedReader br = null;
+
+		try {
+			String path = String.format("%s/%d/neighborhood.csv", BASE_PATH, user);
+			String line;
+			int i = 0;
+
+			br = new BufferedReader(new FileReader(path));
+
+			while ((line = br.readLine()) != null) {
+
+				if (i >= 1) {
+					neighborhood = AttributeFilters.filterStarFromString(line);
+					break;
+				}
+
+				i++;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return neighborhood;
+	}
+
+	public static String readResearchGroup(int user) {
+		// System.out.println("readLocs:");
+		String group = "";
+		BufferedReader br = null;
+
+		try {
+			String path = String.format("%s/%d/my_group.csv", BASE_PATH, user);
+			String line;
+			int i = 0;
+
+			br = new BufferedReader(new FileReader(path));
+
+			while ((line = br.readLine()) != null) {
+
+				if (i >= 1) {
+					group = AttributeFilters.filterStarFromString(line);
+					break;
+				}
+
+				i++;
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return group;
+	}
+
+	public static ArrayList<String> readHangouts(int user) {
+		ArrayList<String> lines = new ArrayList<>();
+		BufferedReader br = null;
+
+		try {
+			String path = String.format("%s/%d/my_hangouts.csv", BASE_PATH, user);
+			String line;
+			int i = 0;
+
+			br = new BufferedReader(new FileReader(path));
+
+			while ((line = br.readLine()) != null) {
+
+				if (i >= 1) {
+					lines.addAll(parseHangout(line));
+				}
+
+				i++;
+			}
+		} catch (
+
+		FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return lines;
+	}
+
+	private static ArrayList<String> parseHangout(String line) {
+		ArrayList<String> result = new ArrayList<>();
+		String seperator = "; ";
+
+		String[] splitLine = line.split(seperator);
+
+		for (String s : splitLine) {
+			s = AttributeFilters.filterStarFromString(s).trim();
+
+			if (!s.isEmpty()) {
+				result.add(s);
+			}
+		}
+
+		return result;
+	}
+
 	public static ArrayList<Loc> readLocs(int user) {
 		ArrayList<Loc> lines = new ArrayList<>();
 		BufferedReader br = null;
@@ -139,7 +269,8 @@ public class AttributeReader {
 		if (splitLine.length > 1) {
 			userLabel = splitLine[1];
 
-			userLabel = ProviderFilter.removeProviderFromStart(userLabel);
+			userLabel = AttributeFilters.filterProviderFromStart(userLabel);
+			userLabel = AttributeFilters.filterStarFromString(userLabel);
 
 			result = new Cellname(locationAreaCode, cellId, userLabel);
 		} else {
@@ -165,7 +296,7 @@ public class AttributeReader {
 			while ((line = br.readLine()) != null) {
 
 				if (i >= 1) {
-					predictability = line;
+					predictability = AttributeFilters.filterStarFromString(line);
 					break;
 				}
 
@@ -203,7 +334,7 @@ public class AttributeReader {
 			while ((line = br.readLine()) != null) {
 
 				if (i >= 1) {
-					provider = line;
+					provider = AttributeFilters.filterStarFromString(line);
 					break;
 				}
 

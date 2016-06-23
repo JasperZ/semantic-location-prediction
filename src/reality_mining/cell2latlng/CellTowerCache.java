@@ -41,7 +41,7 @@ public class CellTowerCache {
 	}
 
 	public void add(User user) {
-		if (user.locsAvailable()) {
+		if (user.areLocsAvailable()) {
 			for (Loc f : user.getLocs()) {
 				GeolifeCacheElement e = new GeolifeCacheElement();
 
