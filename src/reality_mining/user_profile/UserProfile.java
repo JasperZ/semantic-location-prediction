@@ -1,11 +1,11 @@
-package reality_mining.user;
+package reality_mining.user_profile;
 
 import java.util.ArrayList;
 
-import reality_mining.cell2latlng.CellTowerCache;
-import reality_mining.cell2latlng.GeolifeCacheElement;
+import reality_mining.CellTowerCache;
+import reality_mining.GeolifeCacheElement;
 
-public class User {
+public class UserProfile {
 	private int id;
 	private ArrayList<Cellname> cellnames;
 	private String provider;
@@ -15,7 +15,7 @@ public class User {
 	private String researchGroup;
 	private String neighborhood;
 
-	public User(int id) {
+	public UserProfile(int id) {
 		this.id = id;
 		this.locs = null;
 		this.cellnames = null;
@@ -26,8 +26,8 @@ public class User {
 		this.neighborhood = null;
 	}
 
-	public User(int id, ArrayList<Loc> locs, ArrayList<Cellname> cellnames, String provider, String predictability,
-			ArrayList<String> hangouts, String researchGroup, String neighborhood) {
+	public UserProfile(int id, ArrayList<Loc> locs, ArrayList<Cellname> cellnames, String provider,
+			String predictability, ArrayList<String> hangouts, String researchGroup, String neighborhood) {
 		this.id = id;
 
 		setLocs(locs);
@@ -56,7 +56,7 @@ public class User {
 	}
 
 	public void setLocs(ArrayList<Loc> locs) {
-		if (locs != null) {
+		if (locs != null && !locs.isEmpty()) {
 			this.locs = locs;
 		} else {
 			this.locs = null;
@@ -184,7 +184,7 @@ public class User {
 		return neighborhood;
 	}
 
-	public void offlineFusion() {
+	public void performLocCellnameFusion() {
 		if (areLocsAvailable()) {
 			if (areCellnamesAvailable()) {
 				for (Loc f : locs) {
@@ -201,7 +201,7 @@ public class User {
 		}
 	}
 
-	public void cacheFusion(CellTowerCache cache) {
+	public void performeLocCellTowerCacheFusion(CellTowerCache cache) {
 		if (areLocsAvailable()) {
 			if (cache != null) {
 				for (Loc f : locs) {
@@ -217,5 +217,47 @@ public class User {
 				}
 			}
 		}
+	}
+
+	public int countUserLabeledLocs() {
+		int counter = 0;
+
+		if (areLocsAvailable()) {
+			for (Loc l : getLocs()) {
+				if (l.isUserLabelAvailable()) {
+					counter++;
+				}
+			}
+		}
+
+		return counter;
+	}
+
+	public int countLatLngLocs() {
+		int counter = 0;
+
+		if (areLocsAvailable()) {
+			for (Loc l : getLocs()) {
+				if (l.isLatitudeAvailable() && l.isLongitudeAvailable()) {
+					counter++;
+				}
+			}
+		}
+
+		return counter;
+	}
+
+	public int countUserLabeledLatLngLocs() {
+		int counter = 0;
+
+		if (areLocsAvailable()) {
+			for (Loc l : getLocs()) {
+				if ((l.isLatitudeAvailable() && l.isLongitudeAvailable()) || l.isUserLabelAvailable()) {
+					counter++;
+				}
+			}
+		}
+
+		return counter;
 	}
 }

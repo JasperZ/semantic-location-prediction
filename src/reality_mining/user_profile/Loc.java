@@ -1,4 +1,4 @@
-package reality_mining.user;
+package reality_mining.user_profile;
 
 public class Loc {
 	private Long timestamp;

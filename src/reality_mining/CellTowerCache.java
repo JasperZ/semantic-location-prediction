@@ -1,17 +1,16 @@
-package reality_mining.cell2latlng;
+package reality_mining;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import open_cell_id.OpenCellIdReader;
 import open_cell_id.TowerRecord;
-import reality_mining.user.Loc;
-import reality_mining.user.User;
+import reality_mining.user_profile.Loc;
+import reality_mining.user_profile.UserProfile;
 
 public class CellTowerCache {
 	private ArrayList<GeolifeCacheElement> cache = new ArrayList<>();
@@ -40,7 +39,7 @@ public class CellTowerCache {
 		}
 	}
 
-	public void add(User user) {
+	public void add(UserProfile user) {
 		if (user.areLocsAvailable()) {
 			for (Loc f : user.getLocs()) {
 				GeolifeCacheElement e = new GeolifeCacheElement();

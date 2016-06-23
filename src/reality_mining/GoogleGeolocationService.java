@@ -1,4 +1,4 @@
-package reality_mining.cell2latlng;
+package reality_mining;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

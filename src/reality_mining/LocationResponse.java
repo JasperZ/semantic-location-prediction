@@ -1,4 +1,4 @@
-package reality_mining.cell2latlng;
+package reality_mining;
 
 public class LocationResponse {
 	public GPSLocation location;

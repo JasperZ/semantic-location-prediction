@@ -1,4 +1,4 @@
-package reality_mining.user;
+package reality_mining.user_profile;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -12,7 +12,6 @@ public class AttributeReader {
 	public final static String BASE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining";
 
 	public static String readNeighborhood(int user) {
-		// System.out.println("readLocs:");
 		String neighborhood = "";
 		BufferedReader br = null;
 
@@ -50,7 +49,6 @@ public class AttributeReader {
 	}
 
 	public static String readResearchGroup(int user) {
-		// System.out.println("readLocs:");
 		String group = "";
 		BufferedReader br = null;
 
@@ -145,8 +143,6 @@ public class AttributeReader {
 		ArrayList<Loc> lines = new ArrayList<>();
 		BufferedReader br = null;
 
-		// System.out.println("readLocs:");
-
 		try {
 			String path = String.format("%s/%d/locs.csv", BASE_PATH, user);
 			String line;
@@ -158,9 +154,10 @@ public class AttributeReader {
 
 				if (i >= 1) {
 					Loc geoLine = parseLoc(line);
-					lines.add(geoLine);
 
-					// System.out.println(i + ":\t" + geoLine);
+					if (geoLine != null) {
+						lines.add(geoLine);
+					}
 				}
 
 				i++;
@@ -180,11 +177,12 @@ public class AttributeReader {
 				}
 			}
 		}
+
 		return lines;
 	}
 
 	private static Loc parseLoc(String line) {
-		Loc result;
+		Loc result = null;
 		String seperator = "\t";
 		Integer locationAreaCode = null;
 		Integer cellId = null;
@@ -197,9 +195,8 @@ public class AttributeReader {
 		if (splitLineCell.length == 2) {
 			locationAreaCode = Integer.valueOf(splitLineCell[0]);
 			cellId = Integer.valueOf(splitLineCell[1]);
+			result = new Loc(MatlabHelpers.serialDateToUnixtime(Double.valueOf(timestamp)), locationAreaCode, cellId);
 		}
-
-		result = new Loc(MatlabHelpers.serialDateToUnixtime(Double.valueOf(timestamp)), locationAreaCode, cellId);
 
 		return result;
 	}

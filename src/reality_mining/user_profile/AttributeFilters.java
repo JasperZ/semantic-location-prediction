@@ -1,4 +1,4 @@
-package reality_mining.user;
+package reality_mining.user_profile;
 
 public class AttributeFilters {
 	private final static String AVAILABLE_PROVIDERS[] = { "AT&TWirel", "AT&T", "T-Mobile", "TMO" };
