@@ -1,5 +1,7 @@
 package reality_mining.user_profile;
 
+import main.foursquare.venue.VenueResponse;
+
 public class Loc {
 	private Long timestamp;
 	private Integer locationAreaCode;
@@ -8,6 +10,7 @@ public class Loc {
 	private Double lng;
 	private Double accuracy;
 	private String userLabel;
+	private VenueResponse[] foursquare;
 
 	public Loc(long timestamp, Integer locationAreaCode, Integer cellId, Double lat, Double lng, Double accuracy,
 			String userLabel) {
@@ -18,6 +21,7 @@ public class Loc {
 		this.lng = lng;
 		this.accuracy = accuracy;
 		this.userLabel = userLabel;
+		this.foursquare = null;
 	}
 
 	public Loc(long timestamp, Integer locationAreaCode, Integer cellId) {
@@ -28,6 +32,7 @@ public class Loc {
 		this.lng = null;
 		this.accuracy = null;
 		this.userLabel = null;
+		this.foursquare = null;
 	}
 
 	public Loc() {
@@ -38,6 +43,7 @@ public class Loc {
 		this.lng = null;
 		this.accuracy = null;
 		this.userLabel = null;
+		this.foursquare = null;
 	}
 
 	public Long getTimestamp() {
@@ -90,6 +96,14 @@ public class Loc {
 
 	public String getUserLabel() {
 		return userLabel;
+	}
+
+	public VenueResponse[] getFoursquare() {
+		return foursquare;
+	}
+
+	public void setFoursquare(VenueResponse[] foursquareLabel) {
+		this.foursquare = foursquareLabel;
 	}
 
 	public void setUserLabel(String userLabel) {
@@ -146,6 +160,14 @@ public class Loc {
 
 	public boolean isUserLabelAvailable() {
 		if (userLabel != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isFoursquareLabelAvailable() {
+		if (foursquare != null) {
 			return true;
 		} else {
 			return false;
