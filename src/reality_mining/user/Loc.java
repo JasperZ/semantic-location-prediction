@@ -96,6 +96,62 @@ public class Loc {
 		this.userLabel = userLabel;
 	}
 
+	public boolean isTimestampAvailable() {
+		if (timestamp != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isLocationAreaCodeAvailable() {
+		if (locationAreaCode != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isCellIdAvailable() {
+		if (cellId != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isLatitudeAvailable() {
+		if (lat != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isLongitudeAvailable() {
+		if (lat != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isAccuracyAvailable() {
+		if (accuracy != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isUserLabelAvailable() {
+		if (userLabel != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	public String toString() {
 		return String.format(
