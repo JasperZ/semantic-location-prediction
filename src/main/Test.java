@@ -21,10 +21,6 @@ public class Test {
 				int countLabelLatLng = user.countUserLabeledLatLngLocs();
 				double labelLatLngPercent = (100.0 / total) * countLabelLatLng;
 
-				if (labelLatLngPercent < 10) {
-					continue;
-				}
-
 				if (user.getId() >= 10) {
 					System.out.println(String.format(Locale.ENGLISH, "user %d \t%.2f\t%.2f\t%.2f", user.getId(),
 							labelPercent, latLngPercent, labelLatLngPercent));

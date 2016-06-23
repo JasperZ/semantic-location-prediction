@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.w3c.dom.Attr;
+
 import main.MatlabHelpers;
 
 public class AttributeReader {
@@ -268,7 +270,8 @@ public class AttributeReader {
 
 			userLabel = AttributeFilters.filterProviderFromStart(userLabel);
 			userLabel = AttributeFilters.filterStarFromString(userLabel);
-
+			userLabel = AttributeFilters.substituteCellnameUserLabel(userLabel);
+			
 			result = new Cellname(locationAreaCode, cellId, userLabel);
 		} else {
 			result = null;

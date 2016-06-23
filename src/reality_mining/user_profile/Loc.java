@@ -129,7 +129,7 @@ public class Loc {
 	}
 
 	public boolean isLongitudeAvailable() {
-		if (lat != null) {
+		if (lng != null) {
 			return true;
 		} else {
 			return false;

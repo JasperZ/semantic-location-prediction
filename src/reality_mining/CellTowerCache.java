@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import open_cell_id.OpenCellIdReader;
@@ -23,7 +24,7 @@ public class CellTowerCache {
 		if (e.locationAreaCode == null || e.cellId == null) {
 			return;
 		}
-
+		
 		for (GeolifeCacheElement c : cache) {
 			if (c.locationAreaCode.equals(e.locationAreaCode) && c.cellId.equals(e.cellId)) {
 				newElement = false;
@@ -95,8 +96,6 @@ public class CellTowerCache {
 		BufferedReader br = null;
 		int matches = 0;
 
-		// System.out.println("readLocs:");
-
 		int i = 0;
 
 		FileInputStream inputStream = null;
@@ -119,7 +118,7 @@ public class CellTowerCache {
 					TowerRecord record = parse(line);
 
 					// only look for matches in GSM records since the data from
-					// the geolife dataset contains only GSM cells
+					// the reality mining dataset contains only GSM cells
 					if (record.getRadio().equals("GSM")) {
 						GeolifeCacheElement c = find(record.getArea(), record.getCell());
 
