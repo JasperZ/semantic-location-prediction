@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import open_cell_id.OpenCellIdReader;
@@ -14,7 +15,7 @@ import reality_mining.user_profile.Loc;
 import reality_mining.user_profile.UserProfile;
 
 public class CellTowerCache {
-	private ArrayList<GeolifeCacheElement> cache = new ArrayList<>();
+	private HashMap<String, GeolifeCacheElement> hCache = new HashMap<>();
 	public static int cacheSize = 0;
 	public static int cacheHits = 0;
 
@@ -24,17 +25,14 @@ public class CellTowerCache {
 		if (e.locationAreaCode == null || e.cellId == null) {
 			return;
 		}
-		
-		for (GeolifeCacheElement c : cache) {
-			if (c.locationAreaCode.equals(e.locationAreaCode) && c.cellId.equals(e.cellId)) {
-				newElement = false;
-				cacheHits++;
-				break;
-			}
+
+		if (hCache.containsKey(String.format("%d.%d", e.locationAreaCode, e.cellId))) {
+			newElement = false;
+			cacheHits++;
 		}
 
 		if (newElement) {
-			cache.add(e);
+			hCache.put(String.format("%d.%d", e.locationAreaCode, e.cellId), e);
 			cacheSize++;
 			// System.out.println(e);
 		}
@@ -55,18 +53,12 @@ public class CellTowerCache {
 		}
 	}
 
-	public ArrayList<GeolifeCacheElement> getCache() {
-		return this.cache;
+	public int getSize() {
+		return this.hCache.size();
 	}
 
 	public GeolifeCacheElement find(int locationAreaCode, int cellId) {
-		GeolifeCacheElement result = null;
-
-		for (GeolifeCacheElement c : cache) {
-			if (c.locationAreaCode.equals(locationAreaCode) && c.cellId.equals(cellId)) {
-				return c;
-			}
-		}
+		GeolifeCacheElement result = hCache.get(String.format("%d.%d", locationAreaCode, cellId));
 
 		return result;
 	}
@@ -74,14 +66,15 @@ public class CellTowerCache {
 	public int queryAllElementsFromGoogle() {
 		int matches = 0;
 
-		for (GeolifeCacheElement c : cache) {
-			LocationResponse response = GoogleGeolocationService.getCellTowerLocation(c.locationAreaCode, c.cellId);
+		for (Entry<String, GeolifeCacheElement> c : hCache.entrySet()) {
+			LocationResponse response = GoogleGeolocationService.getCellTowerLocation(c.getValue().locationAreaCode,
+					c.getValue().cellId);
 
 			if (response != null) {
-				c.lat = response.location.lat;
-				c.lng = response.location.lng;
-				c.accuracy = response.accuracy;
-				c.locationFound = true;
+				c.getValue().lat = response.location.lat;
+				c.getValue().lng = response.location.lng;
+				c.getValue().accuracy = response.accuracy;
+				c.getValue().locationFound = true;
 
 				matches++;
 
@@ -130,12 +123,12 @@ public class CellTowerCache {
 
 							matches++;
 							// System.out.println(i + ":\t" + geoLine);
-							System.out.println(String.format("\t\tmatches: %d of %d", matches, cache.size()));
+							System.out.println(String.format("\t\tmatches: %d of %d", matches, getSize()));
 						}
 					}
 				}
 
-				if (matches == cache.size()) {
+				if (matches == getSize()) {
 					break;
 				}
 

@@ -28,7 +28,7 @@ public class LocationCelltowerFusion {
 			cellTowerCache.add(p);
 		}
 
-		System.out.println("\t\tcache size: " + cellTowerCache.getCache().size());
+		System.out.println("\t\tcache size: " + cellTowerCache.getSize());
 
 		// cellTowerCache.queryAllElementsFromGoogle();
 
