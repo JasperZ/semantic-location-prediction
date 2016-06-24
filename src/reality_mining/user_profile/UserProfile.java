@@ -7,6 +7,7 @@ import reality_mining.GeolifeCacheElement;
 
 public class UserProfile {
 	private int id;
+	private ArrayList<StayLoc> stayLocs;
 	private ArrayList<Cellname> cellnames;
 	private String provider;
 	private String predictability;
@@ -17,6 +18,7 @@ public class UserProfile {
 
 	public UserProfile(int id) {
 		this.id = id;
+		this.stayLocs = null;
 		this.locs = null;
 		this.cellnames = null;
 		this.provider = null;
@@ -41,6 +43,26 @@ public class UserProfile {
 
 	public int getId() {
 		return this.id;
+	}
+
+	public boolean areStayLocsAvailable() {
+		if (stayLocs != null && stayLocs.size() != 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public ArrayList<StayLoc> getStayLocs() {
+		return stayLocs;
+	}
+
+	public void setStayLocs(ArrayList<StayLoc> stayLocs) {
+		if (stayLocs != null && !stayLocs.isEmpty()) {
+			this.stayLocs = stayLocs;
+		} else {
+			this.stayLocs = null;
+		}
 	}
 
 	public boolean areLocsAvailable() {
