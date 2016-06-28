@@ -12,6 +12,7 @@ import java.util.Scanner;
 import open_cell_id.OpenCellIdReader;
 import open_cell_id.TowerRecord;
 import reality_mining.user_profile.Loc;
+import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
 
 public class CellTowerCache {
@@ -39,14 +40,14 @@ public class CellTowerCache {
 	}
 
 	public void add(UserProfile user) {
-		if (user.areLocsAvailable()) {
-			for (Loc f : user.getLocs()) {
+		if (user.areStayLocsAvailable()) {
+			for (StayLoc s : user.getStayLocs()) {
 				GeolifeCacheElement e = new GeolifeCacheElement();
 
-				e.locationAreaCode = f.getLocationAreaCode();
-				e.cellId = f.getCellId();
-				e.accuracy = f.getAccuracy();
-				e.userLabel = f.getUserLabel();
+				e.locationAreaCode = s.getLocationAreaCode();
+				e.cellId = s.getCellId();
+				e.accuracy = s.getAccuracy();
+				e.userLabel = s.getUserLabel();
 
 				add(e);
 			}

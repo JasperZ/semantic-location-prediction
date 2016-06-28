@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Locale;
 
-import reality_mining.LocationCelltowerFusion;
+import reality_mining.StayLocCelltowerFusion;
 import reality_mining.user_profile.Loc;
 import reality_mining.user_profile.UserProfile;
 import reality_mining.user_profile.UserProfileReader;
@@ -15,7 +15,7 @@ public class TestBabel {
 
 	public static void main(String[] args) {
 		UserProfile user = UserProfileReader
-				.readJsonToUserProfile(LocationCelltowerFusion.LOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH, 106);
+				.readJsonToUserProfile(StayLocCelltowerFusion.STAYLOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH, 106);
 
 		writeLocFusions(user);
 	}

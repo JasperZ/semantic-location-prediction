@@ -26,6 +26,10 @@ public class VenueSearchRequest {
 	private int radius;
 	private boolean limitSet = false;
 	private int limit;
+	private boolean nearSet = false;
+	private String near;
+	private boolean querySet = false;
+	private String query;
 
 	public VenueSearchRequest(String clientId, String clientSecret) {
 		this.clientId = clientId;
@@ -55,9 +59,23 @@ public class VenueSearchRequest {
 		return this;
 	}
 
+	public VenueSearchRequest near(String near) {
+		this.near = near;
+		this.nearSet = true;
+
+		return this;
+	}
+
+	public VenueSearchRequest query(String query) {
+		this.query = query;
+		this.querySet = true;
+
+		return this;
+	}
+
 	private String buildQuery() {
-		String query = String.format(Locale.ENGLISH, "%s?client_id=%s&client_secret=%s&v=%s&intent=browse", BASE_URL, clientId,
-				clientSecret, version);
+		String query = String.format(Locale.ENGLISH, "%s?client_id=%s&client_secret=%s&v=%s&intent=checkin", BASE_URL,
+				clientId, clientSecret, version);
 
 		if (latitudeLongitudeSet) {
 			query += String.format(Locale.ENGLISH, "&ll=%f,%f", latitude, longitude);
@@ -69,6 +87,14 @@ public class VenueSearchRequest {
 
 		if (limitSet) {
 			query += String.format(Locale.ENGLISH, "&limit=%d", limit);
+		}
+
+		if (nearSet) {
+			query += String.format(Locale.ENGLISH, "&near=%s", near);
+		}
+
+		if (querySet) {
+			query += String.format(Locale.ENGLISH, "&query=%s", this.query);
 		}
 
 		System.out.println("query: " + query);

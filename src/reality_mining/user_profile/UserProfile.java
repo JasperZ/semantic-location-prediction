@@ -206,15 +206,15 @@ public class UserProfile {
 		return neighborhood;
 	}
 
-	public void performLocCellnameFusion() {
-		if (areLocsAvailable()) {
+	public void performStayLocCellnameFusion() {
+		if (areStayLocsAvailable()) {
 			if (areCellnamesAvailable()) {
-				for (Loc f : locs) {
+				for (StayLoc s : stayLocs) {
 					for (Cellname c : cellnames) {
-						if (f.getLocationAreaCode() != null && f.getCellId() != null
-								&& f.getLocationAreaCode().equals(c.locationAreaCode)
-								&& f.getCellId().equals(c.cellId)) {
-							f.setUserLabel(c.userLabel);
+						if (s.getLocationAreaCode() != null && s.getCellId() != null
+								&& s.getLocationAreaCode().equals(c.locationAreaCode)
+								&& s.getCellId().equals(c.cellId)) {
+							s.setUserLabel(c.userLabel);
 							break;
 						}
 					}
@@ -224,9 +224,9 @@ public class UserProfile {
 	}
 
 	public void performeLocCellTowerCacheFusion(CellTowerCache cache) {
-		if (areLocsAvailable()) {
+		if (areStayLocsAvailable()) {
 			if (cache != null) {
-				for (Loc f : locs) {
+				for (StayLoc f : getStayLocs()) {
 					if (f.getLocationAreaCode() != null && f.getCellId() != null) {
 						GeolifeCacheElement c = cache.find(f.getLocationAreaCode(), f.getCellId());
 
@@ -241,11 +241,11 @@ public class UserProfile {
 		}
 	}
 
-	public int countUserLabeledLocs() {
+	public int countUserLabeledStayLocs() {
 		int counter = 0;
 
-		if (areLocsAvailable()) {
-			for (Loc l : getLocs()) {
+		if (areStayLocsAvailable()) {
+			for (StayLoc l : getStayLocs()) {
 				if (l.isUserLabelAvailable()) {
 					counter++;
 				}
@@ -255,11 +255,11 @@ public class UserProfile {
 		return counter;
 	}
 
-	public int countLatLngLocs() {
+	public int countLatLngStayLocs() {
 		int counter = 0;
 
-		if (areLocsAvailable()) {
-			for (Loc l : getLocs()) {
+		if (areStayLocsAvailable()) {
+			for (StayLoc l : getStayLocs()) {
 				if (l.isLatitudeAvailable() && l.isLongitudeAvailable()) {
 					counter++;
 				}
@@ -269,11 +269,11 @@ public class UserProfile {
 		return counter;
 	}
 
-	public int countUserLabeledLatLngLocs() {
+	public int countUserLabeledLatLngStayLocs() {
 		int counter = 0;
 
-		if (areLocsAvailable()) {
-			for (Loc l : getLocs()) {
+		if (areStayLocsAvailable()) {
+			for (StayLoc l : getStayLocs()) {
 				if ((l.isLatitudeAvailable() && l.isLongitudeAvailable()) || l.isUserLabelAvailable()) {
 					counter++;
 				}

@@ -6,19 +6,21 @@ import reality_mining.user_profile.UserProfile;
 import reality_mining.user_profile.UserProfileReader;
 import reality_mining.user_profile.UserProfileWriter;
 
-public class LocationCelltowerFusion {
-	public static final String LOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/loc_celltower_fusion_user_profiles";
+public class StayLocCelltowerFusion {
+	public static final String STAYLOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/stayloc_celltower_fusion_user_profiles";
 
 	public static void main(String[] args) {
-		locationCellTowerFusion();
-	}
-
-	public static void locationCellTowerFusion() {
 		ArrayList<UserProfile> userProfiles;
 
-		userProfiles = UserProfileReader
-				.readJsonUserProfiles(LocationCellnameFusion.LOC_CELLNAME_FUSION_USER_PROFILES_DIRECTORY_PATH, 2, 106);
+		userProfiles = UserProfileReader.readJsonUserProfiles(
+				StayLocCellnameFusion.STAYLOC_CELLNAME_FUSION_USER_PROFILES_DIRECTORY_PATH, 2, 106);
 
+		locationCellTowerFusion(userProfiles);
+
+		UserProfileWriter.writeUserProfilesToJson(STAYLOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH, userProfiles);
+	}
+
+	public static void locationCellTowerFusion(ArrayList<UserProfile> userProfiles) {
 		CellTowerCache cellTowerCache = new CellTowerCache();
 
 		// build cache of cell-towers to avoid multiple requests for the same
@@ -37,7 +39,5 @@ public class LocationCelltowerFusion {
 		for (UserProfile p : userProfiles) {
 			p.performeLocCellTowerCacheFusion(cellTowerCache);
 		}
-
-		UserProfileWriter.writeUserProfilesToJson(LOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH, userProfiles);
 	}
 }
