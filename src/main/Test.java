@@ -5,6 +5,10 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
+
 import reality_mining.StayLocCelltowerFusion;
 import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
@@ -34,7 +38,7 @@ public class Test {
 				}
 			}
 		}
-
+/*
 		HashMap<String, Integer> labels = new HashMap<>();
 
 		for (int i = 2; i <= 106; i++) {

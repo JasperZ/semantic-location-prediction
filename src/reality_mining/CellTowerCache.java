@@ -67,6 +67,8 @@ public class CellTowerCache {
 	public int queryAllElementsFromGoogle() {
 		int matches = 0;
 
+		System.out.println("\t\tsearching...");
+		
 		for (Entry<String, GeolifeCacheElement> c : hCache.entrySet()) {
 			LocationResponse response = GoogleGeolocationService.getCellTowerLocation(c.getValue().locationAreaCode,
 					c.getValue().cellId);
@@ -79,7 +81,7 @@ public class CellTowerCache {
 
 				matches++;
 
-				System.out.println(c);
+				System.out.println(String.format("\t\tmatches: %d of %d", matches, getSize()));
 			}
 		}
 
