@@ -51,8 +51,8 @@ public class StayLocDetector {
 	}
 
 	public static void detectStayPoints(UserProfile userProfile) {
-		List<Loc> gpsTrajectory = userProfile.getLocs();
-		ArrayList<StayLoc> stayPoints = new ArrayList<>();
+		List<Loc> locTrajectory = userProfile.getLocs();
+		ArrayList<StayLoc> stayLocs = new ArrayList<>();
 		Loc a = null;
 		Loc b = null;
 
@@ -60,16 +60,16 @@ public class StayLocDetector {
 		int i = 0;
 		int j = 0;
 
-		while (i < gpsTrajectory.size() && j < gpsTrajectory.size()) {
+		while (i < locTrajectory.size() && j < locTrajectory.size()) {
 			j = i + 1;
-			a = gpsTrajectory.get(i);
+			a = locTrajectory.get(i);
 
 			if (!a.isLocationAreaCodeAvailable() || !a.isCellIdAvailable()) {
 				continue;
 			}
 
-			while (j < gpsTrajectory.size()) {
-				b = gpsTrajectory.get(j);
+			while (j < locTrajectory.size()) {
+				b = locTrajectory.get(j);
 
 				if (!b.isLocationAreaCodeAvailable() || !b.isCellIdAvailable()) {
 					continue;
@@ -80,9 +80,9 @@ public class StayLocDetector {
 					deltaTime = b.getTimestamp() - a.getTimestamp();
 
 					if (deltaTime >= TIME_TRHESHOLD) {
-						StayLoc stayPoint = computeStayPoint(i, j, gpsTrajectory);
+						StayLoc stayPoint = computeStayPoint(i, j, locTrajectory);
 
-						stayPoints.add(stayPoint);
+						stayLocs.add(stayPoint);
 					}
 
 					i = j;
@@ -100,13 +100,13 @@ public class StayLocDetector {
 			deltaTime = b.getTimestamp() - a.getTimestamp();
 
 			if (deltaTime >= TIME_TRHESHOLD) {
-				StayLoc stayPoint = computeStayPoint(i, j, gpsTrajectory);
+				StayLoc stayPoint = computeStayPoint(i, j, locTrajectory);
 
-				stayPoints.add(stayPoint);
+				stayLocs.add(stayPoint);
 			}
 		}
 
-		userProfile.setStayLocs(stayPoints);
+		userProfile.setStayLocs(stayLocs);
 	}
 
 	public static StayLoc computeStayPoint(int i, int j, List<Loc> gpsTrajectory) {
