@@ -144,7 +144,7 @@ public class UserProfile {
 
 	public void setNeighborhood(String neighborhood) {
 		if (neighborhood != null && !neighborhood.equals("")) {
-			this.neighborhood = researchGroup;
+			this.neighborhood = neighborhood;
 		} else {
 			this.neighborhood = null;
 		}
