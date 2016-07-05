@@ -1,12 +1,15 @@
 package reality_mining;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import main.APIKeys;
 import main.foursquare.venue.FoursquareVenuesService;
 import main.foursquare.venue.VenueResponse;
+import reality_mining.daily_user_profile.DailyUserProfile;
+import reality_mining.daily_user_profile.DailyUserProfileWriter;
 import reality_mining.user_profile.AttributeReader;
 import reality_mining.user_profile.Cellname;
 import reality_mining.user_profile.Loc;
@@ -16,11 +19,13 @@ import reality_mining.user_profile.UserProfileWriter;
 
 public class DatasetPreparation {
 	public static final String FINAL_USER_PROFILE_DIRECTORY = "/home/jasper/SemanticLocationPredictionData/RealityMining/final_user_profiles";
+	public static final String FINAL_DAILY_USER_PROFILE_DIRECTORY = "/home/jasper/SemanticLocationPredictionData/RealityMining/final_daily_user_profiles";
 	// time threshold in milliseconds
 	private static final long TIME_TRHESHOLD = 30 * 60 * 1000;
 
 	public static void main(String[] args) {
 		ArrayList<UserProfile> userProfiles;
+		ArrayList<DailyUserProfile> dailyUserProfiles;
 
 		userProfiles = convertCSVToUserProfiles(2, 106);
 
@@ -29,7 +34,58 @@ public class DatasetPreparation {
 		mobileCellFusion(userProfiles);
 		// foursquareFusion(userProfiles);
 
+		dailyUserProfiles = createDailyUserProfiles(userProfiles);
+		
 		UserProfileWriter.writeUserProfilesToJson(FINAL_USER_PROFILE_DIRECTORY, userProfiles);
+		DailyUserProfileWriter.writeDailyUserProfilesToJson(FINAL_DAILY_USER_PROFILE_DIRECTORY, dailyUserProfiles);
+	}
+
+	public static ArrayList<DailyUserProfile> createDailyUserProfiles(ArrayList<UserProfile> userProfiles) {
+		ArrayList<DailyUserProfile> dailyUserProfiles = new ArrayList<>();
+
+		System.out.println("perform daily-user-profile creation");
+
+		for (UserProfile p : userProfiles) {
+			if (p.areStayLocsAvailable()) {
+				Date currentDay = new Date(p.getStayLocs().get(0).getStartTimestamp());
+				ArrayList<StayLoc> currentStayLocs = new ArrayList<>();
+
+				currentDay.setHours(23);
+				currentDay.setMinutes(59);
+				currentDay.setSeconds(59);
+
+				for (StayLoc l : p.getStayLocs()) {
+					if (l.getStartTimestamp() > currentDay.getTime()) {
+						if (currentStayLocs.size() > 0) {
+							DailyUserProfile dailyUserProfile = new DailyUserProfile(p.getId(), currentStayLocs,
+									p.getProvider(), p.getPredictability(), p.getHangouts(), p.getResearchGroup(),
+									p.getNeighborhood());
+
+							dailyUserProfiles.add(dailyUserProfile);
+
+							currentDay = new Date(l.getStartTimestamp());
+							currentStayLocs = new ArrayList<>();
+
+							currentDay.setHours(23);
+							currentDay.setMinutes(59);
+							currentDay.setSeconds(59);
+						}
+					}
+
+					currentStayLocs.add(l);
+				}
+
+				if (currentStayLocs.size() > 0) {
+					DailyUserProfile dailyUserProfile = new DailyUserProfile(p.getId(), currentStayLocs,
+							p.getProvider(), p.getPredictability(), p.getHangouts(), p.getResearchGroup(),
+							p.getNeighborhood());
+
+					dailyUserProfiles.add(dailyUserProfile);
+				}
+			}
+		}
+
+		return dailyUserProfiles;
 
 	}
 
