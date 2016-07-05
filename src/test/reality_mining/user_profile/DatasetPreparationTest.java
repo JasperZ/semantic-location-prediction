@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import reality_mining.StayLocDetector;
+import reality_mining.DatasetPreparation;
 import reality_mining.user_profile.Loc;
 import reality_mining.user_profile.UserProfile;
 
-public class StayLocDetectorTest {
+public class DatasetPreparationTest {
 
 	private UserProfile profile3StayLocs;
 
@@ -34,14 +34,14 @@ public class StayLocDetectorTest {
 
 	@Test
 	public void testDetectStayPoints1() {
-		StayLocDetector.detectStayPoints(profile3StayLocs);
+		DatasetPreparation.detectStayLocs(profile3StayLocs);
 
 		assertEquals(true, profile3StayLocs.areStayLocsAvailable());
 	}
 
 	@Test
 	public void testDetectStayPoints2() {
-		StayLocDetector.detectStayPoints(profile3StayLocs);
+		DatasetPreparation.detectStayLocs(profile3StayLocs);
 
 		assertEquals(3, profile3StayLocs.getStayLocs().size());
 	}

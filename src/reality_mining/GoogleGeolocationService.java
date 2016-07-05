@@ -25,12 +25,9 @@ public class GoogleGeolocationService {
 	public static LocationResponse getCellTowerLocation(int locationAreaCode, int cellId) {
 		Gson gson = new GsonBuilder().create();
 		GeolocationRequest request = new GeolocationRequest();
-		CellTower tower = new CellTower();
+		MobileCell tower = new MobileCell(locationAreaCode, cellId);
 
-		tower.locationAreaCode = locationAreaCode;
-		tower.cellId = cellId;
-
-		request.cellTowers = new CellTower[] { tower };
+		request.cellTowers = new MobileCell[] { tower };
 
 		URL url;
 
@@ -54,7 +51,7 @@ public class GoogleGeolocationService {
 				gson = new GsonBuilder().create();
 				LocationResponse response = gson.fromJson(br, LocationResponse.class);
 
-				// System.out.println(gson.toJson(response));
+				System.out.println(gson.toJson(response));
 
 				return response;
 

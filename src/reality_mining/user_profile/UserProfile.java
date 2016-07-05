@@ -2,7 +2,6 @@ package reality_mining.user_profile;
 
 import java.util.ArrayList;
 
-import reality_mining.CellTowerCache;
 import reality_mining.GeolifeCacheElement;
 
 public class UserProfile {
@@ -216,24 +215,6 @@ public class UserProfile {
 								&& s.getCellId().equals(c.cellId)) {
 							s.setUserLabel(c.userLabel);
 							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public void performeLocCellTowerCacheFusion(CellTowerCache cache) {
-		if (areStayLocsAvailable()) {
-			if (cache != null) {
-				for (StayLoc f : getStayLocs()) {
-					if (f.getLocationAreaCode() != null && f.getCellId() != null) {
-						GeolifeCacheElement c = cache.find(f.getLocationAreaCode(), f.getCellId());
-
-						if (c.locationFound) {
-							f.setLat(c.lat);
-							f.setLng(c.lng);
-							f.setAccuracy(c.accuracy);
 						}
 					}
 				}

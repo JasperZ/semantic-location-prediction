@@ -6,5 +6,5 @@ public class GeolocationRequest {
 	public String radioType;
 	public String carrier;
 	public String considerIp;
-	public CellTower[] cellTowers;
+	public MobileCell[] cellTowers;
 }
