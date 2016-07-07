@@ -2,8 +2,6 @@ package reality_mining.user_profile;
 
 import java.util.ArrayList;
 
-import reality_mining.GeolifeCacheElement;
-
 public class UserProfile {
 	private int id;
 	private ArrayList<StayLoc> stayLocs;

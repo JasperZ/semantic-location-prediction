@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import reality_mining.DatasetPreparation;
+import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
 import reality_mining.user_profile.UserProfileReader;
@@ -19,7 +20,7 @@ public class TestBabel {
 
 		writeLocFusions(user);
 	}
-
+	
 	public static void writeLocFusions(UserProfile user) {
 		try {
 			String pathBabel = String.format("/tmp/%d_locs_fusion_babel.csv", user.getId());
