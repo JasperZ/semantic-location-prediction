@@ -62,6 +62,37 @@ public class StayLoc {
 		this.foursquare = null;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((cellId == null) ? 0 : cellId.hashCode());
+		result = prime * result + ((locationAreaCode == null) ? 0 : locationAreaCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StayLoc other = (StayLoc) obj;
+		if (cellId == null) {
+			if (other.cellId != null)
+				return false;
+		} else if (!cellId.equals(other.cellId))
+			return false;
+		if (locationAreaCode == null) {
+			if (other.locationAreaCode != null)
+				return false;
+		} else if (!locationAreaCode.equals(other.locationAreaCode))
+			return false;
+		return true;
+	}
+
 	public Long getStartTimestamp() {
 		return startTimestamp;
 	}
