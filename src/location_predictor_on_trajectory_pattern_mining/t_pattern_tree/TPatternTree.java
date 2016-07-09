@@ -37,6 +37,7 @@ public class TPatternTree {
 	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence) {
 		StayLoc result = null;
 		double support = 0.0;
+		int depth = 0;
 
 		Node node = root;
 
@@ -45,13 +46,49 @@ public class TPatternTree {
 
 			if (n != null) {
 				node = n;
+				depth++;
 			}
 		}
 
-		for (Node c : node.getChildren()) {
-			if (c.getSupport() > support) {
-				result = c.getStayLoc();
-				support = c.getSupport();
+		if (depth == stayLocSequence.size()) {
+			for (Node c : node.getChildren()) {
+				if (c.getSupport() > support) {
+					result = c.getStayLoc();
+					support = c.getSupport();
+				}
+			}
+		}
+
+		return result;
+	}
+
+	public ArrayList<StayLoc> whereNextCandidates(ArrayList<StayLoc> stayLocSequence) {
+		ArrayList<StayLoc> result = new ArrayList<>();
+		double support = 0.0;
+		int depth = 0;
+
+		Node node = root;
+
+		for (StayLoc e : stayLocSequence) {
+			Node n = node.findChild(e);
+
+			if (n != null) {
+				node = n;
+				depth++;
+			}
+		}
+
+		if (depth == stayLocSequence.size()) {
+			for (Node c : node.getChildren()) {
+				if (c.getSupport() > support) {
+					support = c.getSupport();
+				}
+			}
+
+			for (Node c : node.getChildren()) {
+				if (c.getSupport() == support) {
+					result.add(c.getStayLoc());
+				}
 			}
 		}
 

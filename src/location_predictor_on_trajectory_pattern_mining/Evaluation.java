@@ -1,14 +1,9 @@
 package location_predictor_on_trajectory_pattern_mining;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
-import org.apache.commons.io.FileUtils;
 
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.PatternDB;
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Sequence;
@@ -45,7 +40,7 @@ public class Evaluation {
 		while (it.hasNext()) {
 			DailyUserProfile p = it.next();
 
-			if (p.percentageLatLng() != 100.0 || p.getStayLocs().size() < 4) {
+			if (p.getStayLocs().size() < 4 || p.getStayLocs().size() > 40) {
 				it.remove();
 			}
 		}
@@ -72,7 +67,7 @@ public class Evaluation {
 			ArrayList<DailyUserProfile> userProfiles = e.getValue();
 
 			for (int i = 0; i < userProfiles.size(); i++) {
-				if (i % 2 == 0) {
+				if (i % 2 != 0) {
 					trainingProfiles.add(userProfiles.get(i));
 				} else {
 					testProfiles.add(userProfiles.get(i));
@@ -89,7 +84,7 @@ public class Evaluation {
 
 		// build pattern database from training sequences
 		patternDB = new PatternDB(trainingSequences.toArray(new Sequence[1]));
-		patternMinSupport = 0.00;
+		patternMinSupport = 0.0;
 
 		patternDB.generatePatterns(patternMinSupport);
 		patternDB.saveToFile();
@@ -106,6 +101,7 @@ public class Evaluation {
 		int totalPredictions = 0;
 		int correctCounter = 0;
 		int wrongCounter = 0;
+		int wrongButContainedCounter = 0;
 		int noPredictionCounter = 0;
 
 		for (DailyUserProfile p : testProfiles) {
@@ -130,7 +126,24 @@ public class Evaluation {
 					if (predictionResult.equals(correctResult)) {
 						correctCounter++;
 					} else {
-						wrongCounter++;
+						ArrayList<StayLoc> predictionCandidates = patternTree
+								.whereNextCandidates(postPredictionStayLocs);
+						System.out.println("\n" + new Sequence(postPredictionStayLocs));
+						System.out.print("where next candidates:");
+
+						if (predictionCandidates.contains(correctResult)) {
+							wrongButContainedCounter++;
+						} else {
+							wrongCounter++;
+						}
+
+						for (StayLoc l : predictionCandidates) {
+							System.out.print(" " + l.toShortString());
+						}
+
+						System.out.println("\npredicted candidate: " + predictionResult.toShortString());
+						System.out.println("correct candidate: " + correctResult.toShortString());
+						System.out.println();
 					}
 				} else {
 					noPredictionCounter++;
@@ -140,6 +153,7 @@ public class Evaluation {
 
 		System.out.println("correct: " + correctCounter + " of " + totalPredictions);
 		System.out.println("wrong: " + wrongCounter + " of " + totalPredictions);
+		System.out.println("wrong but contained solution: " + wrongButContainedCounter + " of " + totalPredictions);
 		System.out.println("no prediction: " + noPredictionCounter + " of " + totalPredictions);
 	}
 }
