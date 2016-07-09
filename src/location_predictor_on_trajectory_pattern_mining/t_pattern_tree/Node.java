@@ -3,6 +3,7 @@ package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
 import java.util.HashSet;
 import java.util.Locale;
 
+import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Interval;
 import reality_mining.user_profile.StayLoc;
 
 public class Node {
@@ -11,14 +12,14 @@ public class Node {
 	private StayLoc stayLoc;
 	private double support;
 	private HashSet<Node> children;
-	// private Interval interval;
+	private Interval interval;
 
-	public Node(StayLoc stayLoc, double support) {
+	public Node(StayLoc stayLoc, Interval interval, double support) {
 		this.id = idCounter++;
 		this.stayLoc = stayLoc;
 		this.support = support;
 		this.children = new HashSet<>();
-		// this.interval = interval;
+		this.interval = interval;
 	}
 
 	@Override
@@ -48,7 +49,8 @@ public class Node {
 		String result = "\"" + id + " | ";
 
 		if (stayLoc != null) {
-			result += stayLoc.toShortString() + " | " + String.format(Locale.ENGLISH, "%.3f", support) + "\"";
+			result += stayLoc.toShortString() + " | " + String.format(Locale.ENGLISH, "%.3f", support) + " | "
+					+ interval + "\"";
 		} else {
 			result += "root\"";
 		}
@@ -91,17 +93,25 @@ public class Node {
 		children.add(child);
 	}
 
-	/*
-	 * public boolean included(Interval interval) { if (this.interval.getStart()
-	 * < interval.getStart() && this.interval.getEnd() > interval.getEnd()) {
-	 * return true; } else { return false; } }
-	 * 
-	 * public void updateInterval(Interval interval) { if (interval.getLength()
-	 * > this.interval.getLength()) { this.interval = interval; } }
-	 */
+	public boolean included(Interval interval) {
+		if (this.interval.getStart() < interval.getStart() && this.interval.getEnd() > interval.getEnd()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void updateInterval(Interval interval) {
+		this.interval.update(interval);
+	}
+
 	public void updateSupport(double support) {
 		if (support > this.support) {
 			this.support = support;
 		}
+	}
+
+	public Interval getInterval() {
+		return interval;
 	}
 }

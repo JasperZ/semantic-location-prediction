@@ -3,6 +3,7 @@ package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
 import java.util.ArrayList;
 import java.util.Set;
 
+import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Interval;
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Pattern;
 import reality_mining.user_profile.StayLoc;
 
@@ -10,26 +11,37 @@ public class TPatternTree {
 	private Node root;
 
 	public TPatternTree() {
-		root = new Node(null, 0.0);
+		root = new Node(null, null, 0.0);
 	}
 
 	public void build(Set<Pattern> tSet) {
 		for (Pattern tp : tSet) {
 			Node node = root;
+			int depth = 0;
 
 			for (StayLoc e : tp.getPattern()) {
 				Node n = node.findChild(e);
 
 				if (n == null) {
-					Node v = new Node(e, tp.getSupport());
+					Interval interval = null;
+
+					if (depth != 0) {
+						interval = tp.getIntervals()[depth - 1];
+					}
+
+					Node v = new Node(e, interval, tp.getSupport());
 
 					node.appendChild(v);
 					node = v;
 				} else {
-					// n.updateInterval(e.getInterval());
+					if (depth != 0) {
+						n.updateInterval(tp.getIntervals()[depth - 1]);
+					}
 					// n.updateSupport(tp.getSupport());
 					node = n;
 				}
+
+				depth++;
 			}
 		}
 	}
@@ -38,6 +50,7 @@ public class TPatternTree {
 		StayLoc result = null;
 		double support = 0.0;
 		int depth = 0;
+		StayLoc last = null;
 
 		Node node = root;
 
@@ -45,9 +58,21 @@ public class TPatternTree {
 			Node n = node.findChild(e);
 
 			if (n != null) {
+				if (depth != 0) {
+					long duration = e.getStartTimestamp() - last.getEndTimestamp();
+
+					if (!n.getInterval().includes(new Interval(duration, duration))) {
+						break;
+					}
+				}
+
 				node = n;
 				depth++;
+			} else {
+				break;
 			}
+
+			last = e;
 		}
 
 		if (depth == stayLocSequence.size()) {
@@ -66,6 +91,7 @@ public class TPatternTree {
 		ArrayList<StayLoc> result = new ArrayList<>();
 		double support = 0.0;
 		int depth = 0;
+		StayLoc last = null;
 
 		Node node = root;
 
@@ -73,9 +99,21 @@ public class TPatternTree {
 			Node n = node.findChild(e);
 
 			if (n != null) {
+				if (depth != 0) {
+					long duration = e.getStartTimestamp() - last.getEndTimestamp();
+
+					if (!n.getInterval().includes(new Interval(duration, duration))) {
+						break;
+					}
+				}
+
 				node = n;
 				depth++;
+			} else {
+				break;
 			}
+
+			last = e;
 		}
 
 		if (depth == stayLocSequence.size()) {

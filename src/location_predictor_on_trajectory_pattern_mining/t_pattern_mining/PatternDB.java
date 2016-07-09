@@ -100,7 +100,7 @@ public class PatternDB {
 
 				if (currentPatternLength == 0) {
 					for (int i = 0; i < sequence.length(); i++) {
-						Pattern pattern = new Pattern(new StayLoc[] { sequence.get(i) },
+						Pattern pattern = new Pattern(new StayLoc[] { sequence.get(i) }, new Interval[0],
 								new Appearance(sequence, i, i));
 						Pattern pp = newPatterns.get(pattern.hashCode());
 
@@ -121,13 +121,20 @@ public class PatternDB {
 										Pattern pattern;
 										Pattern pp;
 										StayLoc ll[] = Arrays.copyOf(p.getPattern(), p.length() + 1);
+										Interval[] intervals = Arrays.copyOf(p.getIntervals(),
+												p.getIntervals().length + 1);
+										long duration = sequence.get(i).getStartTimestamp()
+												- sequence.get(i - 1).getEndTimestamp();
 
 										ll[p.length()] = sequence.get(i);
-										pattern = new Pattern(ll, new Appearance(sequence, a.getStartIndex(), i));
+										intervals[intervals.length - 1] = new Interval(duration, duration);
+										pattern = new Pattern(ll, intervals,
+												new Appearance(sequence, a.getStartIndex(), i));
 										pp = newPatterns.get(pattern.hashCode());
 
 										if (pp != null) {
 											pp.addAppearances(pattern.getAppearances());
+											pp.updateIntervals(intervals);
 										} else {
 											newPatterns.put(pattern.hashCode(), pattern);
 										}

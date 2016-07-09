@@ -1,10 +1,15 @@
 package location_predictor_on_trajectory_pattern_mining;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
+
+import org.apache.commons.io.FileUtils;
 
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.PatternDB;
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Sequence;
@@ -97,7 +102,12 @@ public class Evaluation {
 		for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
 			patternTree.build(patternDB.getPatterns(i));
 		}
-
+		/*
+		 * try { FileUtils.writeStringToFile(new File("/tmp/graph.gv"),
+		 * patternTree.toGraphviz(), StandardCharsets.UTF_8); } catch
+		 * (IOException e1) { // TODO Auto-generated catch block
+		 * e1.printStackTrace(); }
+		 */
 		// use test profiles to evaluate prediction
 		int totalPredictions = 0;
 		int correctCounter = 0;
@@ -106,7 +116,7 @@ public class Evaluation {
 		int noPredictionCounter = 0;
 
 		for (DailyUserProfile p : testProfiles) {
-			int postPredictionLength = 3;
+			int postPredictionLength = 2;
 
 			for (int j = 0; j < p.getStayLocs().size() - postPredictionLength - 1; j++) {
 				ArrayList<StayLoc> postPredictionStayLocs;

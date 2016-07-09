@@ -10,12 +10,14 @@ public class Pattern {
 
 	private long id;
 	private StayLoc[] pattern;
+	private Interval[] intervals;
 	private HashSet<Appearance> appearances;
 	private double support;
 
-	public Pattern(StayLoc[] pattern, Appearance appearance) {
+	public Pattern(StayLoc[] pattern, Interval[] intervals, Appearance appearance) {
 		this.id = idCounter++;
 		this.pattern = pattern;
+		this.intervals = intervals;
 		this.appearances = new HashSet<>();
 		this.support = 0.0;
 
@@ -77,6 +79,10 @@ public class Pattern {
 		return pattern;
 	}
 
+	public Interval[] getIntervals() {
+		return this.intervals;
+	}
+
 	public int length() {
 		return pattern.length;
 	}
@@ -95,5 +101,16 @@ public class Pattern {
 
 	public HashSet<Appearance> getAppearances() {
 		return appearances;
+	}
+
+	public void updateIntervals(Interval[] intervals) {
+		if (intervals != null && this.intervals.length == intervals.length) {
+			for (int i = 0; i < intervals.length; i++) {
+				Interval oldI = this.intervals[i];
+				Interval newI = intervals[i];
+
+				oldI.update(newI);
+			}
+		}
 	}
 }
