@@ -88,7 +88,7 @@ public class PatternDB {
 		return size;
 	}
 
-	public void generatePatterns(int patternLength, double minSupport) {
+	public void generatePatterns(double minSupport) {
 		for (Sequence sequence : sequences) {
 			Integer currentPatternLength = 0;
 			Boolean newPatternsPossible = true;
@@ -96,8 +96,6 @@ public class PatternDB {
 			HashMap<Integer, Pattern> localPatterns = new HashMap<>();
 
 			while (newPatternsPossible) {
-				System.out.println("generate patterns with length " + (currentPatternLength + 1) + " for sequence "
-						+ sequence.getId());
 				HashMap<Integer, Pattern> newPatterns = new HashMap<>();
 
 				if (currentPatternLength == 0) {
@@ -149,8 +147,6 @@ public class PatternDB {
 					newPatternsPossible = false;
 				}
 			}
-
-			System.out.println("patternd database size: " + size());
 		}
 
 		for (Entry<Integer, HashMap<Integer, Pattern>> e : patterns.entrySet()) {
@@ -215,5 +211,23 @@ public class PatternDB {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+	}
+
+	public int getLongestPatternLength() {
+		return patterns.size();
+	}
+
+	public HashSet<Pattern> getPatterns(int length) {
+		HashSet<Pattern> result = new HashSet<>();
+
+		HashMap<Integer, Pattern> p = patterns.get(length);
+
+		if (p != null) {
+			for (Entry<Integer, Pattern> e : p.entrySet()) {
+				result.add(e.getValue());
+			}
+		}
+
+		return result;
 	}
 }
