@@ -3,6 +3,7 @@ package location_predictor_on_trajectory_pattern_mining;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.PatternDB;
@@ -128,7 +129,7 @@ public class Evaluation {
 					} else {
 						ArrayList<StayLoc> predictionCandidates = patternTree
 								.whereNextCandidates(postPredictionStayLocs);
-						System.out.println("\n" + new Sequence(postPredictionStayLocs));
+						System.out.println(new Sequence(postPredictionStayLocs));
 						System.out.print("where next candidates:");
 
 						if (predictionCandidates.contains(correctResult)) {
@@ -151,9 +152,13 @@ public class Evaluation {
 			}
 		}
 
-		System.out.println("correct: " + correctCounter + " of " + totalPredictions);
-		System.out.println("wrong: " + wrongCounter + " of " + totalPredictions);
-		System.out.println("wrong but contained solution: " + wrongButContainedCounter + " of " + totalPredictions);
-		System.out.println("no prediction: " + noPredictionCounter + " of " + totalPredictions);
+		System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter, totalPredictions,
+				(100.0 / totalPredictions * correctCounter)));
+		System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter, totalPredictions,
+				(100.0 / totalPredictions * wrongCounter)));
+		System.out.println(String.format(Locale.ENGLISH, "wrong but in solution candidates: %d of %d (%.2f%%)",
+				wrongButContainedCounter, totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
+		System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)", noPredictionCounter,
+				totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
 	}
 }
