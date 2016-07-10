@@ -89,6 +89,10 @@ public class PatternDB {
 	}
 
 	public void generatePatterns(double minSupport) {
+		if (sequences == null || sequences[0] == null) {
+			return;
+		}
+
 		for (Sequence sequence : sequences) {
 			Integer currentPatternLength = 0;
 			Boolean newPatternsPossible = true;
@@ -124,7 +128,7 @@ public class PatternDB {
 										Interval[] intervals = Arrays.copyOf(p.getIntervals(),
 												p.getIntervals().length + 1);
 										long duration = sequence.get(i).getStartTimestamp()
-												- sequence.get(i - 1).getEndTimestamp();
+												- sequence.get(a.getEndIndex()).getEndTimestamp();
 
 										ll[p.length()] = sequence.get(i);
 										intervals[intervals.length - 1] = new Interval(duration, duration);
