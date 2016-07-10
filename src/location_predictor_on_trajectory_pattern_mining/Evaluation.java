@@ -1,15 +1,11 @@
 package location_predictor_on_trajectory_pattern_mining;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
-
-import org.apache.commons.io.FileUtils;
 
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.PatternDB;
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Sequence;
@@ -114,6 +110,7 @@ public class Evaluation {
 		int wrongCounter = 0;
 		int wrongButContainedCounter = 0;
 		int noPredictionCounter = 0;
+		HashSet<ArrayList<StayLoc>> predictedSequences = new HashSet<>();
 
 		for (DailyUserProfile p : testProfiles) {
 			int postPredictionLength = 2;
@@ -129,35 +126,47 @@ public class Evaluation {
 					postPredictionStayLocs.add(p.getStayLocs().get(j + i));
 				}
 
-				correctResult = p.getStayLocs().get(j + postPredictionLength);
-				predictionResult = patternTree.whereNext(postPredictionStayLocs);
-				totalPredictions++;
+				if (!predictedSequences.contains(postPredictionStayLocs)) {
 
-				if (predictionResult != null) {
-					if (predictionResult.equals(correctResult)) {
-						correctCounter++;
-					} else {
-						ArrayList<StayLoc> predictionCandidates = patternTree
-								.whereNextCandidates(postPredictionStayLocs);
-						System.out.println(new Sequence(postPredictionStayLocs));
-						System.out.print("where next candidates:");
+					correctResult = p.getStayLocs().get(j + postPredictionLength);
+					predictionResult = patternTree.whereNext(postPredictionStayLocs);
+					totalPredictions++;
 
-						if (predictionCandidates.contains(correctResult)) {
-							wrongButContainedCounter++;
+					if (predictionResult != null) {
+						if (predictionResult.equals(correctResult)) {
+							correctCounter++;
 						} else {
-							wrongCounter++;
-						}
+							ArrayList<StayLoc> predictionCandidates = patternTree
+									.whereNextCandidates(postPredictionStayLocs);
 
-						for (StayLoc l : predictionCandidates) {
-							System.out.print(" " + l.toShortString());
-						}
+							System.out.println(new Sequence(postPredictionStayLocs));
+							System.out.print("where next candidates:");
 
-						System.out.println("\npredicted candidate: " + predictionResult.toShortString());
+							if (predictionCandidates.contains(correctResult)) {
+								wrongButContainedCounter++;
+							} else {
+								wrongCounter++;
+							}
+
+							for (StayLoc l : predictionCandidates) {
+								System.out.print(" " + l.toShortString());
+							}
+
+							System.out.println("\npredicted candidate: " + predictionResult.toShortString());
+							System.out.println("correct candidate: " + correctResult.toShortString());
+							System.out.println();
+						}
+					} else {
+						noPredictionCounter++;
+
+						System.out.println(new Sequence(postPredictionStayLocs));
+						System.out.println("where next candidates: not available");
+						System.out.println("predicted candidate: not available");
 						System.out.println("correct candidate: " + correctResult.toShortString());
 						System.out.println();
 					}
-				} else {
-					noPredictionCounter++;
+
+					predictedSequences.add(postPredictionStayLocs);
 				}
 			}
 		}
