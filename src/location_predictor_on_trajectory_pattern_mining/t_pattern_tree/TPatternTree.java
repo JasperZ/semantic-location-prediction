@@ -22,22 +22,15 @@ public class TPatternTree {
 			for (StayLoc e : tp.getPattern()) {
 				Node n = node.findChild(e);
 
-				if (n == null) {
-					Interval interval = null;
-
-					if (depth != 0) {
-						interval = tp.getIntervals()[depth - 1];
-					}
-
+				if (n == null || (n != null && !n.includes(tp.getIntervals()[depth]))) {
+					Interval interval = tp.getIntervals()[depth];
 					Node v = new Node(e, interval, tp.getSupport());
 
 					node.appendChild(v);
 					node = v;
 				} else {
-					if (depth != 0) {
-						n.updateInterval(tp.getIntervals()[depth - 1]);
-					}
-					// n.updateSupport(tp.getSupport());
+					n.updateInterval(tp.getIntervals()[depth]);
+					n.updateSupport(tp.getSupport());
 					node = n;
 				}
 

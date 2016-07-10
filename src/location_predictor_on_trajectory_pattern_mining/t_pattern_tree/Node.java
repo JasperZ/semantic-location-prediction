@@ -79,6 +79,16 @@ public class Node {
 	 * getInterval() { return interval; }
 	 */
 
+	public Node findChild(StayLoc stayLoc, Interval interval) {
+		for (Node n : children) {
+			if (n.stayLoc.equals(stayLoc) && n.includes(interval)) {
+				return n;
+			}
+		}
+
+		return null;
+	}
+
 	public Node findChild(StayLoc stayLoc) {
 		for (Node n : children) {
 			if (n.stayLoc.equals(stayLoc)) {
@@ -93,12 +103,8 @@ public class Node {
 		children.add(child);
 	}
 
-	public boolean included(Interval interval) {
-		if (this.interval.getStart() < interval.getStart() && this.interval.getEnd() > interval.getEnd()) {
-			return true;
-		} else {
-			return false;
-		}
+	public boolean includes(Interval interval) {
+		return this.interval.includes(interval);
 	}
 
 	public void updateInterval(Interval interval) {
