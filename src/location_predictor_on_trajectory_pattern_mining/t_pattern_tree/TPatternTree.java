@@ -1,6 +1,8 @@
 package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Interval;
@@ -10,26 +12,35 @@ import reality_mining.user_profile.StayLoc;
 public class TPatternTree {
 	private Node root;
 
+	/**
+	 * Creates an empty T-Pattern Tree
+	 */
 	public TPatternTree() {
 		root = new Node(null, null, 0.0);
 	}
 
-	public void build(Set<Pattern> tSet) {
-		for (Pattern tp : tSet) {
+	/**
+	 * Builds the T-Pattern Tree using the given Patterns
+	 * 
+	 * @param patterns
+	 *            the patterns used to build the tree
+	 */
+	public void build(Set<Pattern> patterns) {
+		for (Pattern tp : patterns) {
 			Node node = root;
 			int depth = 0;
 
 			for (StayLoc e : tp.getPattern()) {
 				Node n = node.findChild(e);
+				Interval interval = tp.getIntervals()[depth];
 
-				if (n == null || (n != null && !n.includes(tp.getIntervals()[depth]))) {
-					Interval interval = tp.getIntervals()[depth];
+				if (n == null || (n != null && !n.includes(interval))) {
 					Node v = new Node(e, interval, tp.getSupport());
 
 					node.appendChild(v);
 					node = v;
 				} else {
-					n.updateInterval(tp.getIntervals()[depth]);
+					n.updateInterval(interval);
 					n.updateSupport(tp.getSupport());
 					node = n;
 				}
@@ -39,93 +50,143 @@ public class TPatternTree {
 		}
 	}
 
-	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence) {
+	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence, Score score, long thTime, double thScore) {
+		ArrayList<Path> candidates = whereNextCandidates(stayLocSequence, score, thTime, thScore);
 		StayLoc result = null;
-		double support = 0.0;
-		int depth = 0;
-		StayLoc last = null;
+		Path bestPath = null;
 
-		Node node = root;
-
-		for (StayLoc e : stayLocSequence) {
-			Node n = node.findChild(e);
-
-			if (n != null) {
-				if (depth != 0) {
-					long duration = e.getStartTimestamp() - last.getEndTimestamp();
-
-					if (!n.getInterval().includes(new Interval(duration, duration))) {
-						break;
-					}
-				}
-
-				node = n;
-				depth++;
-			} else {
-				break;
+		for (Path p : candidates) {
+			if (bestPath == null) {
+				bestPath = p;
 			}
 
-			last = e;
+			if (bestPath.score(score) < p.score(score)) {
+				bestPath = p;
+			}
 		}
 
-		if (depth == stayLocSequence.size()) {
-			for (Node c : node.getChildren()) {
-				if (c.getSupport() > support) {
-					result = c.getStayLoc();
-					support = c.getSupport();
+		if (bestPath != null) {
+			double maxSore = bestPath.score(score);
+			int counter = 0;
+
+			for (Path p : candidates) {
+				if (p.score(score) == maxSore) {
+					counter++;
 				}
+			}
+
+			if (counter == 1) {
+				result = bestPath.lastNode().getStayLoc();
 			}
 		}
 
 		return result;
 	}
 
-	public ArrayList<StayLoc> whereNextCandidates(ArrayList<StayLoc> stayLocSequence) {
-		ArrayList<StayLoc> result = new ArrayList<>();
-		double support = 0.0;
+	public ArrayList<Path> whereNextCandidates(ArrayList<StayLoc> stayLocSequence, Score score, long thTime,
+			double thScore) {
+		HashSet<Path> paths = new HashSet<>();
 		int depth = 0;
-		StayLoc last = null;
 
-		Node node = root;
+		do {
+			ArrayList<Path> newPaths = new ArrayList<>();
 
-		for (StayLoc e : stayLocSequence) {
-			Node n = node.findChild(e);
+			if (depth == 0) {
+				Path path = new Path();
+				Node prevNode = root;
 
-			if (n != null) {
-				if (depth != 0) {
-					long duration = e.getStartTimestamp() - last.getEndTimestamp();
+				for (Node c : prevNode.getChildren()) {
+					StayLoc cStayLoc = stayLocSequence.get(depth);
 
-					if (!n.getInterval().includes(new Interval(duration, duration))) {
-						break;
+					if (c.getStayLoc().equals(cStayLoc)) {
+						Path p = new Path(path);
+
+						p.append(c, c.getSupport());
+						newPaths.add(p);
+					} else if (c.getStayLoc().getLocationAreaCode().equals(cStayLoc.getLocationAreaCode())
+							&& !c.getStayLoc().getCellId().equals(cStayLoc.getCellId())) {
+						Path p = new Path(path);
+
+						p.append(c, c.getSupport() / 2.0);
+						newPaths.add(p);
+					}
+				}
+			} else {
+				HashSet<Path> pathsToRemove = new HashSet<>();
+
+				for (Path path : paths) {
+					Node prevNode = path.lastNode();
+					boolean pathExtended = false;
+
+					if (path.isComplete()) {
+						continue;
+					}
+
+					for (Node c : prevNode.getChildren()) {
+						StayLoc pStayLoc = stayLocSequence.get(depth - 1);
+						StayLoc cStayLoc = stayLocSequence.get(depth);
+						long duration = cStayLoc.getStartTimestamp() - pStayLoc.getEndTimestamp();
+
+						if (c.getStayLoc().equals(cStayLoc) && c.includes(new Interval(duration, duration))) {
+							Path p = new Path(path);
+
+							p.append(c, c.getSupport());
+							newPaths.add(p);
+							pathExtended = true;
+						} else if (c.getStayLoc().getLocationAreaCode().equals(cStayLoc.getLocationAreaCode())
+								&& !c.getStayLoc().getCellId().equals(cStayLoc.getCellId())) {
+							Path p = new Path(path);
+
+							p.append(c, c.getSupport() / 2.0);
+							newPaths.add(p);
+							pathExtended = true;
+						}
+					}
+
+					if (pathExtended) {
+						pathsToRemove.add(path);
+					} else {
+						path.comlete();
 					}
 				}
 
-				node = n;
-				depth++;
-			} else {
+				paths.removeAll(pathsToRemove);
+			}
+
+			paths.addAll(newPaths);
+			depth++;
+
+			if (newPaths.isEmpty()) {
 				break;
 			}
+		} while (depth < stayLocSequence.size());
 
-			last = e;
-		}
+		if (!paths.isEmpty()) {
+			HashSet<Path> pathCandidates = new HashSet<>();
 
-		if (depth == stayLocSequence.size()) {
-			for (Node c : node.getChildren()) {
-				if (c.getSupport() > support) {
-					support = c.getSupport();
+			for (Path p : paths) {
+				for (Node n : p.lastNode().getChildren()) {
+					Path newPath = new Path(p);
+
+					p.append(n, n.getSupport());
+
+					if (newPath.score(score) >= thScore) {
+						pathCandidates.add(newPath);
+					}
 				}
 			}
 
-			for (Node c : node.getChildren()) {
-				if (c.getSupport() == support) {
-					result.add(c.getStayLoc());
-				}
-			}
+			return new ArrayList<>(pathCandidates);
 		}
 
-		return result;
+		return new ArrayList<>();
 	}
 
+	/**
+	 * Returns a string in graphviz format, representing the T-Pattern Tree
+	 * 
+	 * @return String containing the Tree
+	 */
 	public String toGraphviz() {
 		String result = "digraph G {";
 		ArrayList<Node> currentNodes = new ArrayList<>();
