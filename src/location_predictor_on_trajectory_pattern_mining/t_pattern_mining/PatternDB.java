@@ -133,6 +133,7 @@ public class PatternDB {
 
 										ll[p.length()] = sequence.get(i);
 										intervals[intervals.length - 1] = new Interval(duration, duration);
+
 										pattern = new Pattern(ll, intervals,
 												new Appearance(sequence, a.getStartIndex(), i));
 										pp = newPatterns.get(pattern.hashCode());
@@ -239,6 +240,30 @@ public class PatternDB {
 				result.add(e.getValue());
 			}
 		}
+
+		return result;
+	}
+
+	public double dataCoverage() {
+		double result;
+		HashSet<Sequence> supportedSequences = new HashSet<>();
+
+		for (Sequence s : sequences) {
+			supportedSequences.add(s);
+		}
+
+		for (Entry<Integer, HashMap<Integer, Pattern>> e : patterns.entrySet()) {
+			for (Entry<Integer, Pattern> f : e.getValue().entrySet()) {
+				Pattern p = f.getValue();
+
+				for (Appearance a : p.getAppearances()) {
+					supportedSequences.remove(a.getSequence());
+				}
+			}
+		}
+
+		result = sequences.length - supportedSequences.size();
+		result = result / sequences.length;
 
 		return result;
 	}
