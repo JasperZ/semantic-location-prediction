@@ -48,16 +48,16 @@ public class Pattern {
 
 	@Override
 	public String toString() {
-		String result = "id: " + id + " support: " + support + " pattern: ";
+		String result = "id: " + id + " support: " + support + " pattern:";
 
 		for (StayLoc e : pattern) {
-			result += e.getLocationAreaCode() + "." + e.getCellId() + " ";
+			result += " " + e.getLocationAreaCode() + "." + e.getCellId();
 		}
 
-		result += "appearances: ";
+		result += " appearances:";
 
 		for (Appearance a : appearances) {
-			result += a + " ";
+			result += " " + a;
 		}
 
 		return result.trim();
