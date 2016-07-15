@@ -248,22 +248,17 @@ public class PatternDB {
 		double result;
 		HashSet<Sequence> supportedSequences = new HashSet<>();
 
-		for (Sequence s : sequences) {
-			supportedSequences.add(s);
-		}
-
 		for (Entry<Integer, HashMap<Integer, Pattern>> e : patterns.entrySet()) {
 			for (Entry<Integer, Pattern> f : e.getValue().entrySet()) {
 				Pattern p = f.getValue();
 
 				for (Appearance a : p.getAppearances()) {
-					supportedSequences.remove(a.getSequence());
+					supportedSequences.add(a.getSequence());
 				}
 			}
 		}
 
-		result = sequences.length - supportedSequences.size();
-		result = result / sequences.length;
+		result = (double) supportedSequences.size() / (double) sequences.length;
 
 		return result;
 	}
