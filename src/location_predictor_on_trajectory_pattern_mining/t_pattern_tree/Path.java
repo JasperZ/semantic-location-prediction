@@ -110,14 +110,27 @@ public class Path {
 		return result;
 	}
 
+	/**
+	 * Sets the path complete flag
+	 */
 	public void comlete() {
 		this.pathComplete = true;
 	}
 
+	/**
+	 * Returns whether the path complete flag is set
+	 * 
+	 * @return True if set, otherwise false
+	 */
 	public boolean isComplete() {
 		return pathComplete;
 	}
 
+	/**
+	 * Returns the length of the path
+	 * 
+	 * @return Length of path
+	 */
 	public int length() {
 		return nodes.size();
 	}

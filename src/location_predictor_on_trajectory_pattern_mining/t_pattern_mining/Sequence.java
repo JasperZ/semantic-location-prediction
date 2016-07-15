@@ -11,11 +11,23 @@ public class Sequence {
 	private long id;
 	private StayLoc[] sequence;
 
+	/**
+	 * Creates a sequence containing stay-location
+	 * 
+	 * @param sequence
+	 *            Stay-locations contained in this sequence
+	 */
 	public Sequence(StayLoc[] sequence) {
 		this.id = idCounter++;
 		this.sequence = sequence;
 	}
 
+	/**
+	 * Creates a sequence containing stay-location
+	 * 
+	 * @param sequence
+	 *            Stay-locations contained in this sequence
+	 */
 	public Sequence(ArrayList<StayLoc> sequence) {
 		this.id = idCounter++;
 		this.sequence = sequence.toArray(new StayLoc[1]);
@@ -57,18 +69,40 @@ public class Sequence {
 		return result.trim();
 	}
 
+	/**
+	 * Returns unique id of sequence
+	 * 
+	 * @return Unique id
+	 */
 	public long getId() {
 		return id;
 	}
 
+	/**
+	 * Returns stay-locations in the sequence
+	 * 
+	 * @return Stay-locations
+	 */
 	public StayLoc[] getSequence() {
 		return sequence;
 	}
 
+	/**
+	 * Returns length of the sequence
+	 * 
+	 * @return Length of sequence
+	 */
 	public int length() {
 		return sequence.length;
 	}
 
+	/**
+	 * Returns stay-location at position index in sequence
+	 * 
+	 * @param index
+	 *            Index of stay-location in sequence, starting with 0
+	 * @return Stay-location at position index
+	 */
 	public StayLoc get(int index) {
 		return sequence[index];
 	}

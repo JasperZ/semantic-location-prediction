@@ -14,6 +14,17 @@ public class Pattern {
 	private HashSet<Appearance> appearances;
 	private double support;
 
+	/**
+	 * Creates a new pattern with stay-locations, their transition intervals and
+	 * the sequence it appears in
+	 * 
+	 * @param pattern
+	 *            Array of stay-locations
+	 * @param intervals
+	 *            Transition intervals between stay-location
+	 * @param appearance
+	 *            The Sequence this pattern appears in
+	 */
 	public Pattern(StayLoc[] pattern, Interval[] intervals, Appearance appearance) {
 		this.id = idCounter++;
 		this.pattern = pattern;
@@ -63,46 +74,102 @@ public class Pattern {
 		return result.trim();
 	}
 
+	/**
+	 * Returns support value of the pattern
+	 * 
+	 * @return Support value
+	 */
 	public double getSupport() {
 		return this.support;
 	}
 
+	/**
+	 * Sets support value of the pattern
+	 * 
+	 * @param support
+	 *            Support value to set
+	 */
 	public void setSupport(double support) {
 		this.support = support;
 	}
 
+	/**
+	 * Returns unique id of the pattern
+	 * 
+	 * @return Unique pattern id
+	 */
 	public long getId() {
 		return id;
 	}
 
+	/**
+	 * Returns stay-locations covered by the pattern
+	 * 
+	 * @return Covered stay-locations
+	 */
 	public StayLoc[] getPattern() {
 		return pattern;
 	}
 
+	/**
+	 * Returns transition intervals between stay-locations,
+	 * 
+	 * @return Transition intervals
+	 */
 	public Interval[] getIntervals() {
 		return this.intervals;
 	}
 
+	/**
+	 * Returns the length of the pattern
+	 * 
+	 * @return Length of pattern
+	 */
 	public int length() {
 		return pattern.length;
 	}
 
+	/**
+	 * Adds an appearance where this pattern appears
+	 * 
+	 * @param appearance
+	 *            Appearance to add
+	 */
 	public void addAppearance(Appearance appearance) {
 		if (appearance != null) {
 			this.appearances.add(appearance);
 		}
 	}
 
+	/**
+	 * Adds a set ov appearances where this pattern appears
+	 * 
+	 * @param appearances
+	 *            Set of appearances to add
+	 */
 	public void addAppearances(HashSet<Appearance> appearances) {
 		for (Appearance a : appearances) {
 			this.appearances.add(a);
 		}
 	}
 
+	/**
+	 * Return set of appearances where the pattern appears
+	 * 
+	 * @return Set of appearances
+	 */
 	public HashSet<Appearance> getAppearances() {
 		return appearances;
 	}
 
+	/**
+	 * Updates all transitions intervals of the pattern by comparing them one by
+	 * one
+	 * 
+	 * @param intervals
+	 *            Intervals used for updating. Length has to be equal to pattern
+	 *            length to take effect.
+	 */
 	public void updateIntervals(Interval[] intervals) {
 		if (intervals != null && this.intervals.length == intervals.length) {
 			for (int i = 0; i < intervals.length; i++) {

@@ -1,23 +1,49 @@
 package location_predictor_on_trajectory_pattern_mining.t_pattern_mining;
+
 public class Appearance {
 	private Sequence sequence;
 	private int startIndex;
 	private int endIndex;
 
+	/**
+	 * Creates a new appearance in a sequenze between the start and end index
+	 * 
+	 * @param sequence
+	 *            Sequence of appearence
+	 * @param startIndex
+	 *            Index where the appearnce starts
+	 * @param endIndex
+	 *            Index where the appearance ends
+	 */
 	public Appearance(Sequence sequence, int startIndex, int endIndex) {
 		this.sequence = sequence;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
 	}
 
+	/**
+	 * Returns the seqquence of appearance
+	 * 
+	 * @return Sequence of appearance
+	 */
 	public Sequence getSequence() {
 		return sequence;
 	}
 
+	/**
+	 * Returns the index where the appearance starts
+	 * 
+	 * @return Index where appearance starts
+	 */
 	public int getStartIndex() {
 		return startIndex;
 	}
 
+	/**
+	 * Returns the index where the appearance end
+	 * 
+	 * @return Index where appearance ends
+	 */
 	public int getEndIndex() {
 		return endIndex;
 	}

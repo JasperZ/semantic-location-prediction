@@ -14,6 +14,16 @@ public class Node {
 	private HashSet<Node> children;
 	private Interval interval;
 
+	/**
+	 * Creates node with stay-location, interval and support
+	 * 
+	 * @param stayLoc
+	 *            Stay-location covered by the node
+	 * @param interval
+	 *            interval covered by the edge to this node
+	 * @param support
+	 *            Support of the node
+	 */
 	public Node(StayLoc stayLoc, Interval interval, double support) {
 		this.id = idCounter++;
 		this.stayLoc = stayLoc;
@@ -58,18 +68,38 @@ public class Node {
 		return result;
 	}
 
+	/**
+	 * Returns unique id of node
+	 * 
+	 * @return Unique node id
+	 */
 	public long getId() {
 		return this.id;
 	}
 
+	/**
+	 * Returns stay-location associated with this node
+	 * 
+	 * @return Associated stay-location
+	 */
 	public StayLoc getStayLoc() {
 		return this.stayLoc;
 	}
 
+	/**
+	 * Returns support of the node
+	 * 
+	 * @return Support of the node
+	 */
 	public double getSupport() {
 		return this.support;
 	}
 
+	/**
+	 * Returns set of children reachable from the node
+	 * 
+	 * @return Set of reachable children
+	 */
 	public HashSet<Node> getChildren() {
 		return this.children;
 	}
@@ -79,6 +109,15 @@ public class Node {
 	 * getInterval() { return interval; }
 	 */
 
+	/**
+	 * Returns a children with equal stay-location and included interval
+	 * 
+	 * @param stayLoc
+	 *            Stay-location to match children against
+	 * @param interval
+	 *            Interval which has to be included
+	 * @return Node of child if found, otherwise null
+	 */
 	public Node findChild(StayLoc stayLoc, Interval interval) {
 		for (Node n : children) {
 			if (n.stayLoc.equals(stayLoc) && n.includes(interval)) {
@@ -89,6 +128,13 @@ public class Node {
 		return null;
 	}
 
+	/**
+	 * Returns a children with equal stay-location
+	 * 
+	 * @param stayLoc
+	 *            Stay-location to match children against
+	 * @return Node of child if found, otherwise null
+	 */
 	public Node findChild(StayLoc stayLoc) {
 		for (Node n : children) {
 			if (n.stayLoc.equals(stayLoc)) {
@@ -99,24 +145,54 @@ public class Node {
 		return null;
 	}
 
+	/**
+	 * Appends new child-node to node
+	 * 
+	 * @param child
+	 *            Child-node to append
+	 */
 	public void appendChild(Node child) {
 		children.add(child);
 	}
 
+	/**
+	 * Checks whether the given interval is covered by this node
+	 * 
+	 * @param interval
+	 *            Interval to check
+	 * @return True if included in this node, otherwise false
+	 */
 	public boolean includes(Interval interval) {
 		return this.interval.includes(interval);
 	}
 
+	/**
+	 * Updates covered interval of this node
+	 * 
+	 * @param interval
+	 *            Interval to update with
+	 */
 	public void updateInterval(Interval interval) {
 		this.interval.update(interval);
 	}
 
-	public void updateSupport(double support) {
-		if (support > this.support) {
-			this.support = support;
+	/**
+	 * Updates support of node if passed support is grater
+	 * 
+	 * @param newSupport
+	 *            Suport to update if grater than current one
+	 */
+	public void updateSupport(double newSupport) {
+		if (newSupport > this.support) {
+			this.support = newSupport;
 		}
 	}
 
+	/**
+	 * Returns interval covered by this node
+	 * 
+	 * @return Covered interval by this node
+	 */
 	public Interval getInterval() {
 		return interval;
 	}

@@ -49,6 +49,21 @@ public class TPatternTree {
 		}
 	}
 
+	/**
+	 * Returns a prediction for the next stay-location based on the
+	 * stay-location sequence, a score function, a time and score threshold
+	 * 
+	 * @param stayLocSequence
+	 *            List of stay-locations
+	 * @param score
+	 *            Score function to calculate score
+	 * @param thTime
+	 *            Time threshold
+	 * @param thScore
+	 *            Score threshold
+	 * @return A stay-location which was predicted or null if no prediction was
+	 *         made
+	 */
 	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence, Score score, long thTime, double thScore) {
 		ArrayList<Path> candidates = whereNextCandidates(stayLocSequence, score, thTime, thScore);
 		StayLoc result = null;
@@ -82,6 +97,20 @@ public class TPatternTree {
 		return result;
 	}
 
+	/**
+	 * Returns a list of possible candidates for prediction based on the
+	 * stay-location sequence, a score function, a time and score threshold
+	 * 
+	 * @param stayLocSequence
+	 *            List of stay-locations
+	 * @param score
+	 *            Score function to calculate score
+	 * @param thTime
+	 *            Time threshold
+	 * @param thScore
+	 *            Score threshold
+	 * @return A List of found paths in the tree, also known as candidates
+	 */
 	public ArrayList<Path> whereNextCandidates(ArrayList<StayLoc> stayLocSequence, Score score, long thTime,
 			double thScore) {
 		HashSet<Path> paths = new HashSet<>();
