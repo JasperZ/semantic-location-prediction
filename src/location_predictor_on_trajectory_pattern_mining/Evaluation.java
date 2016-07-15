@@ -44,7 +44,8 @@ public class Evaluation {
 		while (it.hasNext()) {
 			DailyUserProfile p = it.next();
 
-			if (p.percentageLatLng() != 100.0 || p.getStayLocs().size() < 4 || p.getStayLocs().size() > 40)
+			if (p.percentageLatLng() != 100.0 || p.getId() != 75 || p.getStayLocs().size() < 4
+					|| p.getStayLocs().size() > 40)
 				it.remove();
 		}
 
@@ -70,7 +71,7 @@ public class Evaluation {
 			ArrayList<DailyUserProfile> userProfiles = e.getValue();
 
 			for (int i = 0; i < userProfiles.size(); i++) {
-				if (i % 8 != 0) {
+				if (i % 2 != 0) {
 					trainingProfiles.add(userProfiles.get(i));
 				} else {
 					testProfiles.add(userProfiles.get(i));
@@ -91,87 +92,98 @@ public class Evaluation {
 			trainingSequences.add(new Sequence(p.getStayLocs()));
 		}
 
-		// build pattern database from training sequences
-		patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
-		patternMinSupport = 0.0;
+		for (double th = 0.01; th <= 1.0; th += 0.01) {
+			for (double supp = 0.001; supp <= 0.04; supp += 0.001) {
+				// build pattern database from training sequences
+				patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
+				patternMinSupport = 0.0 + supp;
 
-		patternDB.generatePatterns(patternMinSupport);
-		patternDB.saveToFile();
+				patternDB.generatePatterns(patternMinSupport);
+				patternDB.saveToFile();
 
-		// build TPattern tree by inserting all patterns, starting with patterns
-		// of size 1 up to the longest patterns available
-		patternTree = new TPatternTree();
+				// build TPattern tree by inserting all patterns, starting with
+				// patterns
+				// of size 1 up to the longest patterns available
+				patternTree = new TPatternTree();
 
-		for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
-			patternTree.build(patternDB.getPatterns(i));
-		}
-
-		// use test profiles to evaluate prediction
-		int totalPredictions = 0;
-		int correctCounter = 0;
-		int wrongCounter = 0;
-		int wrongButContainedCounter = 0;
-		int noPredictionCounter = 0;
-		int postPredictionLength = 3;
-		Score thAgg = new Score.SumScore();
-		double thScore = 0.3;
-		HashSet<ArrayList<StayLoc>> predictedSequences = new HashSet<>();
-
-		for (DailyUserProfile p : testProfiles) {
-			for (int j = 0; j < p.getStayLocs().size() - postPredictionLength - 1; j++) {
-				ArrayList<StayLoc> postPredictionStayLocs;
-				StayLoc correctResult;
-				StayLoc predictionResult;
-
-				postPredictionStayLocs = new ArrayList<>();
-
-				for (int i = 0; i < postPredictionLength; i++) {
-					postPredictionStayLocs.add(p.getStayLocs().get(j + i));
+				for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
+					patternTree.build(patternDB.getPatterns(i));
 				}
 
-				if (!predictedSequences.contains(postPredictionStayLocs)) {
+				// use test profiles to evaluate prediction
+				int totalPredictions = 0;
+				int correctCounter = 0;
+				int wrongCounter = 0;
+				int wrongButContainedCounter = 0;
+				int noPredictionCounter = 0;
+				int postPredictionLength = 3;
+				Score thAgg = new Score.AvgScore();
+				double thScore = 0.0 + th;
+				HashSet<ArrayList<StayLoc>> predictedSequences = new HashSet<>();
 
-					correctResult = p.getStayLocs().get(j + postPredictionLength);
-					predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, 200, thScore);
-					totalPredictions++;
+				for (DailyUserProfile p : testProfiles) {
+					for (int j = 0; j < p.getStayLocs().size() - postPredictionLength - 1; j++) {
+						ArrayList<StayLoc> postPredictionStayLocs;
+						StayLoc correctResult;
+						StayLoc predictionResult;
 
-					if (predictionResult != null) {
-						if (predictionResult.equals(correctResult)) {
-							correctCounter++;
-						} else {
-							ArrayList<Path> predictionCandidates = patternTree
-									.whereNextCandidates(postPredictionStayLocs, thAgg, 200, thScore);
-							boolean inCanditades = false;
+						postPredictionStayLocs = new ArrayList<>();
 
-							for (Path path : predictionCandidates) {
-								if (path.lastNode().getStayLoc().equals(correctResult)) {
-									inCanditades = true;
-									break;
-								}
-							}
-
-							if (inCanditades) {
-								wrongButContainedCounter++;
-							} else {
-								wrongCounter++;
-							}
+						for (int i = 0; i < postPredictionLength; i++) {
+							postPredictionStayLocs.add(p.getStayLocs().get(j + i));
 						}
-					} else {
-						noPredictionCounter++;
-					}
 
-					predictedSequences.add(postPredictionStayLocs);
+						if (!predictedSequences.contains(postPredictionStayLocs)) {
+
+							correctResult = p.getStayLocs().get(j + postPredictionLength);
+							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, 200, thScore);
+							totalPredictions++;
+
+							if (predictionResult != null) {
+								if (predictionResult.equals(correctResult)) {
+									correctCounter++;
+								} else {
+									ArrayList<Path> predictionCandidates = patternTree
+											.whereNextCandidates(postPredictionStayLocs, thAgg, 200, thScore);
+									boolean inCanditades = false;
+
+									for (Path path : predictionCandidates) {
+										if (path.lastNode().getStayLoc().equals(correctResult)) {
+											inCanditades = true;
+											break;
+										}
+									}
+
+									if (inCanditades) {
+										wrongButContainedCounter++;
+									} else {
+										wrongCounter++;
+									}
+								}
+							} else {
+								noPredictionCounter++;
+							}
+
+							predictedSequences.add(postPredictionStayLocs);
+						}
+					}
+				}
+
+				if (correctCounter > wrongCounter + wrongButContainedCounter) {
+					System.out.println("thScore: " + thScore);
+					System.out.println("patternMinSupport: " + patternMinSupport);
+					System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
+							totalPredictions, (100.0 / totalPredictions * correctCounter)));
+					System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter,
+							totalPredictions, (100.0 / totalPredictions * wrongCounter)));
+					System.out.println(String.format(Locale.ENGLISH,
+							"wrong but in solution candidates: %d of %d (%.2f%%)", wrongButContainedCounter,
+							totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
+					System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
+							noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
+					System.out.println();
 				}
 			}
 		}
-
-		System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter, totalPredictions,
-				(100.0 / totalPredictions * correctCounter)));
-		System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter, totalPredictions,
-				(100.0 / totalPredictions * wrongCounter)));
-		System.out.println(String.format(Locale.ENGLISH, "wrong but in solution candidates: %d of %d (%.2f%%)",
-				wrongButContainedCounter, totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
-		System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)", noPredictionCounter,
-				totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
 	}
 }
