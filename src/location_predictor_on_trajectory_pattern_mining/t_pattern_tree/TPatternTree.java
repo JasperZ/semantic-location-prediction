@@ -2,7 +2,6 @@ package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Interval;
