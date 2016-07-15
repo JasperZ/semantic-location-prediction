@@ -3,232 +3,185 @@ package main;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.model.GeocodingResult;
-
+import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.PatternDB;
+import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Sequence;
+import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.Path;
+import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.Score;
+import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.TPatternTree;
 import reality_mining.DatasetPreparation;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.daily_user_profile.DailyUserProfileReader;
 import reality_mining.user_profile.StayLoc;
-import reality_mining.user_profile.UserProfile;
-import reality_mining.user_profile.UserProfileReader;
 
 public class Test {
-	public static void main(String[] args) {
-		/*
-		 * for (int i = 2; i <= 106; i++) { UserProfile user =
-		 * UserProfileReader.readJsonToUserProfile( StayLocCelltowerFusion.
-		 * STAYLOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH, i);
-		 * 
-		 * if (user.areStayLocsAvailable()) { int total =
-		 * user.getStayLocs().size(); int countLabel =
-		 * user.countUserLabeledStayLocs(); double labelPercent = (100.0 /
-		 * total) * countLabel; int countLatLng = user.countLatLngStayLocs();
-		 * double latLngPercent = (100.0 / total) * countLatLng; int
-		 * countLabelLatLng = user.countUserLabeledLatLngStayLocs(); double
-		 * labelLatLngPercent = (100.0 / total) * countLabelLatLng;
-		 * 
-		 * if (user.getId() >= 10) {
-		 * System.out.println(String.format(Locale.ENGLISH,
-		 * "user %d \t%.2f\t%.2f\t%.2f", user.getId(), labelPercent,
-		 * latLngPercent, labelLatLngPercent)); } else {
-		 * System.out.println(String.format(Locale.ENGLISH,
-		 * "user %d \t\t%.2f\t%.2f\t%.2f", user.getId(), labelPercent,
-		 * latLngPercent, labelLatLngPercent)); } } }
-		 */
-		/*
-		 * HashMap<String, Integer> cellFrequency = new HashMap<>();
-		 * 
-		 * for (int i = 2; i <= 106; i++) { UserProfile user =
-		 * UserProfileReader.readJsonToUserProfile( StayLocCelltowerFusion.
-		 * STAYLOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH, i);
-		 * 
-		 * if (user.areStayLocsAvailable()) { for (StayLoc l :
-		 * user.getStayLocs()) { if (l.isLocationAreaCodeAvailable() &&
-		 * l.isCellIdAvailable()) { String key = String.format("%d,%s",
-		 * l.getLocationAreaCode(), l.getCellId()); Integer counter =
-		 * cellFrequency.get(key);
-		 * 
-		 * if (counter != null) { counter = counter + 1; cellFrequency.put(key,
-		 * counter);
-		 * 
-		 * } else { cellFrequency.put(key, new Integer(1)); } } } } }
-		 * 
-		 * System.out.println(cellFrequency.size() + " different UserLabels");
-		 * 
-		 * for (Entry<String, Integer> e : cellFrequency.entrySet()) {
-		 * System.out.println(e.getKey() + " " + e.getValue()); }
-		 */
-		/*
-		 * for (int i = 2; i <= 106; i++) { UserProfile user =
-		 * UserProfileReader.readJsonToUserProfile( StayLocCelltowerFusion.
-		 * STAYLOC_CELLTOWER_FUSION_USER_PROFILES_DIRECTORY_PATH, i);
-		 * 
-		 * if (user.areStayLocsAvailable()) { int total =
-		 * user.getStayLocs().size(); int countLabel =
-		 * user.countUserLabeledStayLocs(); double labelPercent = (100.0 /
-		 * total) * countLabel; int countLatLng = user.countLatLngStayLocs();
-		 * double latLngPercent = (100.0 / total) * countLatLng; int
-		 * countLabelLatLng = user.countUserLabeledLatLngStayLocs(); double
-		 * labelLatLngPercent = (100.0 / total) * countLabelLatLng;
-		 * 
-		 * if (user.getId() >= 10) {
-		 * System.out.println(String.format(Locale.ENGLISH,
-		 * "user %d \t%.2f\t%.2f\t%.2f", user.getId(), labelPercent,
-		 * latLngPercent, labelLatLngPercent)); } else {
-		 * System.out.println(String.format(Locale.ENGLISH,
-		 * "user %d \t\t%.2f\t%.2f\t%.2f", user.getId(), labelPercent,
-		 * latLngPercent, labelLatLngPercent)); } } }
-		 */
-		/*
-		 * for (int i = 2; i <= 106; i++) { UserProfile user =
-		 * UserProfileReader.readJsonToUserProfile(DatasetPreparation.
-		 * FINAL_USER_PROFILE_DIRECTORY, i);
-		 * 
-		 * if (user.areStayLocsAvailable() && user.getStayLocs().size() >= 2) {
-		 * for (int j = 0; j < user.getStayLocs().size(); j++) { int k = j + 1;
-		 * 
-		 * for (; k < user.getStayLocs().size(); k++) { if
-		 * (user.getStayLocs().get(k).isLatitudeAvailable() &&
-		 * user.getStayLocs().get(k).isLongitudeAvailable()) {
-		 * 
-		 * } else { break; } }
-		 * 
-		 * if (k - j > 30) { System.out.println("id: " + user.getId() + " " + (k
-		 * - j) + " " + user.getStayLocs().get(j).getStartTimestamp()); }
-		 * 
-		 * j = k; } } }
-		 */
-		/*
-		 * ArrayList<DailyUserProfile> dailyUserProfiles = new ArrayList<>();
-		 * 
-		 * dailyUserProfiles = DailyUserProfileReader
-		 * .readJsonDailyUserProfiles(DatasetPreparation.
-		 * FINAL_DAILY_USER_PROFILE_DIRECTORY);
-		 * 
-		 * ArrayList<DailyUserProfile> training = new ArrayList<>();
-		 * HashSet<String> gps = new HashSet<>();
-		 * 
-		 * for (DailyUserProfile p : dailyUserProfiles) { if
-		 * (p.percentageLatLng() == 100.0 && p.getStayLocs().size() >= 4) { for
-		 * (StayLoc l : p.getStayLocs()) { gps.add(String.format(Locale.ENGLISH,
-		 * "%f,%f", l.getLat(), l.getLng())); } } }
-		 * 
-		 * int i = 0;
-		 * 
-		 * for (String s : gps) { System.out.println(s + ",\"" + (i++) + "\"");
-		 * }
-		 */
+	public static final String SEQUENCE_FILE_PATH = "/home/jasper/EclipseWorkspace/PatternMining/sequences.txt";
 
-		// output for t-pattern mining tool
-		/*
-		 * ArrayList<DailyUserProfile> dailyUserProfiles = new ArrayList<>();
-		 * ArrayList<DailyUserProfile> trainingProfiles = new ArrayList<>();
-		 * 
-		 * dailyUserProfiles = DailyUserProfileReader
-		 * .readJsonDailyUserProfiles(DatasetPreparation.
-		 * FINAL_DAILY_USER_PROFILE_DIRECTORY);
-		 * 
-		 * HashSet<String> gps = new HashSet<>(); HashMap<Integer, Integer> LACs
-		 * = new HashMap<>(); int lacCounter = 1; HashMap<Integer, Integer> CIDs
-		 * = new HashMap<>(); int cidCounter = 1; HashSet<String> regions = new
-		 * HashSet<>();
-		 * 
-		 * for (DailyUserProfile p : dailyUserProfiles) { if
-		 * (p.percentageLatLng() == 100.0 && p.getStayLocs().size() >= 4) {
-		 * trainingProfiles.add(p); } }
-		 * 
-		 * for (DailyUserProfile p : trainingProfiles) { for (StayLoc l :
-		 * p.getStayLocs()) { if (!LACs.containsKey(l.getLocationAreaCode())) {
-		 * LACs.put(l.getLocationAreaCode(), lacCounter);
-		 * 
-		 * lacCounter += 3; }
-		 * 
-		 * if (!CIDs.containsKey(l.getCellId())) { CIDs.put(l.getCellId(),
-		 * cidCounter);
-		 * 
-		 * cidCounter += 3; } } }
-		 * 
-		 * for (DailyUserProfile p : trainingProfiles) { for (StayLoc l :
-		 * p.getStayLocs()) { l.setLat(l.getLat() + 180); l.setLng(l.getLng() +
-		 * 180); } }
-		 * 
-		 * for (DailyUserProfile p : trainingProfiles) { for (StayLoc l :
-		 * p.getStayLocs()) {
-		 * l.setLocationAreaCode(LACs.get(l.getLocationAreaCode()));
-		 * l.setCellId(CIDs.get(l.getCellId()));
-		 * 
-		 * regions.add(l.getLat() + " " + l.getLng() + " " + l.getLat() + " " +
-		 * l.getLng()); } }
-		 * 
-		 * System.out.println("Trajectories:");
-		 * 
-		 * int i = 0;
-		 * 
-		 * for (DailyUserProfile p : trainingProfiles) { String trajectory =
-		 * (i++) + " " + p.getStayLocs().size(); long timeBase =
-		 * p.getStayLocs().get(0).getStartTimestamp();
-		 * 
-		 * for (StayLoc l : p.getStayLocs()) { trajectory += " " +
-		 * l.getStartTimestamp() + " " + l.getLat() + " " + l.getLng(); }
-		 * 
-		 * System.out.println(trajectory); }
-		 * 
-		 * System.out.println("Regions:");
-		 * 
-		 * i = 0;
-		 * 
-		 * for (String r : regions) { System.out.println((i++) + " " + r); }
-		 */
+	public static void main(String args[]) {
+		// variables for profiles
+		ArrayList<DailyUserProfile> dailyUserProfiles;
+		ArrayList<DailyUserProfile> trainingProfiles;
+		ArrayList<DailyUserProfile> testProfiles;
 
-		ArrayList<DailyUserProfile> dailyUserProfiles = new ArrayList<>();
-		ArrayList<DailyUserProfile> trainingProfiles = new ArrayList<>();
+		// variables for pattern database
+		ArrayList<Sequence> trainingSequences;
+		double patternMinSupport;
+		PatternDB patternDB;
 
+		// variables for TPattern tree
+		TPatternTree patternTree;
+
+		// load all daily user profiles from disk
 		dailyUserProfiles = DailyUserProfileReader
 				.readJsonDailyUserProfiles(DatasetPreparation.FINAL_DAILY_USER_PROFILE_DIRECTORY);
 
-		HashMap<String, Integer> lacCidDB = new HashMap<>();
-		int lacCidCounter = 1;
+		// filter daily user profiles for 100% GPS-Coordinate coverage
+		Iterator<DailyUserProfile> it = dailyUserProfiles.iterator();
 
-		for (DailyUserProfile p : dailyUserProfiles) {
-			if (p.percentageLatLng() == 100.0 && p.getStayLocs().size() >= 4) {
-				trainingProfiles.add(p);
-			}
+		while (it.hasNext()) {
+			DailyUserProfile p = it.next();
+
+			if (p.percentageLatLng() != 100.0 || p.getId() != 53 || p.getStayLocs().size() < 4
+					|| p.getStayLocs().size() > 40)
+				it.remove();
 		}
 
+		// divide all available daily profiles of each user into training and
+		// test profiles (~50:50)
+		HashMap<Integer, ArrayList<DailyUserProfile>> profilesByUserId = new HashMap<>();
+
+		for (DailyUserProfile p : dailyUserProfiles) {
+			ArrayList<DailyUserProfile> userProfiles = profilesByUserId.get(p.getId());
+
+			if (userProfiles == null) {
+				userProfiles = new ArrayList<>();
+				profilesByUserId.put(p.getId(), userProfiles);
+			}
+
+			userProfiles.add(p);
+		}
+
+		trainingProfiles = new ArrayList<>();
+		testProfiles = new ArrayList<>();
+
+		for (Entry<Integer, ArrayList<DailyUserProfile>> e : profilesByUserId.entrySet()) {
+			ArrayList<DailyUserProfile> userProfiles = e.getValue();
+
+			for (int i = 0; i < userProfiles.size(); i++) {
+				if (i % 2 != 0) {
+					trainingProfiles.add(userProfiles.get(i));
+				} else {
+					testProfiles.add(userProfiles.get(i));
+				}
+			}
+		}
+		/*
+		 * trainingProfiles = DailyUserProfileReader.readJsonDailyUserProfiles(
+		 * "/home/jasper/SemanticLocationPredictionData/RealityMining/final_daily_user_profiles/training/"
+		 * ); testProfiles = DailyUserProfileReader.readJsonDailyUserProfiles(
+		 * "/home/jasper/SemanticLocationPredictionData/RealityMining/final_daily_user_profiles/test/"
+		 * );
+		 */
+		// add trajectories of training profiles to training sequences
+		trainingSequences = new ArrayList<>();
+
 		for (DailyUserProfile p : trainingProfiles) {
-			for (StayLoc l : p.getStayLocs()) {
-				if (!lacCidDB.containsKey(String.format("%d.%d", l.getLocationAreaCode(), l.getCellId()))) {
-					lacCidDB.put(String.format("%d.%d", l.getLocationAreaCode(), l.getCellId()), lacCidCounter++);
+			trainingSequences.add(new Sequence(p.getStayLocs()));
+		}
+
+		// build pattern database from training sequences
+		patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
+		patternMinSupport = 0.01800000000000001;
+
+		patternDB.generatePatterns(patternMinSupport);
+		patternDB.saveToFile();
+
+		// build TPattern tree by inserting all patterns, starting with
+		// patterns
+		// of size 1 up to the longest patterns available
+		patternTree = new TPatternTree();
+
+		for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
+			patternTree.build(patternDB.getPatterns(i));
+		}
+
+		// use test profiles to evaluate prediction
+		int totalPredictions = 0;
+		int correctCounter = 0;
+		int wrongCounter = 0;
+		int wrongButContainedCounter = 0;
+		int noPredictionCounter = 0;
+		int postPredictionLength = 3;
+		Score thAgg = new Score.AvgScore();
+		double thScore = 0.09;
+		double accuracy;
+		double predictionRate;
+		HashSet<ArrayList<StayLoc>> predictedSequences = new HashSet<>();
+
+		for (DailyUserProfile p : testProfiles) {
+			for (int j = 0; j < p.getStayLocs().size() - postPredictionLength - 1; j++) {
+				ArrayList<StayLoc> postPredictionStayLocs;
+				StayLoc correctResult;
+				StayLoc predictionResult;
+
+				postPredictionStayLocs = new ArrayList<>();
+
+				for (int i = 0; i < postPredictionLength; i++) {
+					postPredictionStayLocs.add(p.getStayLocs().get(j + i));
+				}
+
+				if (!predictedSequences.contains(postPredictionStayLocs)) {
+
+					correctResult = p.getStayLocs().get(j + postPredictionLength);
+					predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, 200, thScore);
+					totalPredictions++;
+
+					if (predictionResult != null) {
+						if (predictionResult.equals(correctResult)) {
+							correctCounter++;
+						} else {
+							ArrayList<Path> predictionCandidates = patternTree
+									.whereNextCandidates(postPredictionStayLocs, thAgg, 200, thScore);
+							boolean inCanditades = false;
+
+							for (Path path : predictionCandidates) {
+								if (path.lastNode().getStayLoc().equals(correctResult)) {
+									inCanditades = true;
+									break;
+								}
+							}
+
+							if (inCanditades) {
+								wrongButContainedCounter++;
+							} else {
+								wrongCounter++;
+							}
+						}
+					} else {
+						noPredictionCounter++;
+					}
+
+					predictedSequences.add(postPredictionStayLocs);
 				}
 			}
 		}
 
-		System.out.println("Trajectories:");
+		predictionRate = (double) (totalPredictions - noPredictionCounter) / (double) totalPredictions;
+		accuracy = (double) correctCounter / (double) (totalPredictions - noPredictionCounter);
 
-		int i = 0;
-
-		for (DailyUserProfile p : trainingProfiles) {
-			String trajectory = "";
-
-			for (StayLoc l : p.getStayLocs()) {
-				trajectory += lacCidDB.get(String.format("%d.%d", l.getLocationAreaCode(), l.getCellId())) + " ";
-			}
-
-			System.out.println(trajectory.trim());
-		}
-
-		System.out.println("lacCidDB:");
-
-		i = 0;
-
-		for (Entry<String, Integer> e : lacCidDB.entrySet()) {
-			System.out.println(e.getKey() + " " + e.getValue());
-		}
+		System.out.println("Prediction Rate: " + predictionRate);
+		System.out.println("Accuracy: " + accuracy);
+		System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter, totalPredictions,
+				(100.0 / totalPredictions * correctCounter)));
+		System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter, totalPredictions,
+				(100.0 / totalPredictions * wrongCounter)));
+		System.out.println(String.format(Locale.ENGLISH, "wrong but in solution candidates: %d of %d (%.2f%%)",
+				wrongButContainedCounter, totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
+		System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)", noPredictionCounter,
+				totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
+		System.out.println();
 	}
 }
