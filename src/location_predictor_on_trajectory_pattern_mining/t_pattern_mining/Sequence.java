@@ -20,11 +20,12 @@ public class Sequence {
 		this.id = idCounter++;
 		this.sequence = sequence.toArray(new StayLoc[1]);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + Arrays.hashCode(sequence);
 		return result;
 	}
@@ -38,11 +39,12 @@ public class Sequence {
 		if (getClass() != obj.getClass())
 			return false;
 		Sequence other = (Sequence) obj;
+		if (id != other.id)
+			return false;
 		if (!Arrays.equals(sequence, other.sequence))
 			return false;
 		return true;
 	}
-
 
 	@Override
 	public String toString() {
@@ -62,11 +64,11 @@ public class Sequence {
 	public StayLoc[] getSequence() {
 		return sequence;
 	}
-	
+
 	public int length() {
 		return sequence.length;
 	}
-	
+
 	public StayLoc get(int index) {
 		return sequence[index];
 	}
