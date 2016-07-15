@@ -92,6 +92,8 @@ public class Evaluation {
 			trainingSequences.add(new Sequence(p.getStayLocs()));
 		}
 
+		System.out.println("thScore,patternMinSupport,correctCounter,wrongCounterPLUSwrongButContainedCounter");
+
 		for (double th = 0.01; th <= 1.0; th += 0.01) {
 			for (double supp = 0.001; supp <= 0.04; supp += 0.001) {
 				// build pattern database from training sequences
@@ -170,18 +172,30 @@ public class Evaluation {
 				}
 
 				if (correctCounter > wrongCounter + wrongButContainedCounter) {
-					System.out.println("thScore: " + thScore);
-					System.out.println("patternMinSupport: " + patternMinSupport);
-					System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
-							totalPredictions, (100.0 / totalPredictions * correctCounter)));
-					System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter,
-							totalPredictions, (100.0 / totalPredictions * wrongCounter)));
-					System.out.println(String.format(Locale.ENGLISH,
-							"wrong but in solution candidates: %d of %d (%.2f%%)", wrongButContainedCounter,
-							totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
-					System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
-							noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
-					System.out.println();
+					// System.out.println("thScore: " + thScore);
+					// System.out.println("patternMinSupport: " +
+					// patternMinSupport);
+					// System.out.println(String.format(Locale.ENGLISH,
+					// "correct: %d of %d (%.2f%%)", correctCounter,
+					// totalPredictions, (100.0 / totalPredictions *
+					// correctCounter)));
+					// System.out.println(String.format(Locale.ENGLISH, "wrong:
+					// %d of %d (%.2f%%)", wrongCounter,
+					// totalPredictions, (100.0 / totalPredictions *
+					// wrongCounter)));
+					// System.out.println(String.format(Locale.ENGLISH,
+					// "wrong but in solution candidates: %d of %d (%.2f%%)",
+					// wrongButContainedCounter,
+					// totalPredictions, (100.0 / totalPredictions *
+					// wrongButContainedCounter)));
+					// System.out.println(String.format(Locale.ENGLISH, "no
+					// prediction: %d of %d (%.2f%%)",
+					// noPredictionCounter, totalPredictions, (100.0 /
+					// totalPredictions * noPredictionCounter)));
+					// System.out.println();
+
+					System.out.println(String.format(Locale.ENGLISH, "%f,%f,%d,%d", thScore, patternMinSupport,
+							correctCounter, wrongCounter + wrongButContainedCounter));
 				}
 			}
 		}
