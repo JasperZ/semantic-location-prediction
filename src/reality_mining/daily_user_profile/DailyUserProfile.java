@@ -15,6 +15,12 @@ public class DailyUserProfile {
 	private String researchGroup;
 	private String neighborhood;
 
+	/**
+	 * Creates an daily user profile with id onl
+	 * 
+	 * @param id
+	 *            Id of the user
+	 */
 	public DailyUserProfile(int id) {
 		this.id = id;
 		this.stayLocs = null;
@@ -25,11 +31,28 @@ public class DailyUserProfile {
 		this.neighborhood = null;
 	}
 
-	public DailyUserProfile(int id, ArrayList<StayLoc> stayLocs, String provider, String predictability,
+	/**
+	 * Creates a daily user profile with several user parameters
+	 * 
+	 * @param id
+	 *            Id of the user
+	 * @param trajectory
+	 *            Trajectory of the user
+	 * @param provider
+	 *            Mobile provider of the user
+	 * @param predictability
+	 *            String to specify predictability of user "very" or "somewhat"
+	 * @param hangouts
+	 * @param researchGroup
+	 *            Research group of the user
+	 * @param neighborhood
+	 *            Neighborhood the user lives in
+	 */
+	public DailyUserProfile(int id, ArrayList<StayLoc> trajectory, String provider, String predictability,
 			ArrayList<String> hangouts, String researchGroup, String neighborhood) {
 		this.id = id;
 
-		setStayLocs(stayLocs);
+		setStayLocs(trajectory);
 		setProvider(provider);
 		setPredictability(predictability);
 		setHangouts(hangouts);
@@ -37,10 +60,20 @@ public class DailyUserProfile {
 		setNeighborhood(neighborhood);
 	}
 
+	/**
+	 * Returns user id
+	 * 
+	 * @return User id
+	 */
 	public int getId() {
 		return this.id;
 	}
 
+	/**
+	 * Return whether stay-locations are available for the user
+	 * 
+	 * @return True if available, otherwise false
+	 */
 	public boolean areStayLocsAvailable() {
 		if (stayLocs != null && stayLocs.size() != 0) {
 			return true;
@@ -246,6 +279,7 @@ public class DailyUserProfile {
 
 	@Override
 	public String toString() {
-		return String.format(Locale.ENGLISH, "id: %d, day: %s, lat&lng: %.2f%%, label: %.2f%%, lat&lng|label: %.2f%%", getId(), getDay(), percentageLatLng(), percentageLatLngUserLabel(), percentageLatLngUserLabel());
+		return String.format(Locale.ENGLISH, "id: %d, day: %s, lat&lng: %.2f%%, label: %.2f%%, lat&lng|label: %.2f%%",
+				getId(), getDay(), percentageLatLng(), percentageLatLngUserLabel(), percentageLatLngUserLabel());
 	}
 }
