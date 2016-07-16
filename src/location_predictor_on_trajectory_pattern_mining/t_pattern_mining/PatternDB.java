@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map.Entry;
-
-import javax.jws.soap.SOAPBinding.Use;
 
 import reality_mining.user_profile.StayLoc;
 
@@ -249,7 +246,6 @@ public class PatternDB {
 			writer.flush();
 			writer.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
