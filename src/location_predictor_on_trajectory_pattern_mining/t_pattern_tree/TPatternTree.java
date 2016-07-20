@@ -57,15 +57,13 @@ public class TPatternTree {
 	 *            List of stay-locations
 	 * @param score
 	 *            Score function to calculate score
-	 * @param thTime
-	 *            Time threshold
 	 * @param thScore
 	 *            Score threshold
 	 * @return A stay-location which was predicted or null if no prediction was
 	 *         made
 	 */
-	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence, Score score, long thTime, double thScore) {
-		ArrayList<Path> candidates = whereNextCandidates(stayLocSequence, score, thTime, thScore);
+	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
+		HashSet<Path> candidates = new HashSet<>(whereNextCandidates(stayLocSequence, score, thScore));
 		StayLoc result = null;
 		Path bestPath = null;
 
@@ -105,14 +103,11 @@ public class TPatternTree {
 	 *            List of stay-locations
 	 * @param score
 	 *            Score function to calculate score
-	 * @param thTime
-	 *            Time threshold
 	 * @param thScore
 	 *            Score threshold
 	 * @return A List of found paths in the tree, also known as candidates
 	 */
-	public ArrayList<Path> whereNextCandidates(ArrayList<StayLoc> stayLocSequence, Score score, long thTime,
-			double thScore) {
+	public ArrayList<Path> whereNextCandidates(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
 		HashSet<Path> paths = new HashSet<>();
 		int depth = 0;
 
@@ -131,12 +126,6 @@ public class TPatternTree {
 
 						p.append(c, c.getSupport());
 						newPaths.add(p);
-					} else if (c.getStayLoc().getLocationAreaCode().equals(cStayLoc.getLocationAreaCode())
-							&& !c.getStayLoc().getCellId().equals(cStayLoc.getCellId())) {
-						Path p = new Path(path);
-
-						p.append(c, c.getSupport() / 2.0);
-						newPaths.add(p);
 					}
 				}
 			} else {
@@ -144,37 +133,29 @@ public class TPatternTree {
 
 				for (Path path : paths) {
 					Node prevNode = path.lastNode();
-					boolean pathExtended = false;
 
-					if (path.isComplete()) {
-						continue;
-					}
+					if (!path.isComplete()) {
+						boolean pathExtended = false;
 
-					for (Node c : prevNode.getChildren()) {
-						StayLoc pStayLoc = stayLocSequence.get(depth - 1);
-						StayLoc cStayLoc = stayLocSequence.get(depth);
-						long duration = cStayLoc.getStartTimestamp() - pStayLoc.getEndTimestamp();
+						for (Node c : prevNode.getChildren()) {
+							StayLoc pStayLoc = stayLocSequence.get(depth - 1);
+							StayLoc cStayLoc = stayLocSequence.get(depth);
+							long duration = cStayLoc.getStartTimestamp() - pStayLoc.getEndTimestamp();
 
-						if (c.getStayLoc().equals(cStayLoc) && c.includes(new Interval(duration, duration))) {
-							Path p = new Path(path);
+							if (c.getStayLoc().equals(cStayLoc) && c.includes(new Interval(duration, duration))) {
+								Path p = new Path(path);
 
-							p.append(c, c.getSupport());
-							newPaths.add(p);
-							pathExtended = true;
-						} else if (c.getStayLoc().getLocationAreaCode().equals(cStayLoc.getLocationAreaCode())
-								&& !c.getStayLoc().getCellId().equals(cStayLoc.getCellId())) {
-							Path p = new Path(path);
-
-							p.append(c, c.getSupport() / 2.0);
-							newPaths.add(p);
-							pathExtended = true;
+								p.append(c, c.getSupport());
+								newPaths.add(p);
+								pathExtended = true;
+							}
 						}
-					}
 
-					if (pathExtended) {
-						pathsToRemove.add(path);
-					} else {
-						path.comlete();
+						if (pathExtended) {
+							pathsToRemove.add(path);
+						} else {
+							path.comlete();
+						}
 					}
 				}
 

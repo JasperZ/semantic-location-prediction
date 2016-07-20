@@ -2,7 +2,6 @@ package location_predictor_on_trajectory_pattern_mining;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -44,12 +43,13 @@ public class Evaluation {
 		while (it.hasNext()) {
 			DailyUserProfile p = it.next();
 
-			if (p.percentageLatLng() != 100.0 || p.getStayLocs().size() < 4 || p.getStayLocs().size() > 40)
+			if (p.percentageLatLng() != 100.0 || p.getStayLocs().size() < 4 || p.getStayLocs().size() > 40) {
 				it.remove();
+			}
 		}
 
 		// divide all available daily profiles of each user into training and
-		// test profiles (~50:50)
+		// test profiles
 		HashMap<Integer, ArrayList<DailyUserProfile>> profilesByUserId = new HashMap<>();
 
 		for (DailyUserProfile p : dailyUserProfiles) {
@@ -68,13 +68,15 @@ public class Evaluation {
 
 		for (Entry<Integer, ArrayList<DailyUserProfile>> e : profilesByUserId.entrySet()) {
 			ArrayList<DailyUserProfile> userProfiles = e.getValue();
+			double percentageOfTestProfiles = 10.0;
+			int numberOfTestProfiles = (int) Math.ceil(userProfiles.size() / 100.0 * percentageOfTestProfiles);
 
-			for (int i = 0; i < userProfiles.size(); i++) {
-				if (i % 10 != 0) {
-					trainingProfiles.add(userProfiles.get(i));
-				} else {
-					testProfiles.add(userProfiles.get(i));
-				}
+			for (int j = 0; j < numberOfTestProfiles; j++) {
+				testProfiles.add(userProfiles.get(j));
+			}
+
+			for (int j = numberOfTestProfiles; j < userProfiles.size(); j++) {
+				trainingProfiles.add(userProfiles.get(j));
 			}
 		}
 		/*
@@ -91,26 +93,24 @@ public class Evaluation {
 			trainingSequences.add(new Sequence(p.getStayLocs()));
 		}
 
-		System.out.println("thScore,patternMinSupport,correctCounter,wrongCounterPLUSwrongButContainedCounter");
+		for (double supp = 0.005; supp <= 0.04; supp += 0.001) {
+			// build pattern database from training sequences
+			patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
+			patternMinSupport = 0.0 + supp;
 
-		for (double th = 0.01; th <= 1.0; th += 0.01) {
-			for (double supp = 0.001; supp <= 0.04; supp += 0.001) {
-				// build pattern database from training sequences
-				patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
-				patternMinSupport = 0.0 + supp;
+			patternDB.generatePatterns(patternMinSupport);
+			// System.out.println("Pattern database size: " + patternDB.size());
 
-				patternDB.generatePatterns(patternMinSupport);
-				patternDB.saveToFile();
+			// build TPattern tree by inserting all patterns, starting with
+			// patterns
+			// of size 1 up to the longest patterns available
+			patternTree = new TPatternTree();
 
-				// build TPattern tree by inserting all patterns, starting with
-				// patterns
-				// of size 1 up to the longest patterns available
-				patternTree = new TPatternTree();
+			for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
+				patternTree.build(patternDB.getPatterns(i));
+			}
 
-				for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
-					patternTree.build(patternDB.getPatterns(i));
-				}
-
+			for (double th = 0.0; th <= 0.5; th += 0.01) {
 				// use test profiles to evaluate prediction
 				int totalPredictions = 0;
 				int correctCounter = 0;
@@ -119,6 +119,7 @@ public class Evaluation {
 				int noPredictionCounter = 0;
 				Score thAgg = new Score.AvgScore();
 				double thScore = 0.0 + th;
+				double accuracy;
 
 				for (DailyUserProfile p : testProfiles) {
 					for (int postPredictionLength = 1; postPredictionLength < p.getStayLocs().size()
@@ -135,7 +136,7 @@ public class Evaluation {
 							}
 
 							correctResult = p.getStayLocs().get(j + postPredictionLength);
-							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, 200, thScore);
+							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
 							totalPredictions++;
 
 							if (predictionResult != null) {
@@ -143,7 +144,7 @@ public class Evaluation {
 									correctCounter++;
 								} else {
 									ArrayList<Path> predictionCandidates = patternTree
-											.whereNextCandidates(postPredictionStayLocs, thAgg, 200, thScore);
+											.whereNextCandidates(postPredictionStayLocs, thAgg, thScore);
 									boolean inCanditades = false;
 
 									for (Path path : predictionCandidates) {
@@ -166,7 +167,9 @@ public class Evaluation {
 					}
 				}
 
-				if (correctCounter > wrongCounter + wrongButContainedCounter) {
+				accuracy = (double) correctCounter / (double) (totalPredictions - noPredictionCounter);
+
+				if (accuracy >= 0.5) {
 					System.out.println("thScore: " + thScore);
 					System.out.println("patternMinSupport: " + patternMinSupport);
 					System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
@@ -178,12 +181,11 @@ public class Evaluation {
 							totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
 					System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
 							noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
-
-					double accuracy = (double) correctCounter / (double) (totalPredictions - noPredictionCounter);
-
 					System.out.println("accuracy: " + accuracy);
-					System.out.println(String.format(Locale.ENGLISH, "%f,%f,%d,%d", thScore, patternMinSupport,
-							correctCounter, wrongCounter + wrongButContainedCounter));
+					// System.out.println(String.format(Locale.ENGLISH,
+					// "%f,%f,%d,%d,%d,%f", thScore, patternMinSupport,
+					// correctCounter, wrongCounter, wrongCounter +
+					// wrongButContainedCounter, accuracy));
 					System.out.println();
 				}
 			}
