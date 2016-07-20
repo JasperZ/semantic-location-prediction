@@ -9,7 +9,7 @@ import reality_mining.user_profile.StayLoc;
 public class Node {
 	private static long idCounter = 0;
 	private long id;
-	private StayLoc stayLoc;
+	private String stayLoc;
 	private double support;
 	private HashSet<Node> children;
 	private Interval interval;
@@ -24,7 +24,7 @@ public class Node {
 	 * @param support
 	 *            Support of the node
 	 */
-	public Node(StayLoc stayLoc, Interval interval, double support) {
+	public Node(String stayLoc, Interval interval, double support) {
 		this.id = idCounter++;
 		this.stayLoc = stayLoc;
 		this.support = support;
@@ -59,7 +59,7 @@ public class Node {
 		String result = "\"" + id + " | ";
 
 		if (stayLoc != null) {
-			result += stayLoc.toShortString() + " | " + String.format(Locale.ENGLISH, "%.3f", support) + " | "
+			result += stayLoc + " | " + String.format(Locale.ENGLISH, "%.3f", support) + " | "
 					+ interval + "\"";
 		} else {
 			result += "root\"";
@@ -82,7 +82,7 @@ public class Node {
 	 * 
 	 * @return Associated stay-location
 	 */
-	public StayLoc getStayLoc() {
+	public String getStayLoc() {
 		return this.stayLoc;
 	}
 
@@ -135,7 +135,7 @@ public class Node {
 	 *            Stay-location to match children against
 	 * @return Node of child if found, otherwise null
 	 */
-	public Node findChild(StayLoc stayLoc) {
+	public Node findChild(String stayLoc) {
 		for (Node n : children) {
 			if (n.stayLoc.equals(stayLoc)) {
 				return n;

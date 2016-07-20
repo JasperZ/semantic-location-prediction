@@ -104,7 +104,7 @@ public class Path {
 		String result = "";
 
 		for (Node n : nodes) {
-			result += " " + n.getStayLoc().toShortString();
+			result += " " + n.getStayLoc();
 		}
 
 		return result;

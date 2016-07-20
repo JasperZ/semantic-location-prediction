@@ -90,7 +90,7 @@ public class Test {
 		trainingSequences = new ArrayList<>();
 
 		for (DailyUserProfile p : trainingProfiles) {
-			trainingSequences.add(new Sequence(p.getStayLocs()));
+			trainingSequences.add(new Sequence(p.getStayLocs().toArray(new String[0])));
 		}
 
 		// build pattern database from training sequences
@@ -138,8 +138,8 @@ public class Test {
 						- 1; postPredictionLength++) {
 					for (int j = 0; j < p.getStayLocs().size() - postPredictionLength; j++) {
 						ArrayList<StayLoc> postPredictionStayLocs;
-						StayLoc correctResult;
-						StayLoc predictionResult;
+						String correctResult;
+						String predictionResult;
 
 						postPredictionStayLocs = new ArrayList<>();
 
@@ -147,7 +147,7 @@ public class Test {
 							postPredictionStayLocs.add(p.getStayLocs().get(j + i));
 						}
 
-						correctResult = p.getStayLocs().get(j + postPredictionLength);
+						correctResult = p.getStayLocs().get(j + postPredictionLength).getUserLabel();
 						predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
 						totalPredictions++;
 

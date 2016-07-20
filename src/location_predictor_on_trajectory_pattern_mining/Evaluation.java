@@ -43,7 +43,8 @@ public class Evaluation {
 		while (it.hasNext()) {
 			DailyUserProfile p = it.next();
 
-			if (p.percentageLatLng() != 100.0 || p.getStayLocs().size() < 4 || p.getStayLocs().size() > 40) {
+			if (p.percentageLatLng() != 100.0 || p.percentageUserLabeld() != 100.0 || p.getStayLocs().size() < 4
+					|| p.getStayLocs().size() > 40) {
 				it.remove();
 			}
 		}
@@ -90,16 +91,16 @@ public class Evaluation {
 		trainingSequences = new ArrayList<>();
 
 		for (DailyUserProfile p : trainingProfiles) {
-			trainingSequences.add(new Sequence(p.getStayLocs()));
+			trainingSequences.add(new Sequence(p.getStayLocs().toArray(new StayLoc[0])));
 		}
 
-		for (double supp = 0.005; supp <= 0.04; supp += 0.001) {
+		for (double supp = 0.000; supp <= 0.04; supp += 0.001) {
 			// build pattern database from training sequences
 			patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
 			patternMinSupport = 0.0 + supp;
 
 			patternDB.generatePatterns(patternMinSupport);
-			// System.out.println("Pattern database size: " + patternDB.size());
+			System.out.println("Pattern database size: " + patternDB.size());
 
 			// build TPattern tree by inserting all patterns, starting with
 			// patterns
@@ -126,8 +127,8 @@ public class Evaluation {
 							- 1; postPredictionLength++) {
 						for (int j = 0; j < p.getStayLocs().size() - postPredictionLength; j++) {
 							ArrayList<StayLoc> postPredictionStayLocs;
-							StayLoc correctResult;
-							StayLoc predictionResult;
+							String correctResult;
+							String predictionResult;
 
 							postPredictionStayLocs = new ArrayList<>();
 
@@ -135,7 +136,7 @@ public class Evaluation {
 								postPredictionStayLocs.add(p.getStayLocs().get(j + i));
 							}
 
-							correctResult = p.getStayLocs().get(j + postPredictionLength);
+							correctResult = p.getStayLocs().get(j + postPredictionLength).getUserLabel();
 							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
 							totalPredictions++;
 
@@ -169,25 +170,25 @@ public class Evaluation {
 
 				accuracy = (double) correctCounter / (double) (totalPredictions - noPredictionCounter);
 
-				if (accuracy >= 0.5) {
-					System.out.println("thScore: " + thScore);
-					System.out.println("patternMinSupport: " + patternMinSupport);
-					System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
-							totalPredictions, (100.0 / totalPredictions * correctCounter)));
-					System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter,
-							totalPredictions, (100.0 / totalPredictions * wrongCounter)));
-					System.out.println(String.format(Locale.ENGLISH,
-							"wrong but in solution candidates: %d of %d (%.2f%%)", wrongButContainedCounter,
-							totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
-					System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
-							noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
-					System.out.println("accuracy: " + accuracy);
-					// System.out.println(String.format(Locale.ENGLISH,
-					// "%f,%f,%d,%d,%d,%f", thScore, patternMinSupport,
-					// correctCounter, wrongCounter, wrongCounter +
-					// wrongButContainedCounter, accuracy));
-					System.out.println();
-				}
+				// if (accuracy >= 0.5) {
+				System.out.println("thScore: " + thScore);
+				System.out.println("patternMinSupport: " + patternMinSupport);
+				System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
+						totalPredictions, (100.0 / totalPredictions * correctCounter)));
+				System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter,
+						totalPredictions, (100.0 / totalPredictions * wrongCounter)));
+				System.out.println(String.format(Locale.ENGLISH, "wrong but in solution candidates: %d of %d (%.2f%%)",
+						wrongButContainedCounter, totalPredictions,
+						(100.0 / totalPredictions * wrongButContainedCounter)));
+				System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
+						noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
+				System.out.println("accuracy: " + accuracy);
+				// System.out.println(String.format(Locale.ENGLISH,
+				// "%f,%f,%d,%d,%d,%f", thScore, patternMinSupport,
+				// correctCounter, wrongCounter, wrongCounter +
+				// wrongButContainedCounter, accuracy));
+				System.out.println();
+				// }
 			}
 		}
 	}

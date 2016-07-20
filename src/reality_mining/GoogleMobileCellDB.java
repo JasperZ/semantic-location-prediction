@@ -33,8 +33,8 @@ public class GoogleMobileCellDB {
 						c.getCellId());
 
 				if (response != null) {
-					c.setLatitude(response.location.lat);
-					c.setLongitude(response.location.lng);
+					c.setLatitude(response.location.getLatitude());
+					c.setLongitude(response.location.getLongitude());
 					c.setAccuracy(response.accuracy);
 				}
 

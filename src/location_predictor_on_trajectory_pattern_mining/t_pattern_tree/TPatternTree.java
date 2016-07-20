@@ -29,17 +29,16 @@ public class TPatternTree {
 			Node node = root;
 			int depth = 0;
 
-			for (StayLoc e : tp.getPattern()) {
+			for (String e : tp.getPattern()) {
 				Node n = node.findChild(e);
 				Interval interval = tp.getIntervals()[depth];
 
-				if (n == null || (n != null && !n.includes(interval))) {
+				if (n == null) {
 					Node v = new Node(e, interval, tp.getSupport());
 
 					node.appendChild(v);
 					node = v;
 				} else {
-					n.updateInterval(interval);
 					n.updateSupport(tp.getSupport());
 					node = n;
 				}
@@ -62,9 +61,9 @@ public class TPatternTree {
 	 * @return A stay-location which was predicted or null if no prediction was
 	 *         made
 	 */
-	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
+	public String whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
 		HashSet<Path> candidates = new HashSet<>(whereNextCandidates(stayLocSequence, score, thScore));
-		StayLoc result = null;
+		String result = null;
 		Path bestPath = null;
 
 		for (Path p : candidates) {
@@ -121,7 +120,7 @@ public class TPatternTree {
 				for (Node c : prevNode.getChildren()) {
 					StayLoc cStayLoc = stayLocSequence.get(depth);
 
-					if (c.getStayLoc().equals(cStayLoc)) {
+					if (c.getStayLoc().equals(cStayLoc.getUserLabel())) {
 						Path p = new Path(path);
 
 						p.append(c, c.getSupport());
@@ -142,7 +141,7 @@ public class TPatternTree {
 							StayLoc cStayLoc = stayLocSequence.get(depth);
 							long duration = cStayLoc.getStartTimestamp() - pStayLoc.getEndTimestamp();
 
-							if (c.getStayLoc().equals(cStayLoc) && c.includes(new Interval(duration, duration))) {
+							if (c.getStayLoc().equals(cStayLoc.getUserLabel())) {
 								Path p = new Path(path);
 
 								p.append(c, c.getSupport());

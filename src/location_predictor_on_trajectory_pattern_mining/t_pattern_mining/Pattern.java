@@ -9,7 +9,7 @@ public class Pattern {
 	private static long idCounter = 0;
 
 	private long id;
-	private StayLoc[] pattern;
+	private String[] pattern;
 	private Interval[] intervals;
 	private HashSet<Appearance> appearances;
 	private double support;
@@ -25,7 +25,7 @@ public class Pattern {
 	 * @param appearance
 	 *            The Sequence this pattern appears in
 	 */
-	public Pattern(StayLoc[] pattern, Interval[] intervals, Appearance appearance) {
+	public Pattern(String[] pattern, Interval[] intervals, Appearance appearance) {
 		this.id = idCounter++;
 		this.pattern = pattern;
 		this.intervals = intervals;
@@ -61,8 +61,8 @@ public class Pattern {
 	public String toString() {
 		String result = "id: " + id + " support: " + support + " pattern:";
 
-		for (StayLoc e : pattern) {
-			result += " " + e.getLocationAreaCode() + "." + e.getCellId();
+		for (String e : pattern) {
+			result += " " + e;
 		}
 
 		result += " appearances:";
@@ -107,7 +107,7 @@ public class Pattern {
 	 * 
 	 * @return Covered stay-locations
 	 */
-	public StayLoc[] getPattern() {
+	public String[] getPattern() {
 		return pattern;
 	}
 

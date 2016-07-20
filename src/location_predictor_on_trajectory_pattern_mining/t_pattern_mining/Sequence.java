@@ -9,7 +9,7 @@ public class Sequence {
 	private static long idCounter = 0;
 
 	private long id;
-	private StayLoc[] sequence;
+	private String[] sequence;
 
 	/**
 	 * Creates a sequence containing stay-location
@@ -17,9 +17,18 @@ public class Sequence {
 	 * @param sequence
 	 *            Stay-locations contained in this sequence
 	 */
-	public Sequence(StayLoc[] sequence) {
+	public Sequence(String[] sequence) {
 		this.id = idCounter++;
 		this.sequence = sequence;
+	}
+
+	public Sequence(StayLoc[] sequence) {
+		this.id = idCounter++;
+		this.sequence = new String[sequence.length];
+
+		for (int i = 0; i < sequence.length; i++) {
+			this.sequence[i] = sequence[i].getUserLabel();
+		}
 	}
 
 	/**
@@ -28,9 +37,9 @@ public class Sequence {
 	 * @param sequence
 	 *            Stay-locations contained in this sequence
 	 */
-	public Sequence(ArrayList<StayLoc> sequence) {
+	public Sequence(ArrayList<String> sequence) {
 		this.id = idCounter++;
-		this.sequence = sequence.toArray(new StayLoc[1]);
+		this.sequence = sequence.toArray(new String[1]);
 	}
 
 	@Override
@@ -62,8 +71,8 @@ public class Sequence {
 	public String toString() {
 		String result = "id: " + id + " sequence: ";
 
-		for (StayLoc e : sequence) {
-			result += e.getLocationAreaCode() + "." + e.getCellId() + " ";
+		for (String e : sequence) {
+			result += e + " ";
 		}
 
 		return result.trim();
@@ -83,7 +92,7 @@ public class Sequence {
 	 * 
 	 * @return Stay-locations
 	 */
-	public StayLoc[] getSequence() {
+	public String[] getSequence() {
 		return sequence;
 	}
 
@@ -103,7 +112,7 @@ public class Sequence {
 	 *            Index of stay-location in sequence, starting with 0
 	 * @return Stay-location at position index
 	 */
-	public StayLoc get(int index) {
+	public String get(int index) {
 		return sequence[index];
 	}
 }

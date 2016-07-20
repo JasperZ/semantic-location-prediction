@@ -32,10 +32,10 @@ public class DatasetPreparation {
 		stayLocDetection(userProfiles);
 		cellnameFusion(userProfiles);
 		mobileCellFusion(userProfiles);
-		// foursquareFusion(userProfiles);
+		foursquareFusion(userProfiles);
 
 		dailyUserProfiles = createDailyUserProfiles(userProfiles);
-		
+
 		UserProfileWriter.writeUserProfilesToJson(FINAL_USER_PROFILE_DIRECTORY, userProfiles);
 		DailyUserProfileWriter.writeDailyUserProfilesToJson(FINAL_DAILY_USER_PROFILE_DIRECTORY, dailyUserProfiles);
 	}
@@ -226,9 +226,6 @@ public class DatasetPreparation {
 							response = FoursquareVenuesService
 									.search(APIKeys.FOURSQUARE_CLIENT_ID, APIKeys.FOURSQUARE_CLIENT_SECRET)
 									.latitudeLongitude(s.getLat(), s.getLng()).limit(50).radius(500).execute();
-
-							// response = new VenueResponse[1];
-							// response[0] = new VenueResponse();
 
 							foursquareCache.put(String.format("%f,%f", s.getLat(), s.getLng()), response);
 						}

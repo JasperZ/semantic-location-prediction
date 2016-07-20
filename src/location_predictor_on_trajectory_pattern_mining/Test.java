@@ -83,7 +83,7 @@ public class Test {
 		trainingSequences = new ArrayList<>();
 
 		for (DailyUserProfile p : trainingProfiles) {
-			trainingSequences.add(new Sequence(p.getStayLocs()));
+			trainingSequences.add(new Sequence(p.getStayLocs().toArray(new String[0])));
 		}
 
 		// build pattern database from training sequences
