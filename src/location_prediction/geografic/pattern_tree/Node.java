@@ -1,15 +1,15 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
+package location_prediction.geografic.pattern_tree;
 
 import java.util.HashSet;
 import java.util.Locale;
 
-import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Interval;
+import location_prediction.geografic.pattern_mining.Interval;
 import reality_mining.user_profile.StayLoc;
 
 public class Node {
 	private static long idCounter = 0;
 	private long id;
-	private String stayLoc;
+	private StayLoc stayLoc;
 	private double support;
 	private HashSet<Node> children;
 	private Interval interval;
@@ -24,7 +24,7 @@ public class Node {
 	 * @param support
 	 *            Support of the node
 	 */
-	public Node(String stayLoc, Interval interval, double support) {
+	public Node(StayLoc stayLoc, Interval interval, double support) {
 		this.id = idCounter++;
 		this.stayLoc = stayLoc;
 		this.support = support;
@@ -59,7 +59,7 @@ public class Node {
 		String result = "\"" + id + " | ";
 
 		if (stayLoc != null) {
-			result += stayLoc + " | " + String.format(Locale.ENGLISH, "%.3f", support) + " | "
+			result += stayLoc.toShortString() + " | " + String.format(Locale.ENGLISH, "%.3f", support) + " | "
 					+ interval + "\"";
 		} else {
 			result += "root\"";
@@ -82,7 +82,7 @@ public class Node {
 	 * 
 	 * @return Associated stay-location
 	 */
-	public String getStayLoc() {
+	public StayLoc getStayLoc() {
 		return this.stayLoc;
 	}
 
@@ -135,7 +135,7 @@ public class Node {
 	 *            Stay-location to match children against
 	 * @return Node of child if found, otherwise null
 	 */
-	public Node findChild(String stayLoc) {
+	public Node findChild(StayLoc stayLoc) {
 		for (Node n : children) {
 			if (n.stayLoc.equals(stayLoc)) {
 				return n;

@@ -1,4 +1,4 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
+package location_prediction.semantic.pattern_tree;
 
 import java.util.ArrayList;
 
@@ -101,10 +101,10 @@ public class Path {
 
 	@Override
 	public String toString() {
-		String result = "";
+		String result = "path: ";
 
 		for (Node n : nodes) {
-			result += " " + n.getStayLoc();
+			result += n.getStayLoc() + ", ";
 		}
 
 		return result;

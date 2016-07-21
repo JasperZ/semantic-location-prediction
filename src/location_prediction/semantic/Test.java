@@ -1,4 +1,4 @@
-package location_predictor_on_trajectory_pattern_mining;
+package location_prediction.semantic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,23 +6,22 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.PatternDB;
-import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Sequence;
-import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.Path;
-import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.Score;
-import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.TPatternTree;
-import main.foursquare.venue.FoursquareCategoryDB;
-import main.foursquare.venue.VenueCategory;
-import main.foursquare.venue.VenueResponse;
+import foursquare.venue.VenueDB;
+import foursquare.venue.category.Category;
+import foursquare.venue.category.CategoryDB;
+import foursquare.venue.service.VenueResponse;
+import location_prediction.semantic.pattern_mining.PatternDB;
+import location_prediction.semantic.pattern_mining.Sequence;
+import location_prediction.semantic.pattern_tree.Path;
+import location_prediction.semantic.pattern_tree.Score;
+import location_prediction.semantic.pattern_tree.TPatternTree;
 import reality_mining.DatasetPreparation;
-import reality_mining.FoursquareVenueDB;
 import reality_mining.GPSLocation;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.daily_user_profile.DailyUserProfileReader;
 import reality_mining.user_profile.StayLoc;
 
-public class Evaluation {
-	public static final String SEQUENCE_FILE_PATH = "/home/jasper/EclipseWorkspace/PatternMining/sequences.txt";
+public class Test {
 
 	public static void main(String args[]) {
 		// variables for profiles
@@ -53,8 +52,8 @@ public class Evaluation {
 			}
 		}
 
-		FoursquareVenueDB venueDB = new FoursquareVenueDB();
-		FoursquareCategoryDB categoryDB = new FoursquareCategoryDB();
+		VenueDB venueDB = new VenueDB();
+		CategoryDB categoryDB = new CategoryDB();
 		venueDB.readJsonVenues();
 		categoryDB.readJsonCategories();
 
@@ -63,12 +62,10 @@ public class Evaluation {
 				VenueResponse v = venueDB.findNearestVenue(new GPSLocation(l.getLat(), l.getLng()));
 
 				if (v != null) {
-					for (VenueCategory c : v.categories) {
+					for (Category c : v.categories) {
 						if (c.primary == true) {
-							l.setUserLabel(c.name);
+							l.setUserLabel(categoryDB.getTopCategory(c.id).name);
 							break;
-						} else {
-							l.setUserLabel("unknown");
 						}
 					}
 				} else {
@@ -78,10 +75,13 @@ public class Evaluation {
 		}
 
 		for (DailyUserProfile d : dailyUserProfiles) {
-			for (StayLoc l : d.getStayLocs()) {
-				if (!l.isUserLabelAvailable()) {
-					l.setUserLabel("unknown");
-					System.out.println(l.toShortString());
+			Iterator<StayLoc> its = d.getStayLocs().iterator();
+
+			while (its.hasNext()) {
+				StayLoc l = its.next();
+
+				if (l.getUserLabel().equals("unknown")) {
+					its.remove();
 				}
 			}
 		}
@@ -186,6 +186,9 @@ public class Evaluation {
 											.whereNextCandidates(postPredictionStayLocs, thAgg, thScore);
 									boolean inCanditades = false;
 
+									System.out.println(new Sequence(postPredictionStayLocs.toArray(new StayLoc[0])));
+									System.out.println("where next candidates:");
+
 									for (Path path : predictionCandidates) {
 										if (path.lastNode().getStayLoc().equals(correctResult)) {
 											inCanditades = true;
@@ -198,6 +201,14 @@ public class Evaluation {
 									} else {
 										wrongCounter++;
 									}
+
+									for (Path l : predictionCandidates) {
+										System.out.println("\t" + l);
+									}
+
+									System.out.println("\npredicted candidate: " + predictionResult);
+									System.out.println("correct candidate: " + correctResult);
+									System.out.println();
 								}
 							} else {
 								noPredictionCounter++;
@@ -230,4 +241,5 @@ public class Evaluation {
 			}
 		}
 	}
+
 }

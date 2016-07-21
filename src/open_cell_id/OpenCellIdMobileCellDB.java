@@ -1,4 +1,4 @@
-package reality_mining;
+package open_cell_id;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,8 +15,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import open_cell_id.OpenCellIdReader;
-import open_cell_id.TowerRecord;
 import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
 

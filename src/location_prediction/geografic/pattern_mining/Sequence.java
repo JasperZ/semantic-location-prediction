@@ -1,4 +1,4 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_mining;
+package location_prediction.geografic.pattern_mining;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ public class Sequence {
 	private static long idCounter = 0;
 
 	private long id;
-	private String[] sequence;
+	private StayLoc[] sequence;
 
 	/**
 	 * Creates a sequence containing stay-location
@@ -17,29 +17,20 @@ public class Sequence {
 	 * @param sequence
 	 *            Stay-locations contained in this sequence
 	 */
-	public Sequence(String[] sequence) {
+	public Sequence(StayLoc[] sequence) {
 		this.id = idCounter++;
 		this.sequence = sequence;
 	}
 
-	public Sequence(StayLoc[] sequence) {
-		this.id = idCounter++;
-		this.sequence = new String[sequence.length];
-
-		for (int i = 0; i < sequence.length; i++) {
-			this.sequence[i] = sequence[i].getUserLabel();
-		}
-	}
-
 	/**
 	 * Creates a sequence containing stay-location
 	 * 
 	 * @param sequence
 	 *            Stay-locations contained in this sequence
 	 */
-	public Sequence(ArrayList<String> sequence) {
+	public Sequence(ArrayList<StayLoc> sequence) {
 		this.id = idCounter++;
-		this.sequence = sequence.toArray(new String[1]);
+		this.sequence = sequence.toArray(new StayLoc[1]);
 	}
 
 	@Override
@@ -71,8 +62,8 @@ public class Sequence {
 	public String toString() {
 		String result = "id: " + id + " sequence: ";
 
-		for (String e : sequence) {
-			result += e + " ";
+		for (StayLoc e : sequence) {
+			result += e.getLocationAreaCode() + "." + e.getCellId() + " ";
 		}
 
 		return result.trim();
@@ -92,7 +83,7 @@ public class Sequence {
 	 * 
 	 * @return Stay-locations
 	 */
-	public String[] getSequence() {
+	public StayLoc[] getSequence() {
 		return sequence;
 	}
 
@@ -112,7 +103,7 @@ public class Sequence {
 	 *            Index of stay-location in sequence, starting with 0
 	 * @return Stay-location at position index
 	 */
-	public String get(int index) {
+	public StayLoc get(int index) {
 		return sequence[index];
 	}
 }

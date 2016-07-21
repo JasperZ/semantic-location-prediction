@@ -1,4 +1,4 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_mining;
+package location_prediction.geografic.pattern_mining;
 
 public class Appearance {
 	private Sequence sequence;

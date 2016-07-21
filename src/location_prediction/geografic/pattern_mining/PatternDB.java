@@ -1,4 +1,4 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_mining;
+package location_prediction.geografic.pattern_mining;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -126,12 +126,13 @@ public class PatternDB {
 
 				if (currentPatternLength == 0) {
 					for (int i = 0; i < sequence.length(); i++) {
-						Pattern pattern = new Pattern(new String[] { sequence.get(i) },
+						Pattern pattern = new Pattern(new StayLoc[] { sequence.get(i) },
 								new Interval[] { new Interval(0, Long.MAX_VALUE) }, new Appearance(sequence, i, i));
 						Pattern pp = newPatterns.get(pattern.hashCode());
 
 						if (pp != null) {
 							pp.addAppearances(pattern.getAppearances());
+							pp.updateIntervals(pattern.getIntervals());
 						} else {
 							newPatterns.put(pattern.hashCode(), pattern);
 						}
@@ -146,11 +147,14 @@ public class PatternDB {
 									for (int i = a.getEndIndex() + 1; i < sequence.length(); i++) {
 										Pattern pattern;
 										Pattern pp;
-										String[] ll = Arrays.copyOf(p.getPattern(), p.length() + 1);
+										StayLoc[] ll = Arrays.copyOf(p.getPattern(), p.length() + 1);
 										Interval[] intervals = Arrays.copyOf(p.getIntervals(),
 												p.getIntervals().length + 1);
+										long duration = sequence.get(i).getStartTimestamp()
+												- sequence.get(a.getEndIndex()).getEndTimestamp();
 
 										ll[p.length()] = sequence.get(i);
+										intervals[intervals.length - 1] = new Interval(duration, duration);
 
 										pattern = new Pattern(ll, intervals,
 												new Appearance(sequence, a.getStartIndex(), i));
@@ -158,6 +162,7 @@ public class PatternDB {
 
 										if (pp != null) {
 											pp.addAppearances(pattern.getAppearances());
+											pp.updateIntervals(intervals);
 										} else {
 											newPatterns.put(pattern.hashCode(), pattern);
 										}

@@ -1,4 +1,4 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
+package location_prediction.geografic.pattern_tree;
 
 import java.util.ArrayList;
 

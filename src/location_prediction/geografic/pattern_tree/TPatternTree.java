@@ -1,11 +1,11 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_tree;
+package location_prediction.geografic.pattern_tree;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Interval;
-import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Pattern;
+import location_prediction.geografic.pattern_mining.Interval;
+import location_prediction.geografic.pattern_mining.Pattern;
 import reality_mining.user_profile.StayLoc;
 
 public class TPatternTree {
@@ -29,16 +29,17 @@ public class TPatternTree {
 			Node node = root;
 			int depth = 0;
 
-			for (String e : tp.getPattern()) {
+			for (StayLoc e : tp.getPattern()) {
 				Node n = node.findChild(e);
 				Interval interval = tp.getIntervals()[depth];
 
-				if (n == null) {
+				if (n == null || (n != null && !n.includes(interval))) {
 					Node v = new Node(e, interval, tp.getSupport());
 
 					node.appendChild(v);
 					node = v;
 				} else {
+					n.updateInterval(interval);
 					n.updateSupport(tp.getSupport());
 					node = n;
 				}
@@ -61,9 +62,9 @@ public class TPatternTree {
 	 * @return A stay-location which was predicted or null if no prediction was
 	 *         made
 	 */
-	public String whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
+	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
 		HashSet<Path> candidates = new HashSet<>(whereNextCandidates(stayLocSequence, score, thScore));
-		String result = null;
+		StayLoc result = null;
 		Path bestPath = null;
 
 		for (Path p : candidates) {
@@ -120,7 +121,7 @@ public class TPatternTree {
 				for (Node c : prevNode.getChildren()) {
 					StayLoc cStayLoc = stayLocSequence.get(depth);
 
-					if (c.getStayLoc().equals(cStayLoc.getUserLabel())) {
+					if (c.getStayLoc().equals(cStayLoc)) {
 						Path p = new Path(path);
 
 						p.append(c, c.getSupport());
@@ -141,7 +142,7 @@ public class TPatternTree {
 							StayLoc cStayLoc = stayLocSequence.get(depth);
 							long duration = cStayLoc.getStartTimestamp() - pStayLoc.getEndTimestamp();
 
-							if (c.getStayLoc().equals(cStayLoc.getUserLabel())) {
+							if (c.getStayLoc().equals(cStayLoc) && c.includes(new Interval(duration, duration))) {
 								Path p = new Path(path);
 
 								p.append(c, c.getSupport());

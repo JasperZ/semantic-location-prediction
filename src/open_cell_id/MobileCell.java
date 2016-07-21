@@ -1,4 +1,4 @@
-package reality_mining;
+package open_cell_id;
 
 import java.util.Locale;
 

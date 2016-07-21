@@ -1,4 +1,4 @@
-package location_predictor_on_trajectory_pattern_mining.t_pattern_mining;
+package location_prediction.semantic.pattern_mining;
 
 import java.util.Arrays;
 import java.util.HashSet;
