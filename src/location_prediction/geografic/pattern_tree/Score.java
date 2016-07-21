@@ -26,6 +26,11 @@ public interface Score {
 
 			return score;
 		}
+		
+		@Override
+		public String toString() {
+			return "AvgScore";
+		}
 	}
 
 	public class SumScore implements Score {
@@ -41,6 +46,10 @@ public interface Score {
 			return score;
 		}
 
+		@Override
+		public String toString() {
+			return "SumScore";
+		}
 	}
 
 	public class MaxScore implements Score {
@@ -58,5 +67,9 @@ public interface Score {
 			return score;
 		}
 
+		@Override
+		public String toString() {
+			return "MaxScore";
+		}
 	}
 }
