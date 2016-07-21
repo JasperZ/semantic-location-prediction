@@ -47,6 +47,10 @@ public class Category {
 				shortName, categories.length);
 	}
 
+	public String toShortString() {
+		return String.format("name: %s", name);
+	}
+
 	public static Category Unknown() {
 		Category unknown = new Category();
 

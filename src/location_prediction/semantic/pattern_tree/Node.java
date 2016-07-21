@@ -57,7 +57,7 @@ public class Node {
 		String result = "\"" + id + " | ";
 
 		if (semantic != null) {
-			result += semantic + " | " + String.format(Locale.ENGLISH, "%.3f", support);
+			result += semantic.toShortString() + " | " + String.format(Locale.ENGLISH, "%.3f", support) + "\"";
 		} else {
 			result += "root\"";
 		}
@@ -148,6 +148,10 @@ public class Node {
 	 */
 	public void appendChild(Node child) {
 		children.add(child);
+	}
+
+	public void setSupport(double support) {
+		this.support = support;
 	}
 
 	/**
