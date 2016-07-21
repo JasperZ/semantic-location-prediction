@@ -1,20 +1,26 @@
 package reality_mining;
 
-import java.awt.Point;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import main.APIKeys;
+import main.foursquare.venue.FoursquareCategoryDB;
 import main.foursquare.venue.FoursquareVenuesService;
 import main.foursquare.venue.VenueResponse;
 import reality_mining.user_profile.StayLoc;
@@ -23,31 +29,39 @@ import reality_mining.user_profile.UserProfileReader;
 
 public class FoursquareVenueDB {
 	public static final String FOURSQUARE_VENUES_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/foursquare_venues_db.json";
-	private HashMap<String, VenueResponse[]> venues;
+	private HashSet<VenueDBEntry> venues;
 
 	public static void main(String[] args) {
 		FoursquareVenueDB venueDB = new FoursquareVenueDB();
+
 		HashSet<GPSLocation> gpsSet = generateUniqueGPSSet(
 				UserProfileReader.readJsonUserProfiles(DatasetPreparation.FINAL_USER_PROFILE_DIRECTORY, 2, 106));
-/*
+
 		System.out.println(gpsSet.size());
 
-		venueDB.venues = new HashMap<>();
+		venueDB.venues = new HashSet<>();
 
 		for (GPSLocation l : gpsSet) {
-			VenueResponse venueResponse[] = FoursquareVenuesService
+			VenueResponse[] venueResponse = FoursquareVenuesService
 					.search(APIKeys.FOURSQUARE_CLIENT_ID, APIKeys.FOURSQUARE_CLIENT_SECRET)
 					.latitudeLongitude(l.getLatitude(), l.getLongitude()).limit(50).radius(100).execute();
 
 			if (venueResponse != null && venueResponse.length > 0) {
-				venueDB.venues.put(l.toString(), venueResponse);
-				break;
+				venueDB.venues.add(new VenueDBEntry(l, venueResponse));
 			}
 		}
-*/
-		venueDB.readJsonVenues();
+		/*
+		 * FoursquareCategoryDB categoryDB = new FoursquareCategoryDB();
+		 * categoryDB.readJsonCategories();
+		 * 
+		 * System.out.println(categoryDB.getTopCategory(
+		 * "4bf58dd8d48988d1fa9317356"));
+		 * 
+		 */
+		// venueDB.readJsonVenues();
 		System.out.println(venueDB.getSize());
 		venueDB.writeVenuesToJson();
+
 	}
 
 	public static HashSet<GPSLocation> generateUniqueGPSSet(ArrayList<UserProfile> userProfiles) {
@@ -66,6 +80,34 @@ public class FoursquareVenueDB {
 		return gpsSet;
 	}
 
+	public VenueResponse findNearestVenue(GPSLocation location) {
+		VenueResponse result = null;
+		VenueResponse[] possibleVenues = null;
+
+		for (VenueDBEntry e : venues) {
+			if (e.getGPSLocation().equals(location)) {
+				possibleVenues = e.getResponses();
+				break;
+			}
+		}
+
+		if (possibleVenues != null && possibleVenues.length > 0) {
+			result = null;
+
+			for (VenueResponse v : possibleVenues) {
+				if (result == null && v.categories.length > 0) {
+					result = v;
+				}
+
+				if (v.categories.length > 0 && result.location.distance > v.location.distance) {
+					result = v;
+				}
+			}
+		}
+
+		return result;
+	}
+
 	public long getSize() {
 		if (venues != null) {
 			return venues.size();
@@ -75,13 +117,13 @@ public class FoursquareVenueDB {
 	}
 
 	public void readJsonVenues() {
-		venues = new HashMap<>();
+		venues = new HashSet<>();
 
 		try {
 			String json = FileUtils.readFileToString(new File(FOURSQUARE_VENUES_PATH), StandardCharsets.UTF_8);
 			Gson gson = new Gson();
 
-			venues = gson.fromJson(json, new TypeToken<HashMap<GPSLocation, VenueResponse[]>>() {
+			venues = gson.fromJson(json, new TypeToken<HashSet<VenueDBEntry>>() {
 			}.getType());
 		} catch (IOException e) {
 			e.printStackTrace();

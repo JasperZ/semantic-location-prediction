@@ -11,7 +11,12 @@ import location_predictor_on_trajectory_pattern_mining.t_pattern_mining.Sequence
 import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.Path;
 import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.Score;
 import location_predictor_on_trajectory_pattern_mining.t_pattern_tree.TPatternTree;
+import main.foursquare.venue.FoursquareCategoryDB;
+import main.foursquare.venue.VenueCategory;
+import main.foursquare.venue.VenueResponse;
 import reality_mining.DatasetPreparation;
+import reality_mining.FoursquareVenueDB;
+import reality_mining.GPSLocation;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.daily_user_profile.DailyUserProfileReader;
 import reality_mining.user_profile.StayLoc;
@@ -43,9 +48,41 @@ public class Evaluation {
 		while (it.hasNext()) {
 			DailyUserProfile p = it.next();
 
-			if (p.percentageLatLng() != 100.0 || p.percentageUserLabeld() != 100.0 || p.getStayLocs().size() < 4
-					|| p.getStayLocs().size() > 40) {
+			if (p.percentageLatLng() != 100.0 || p.getStayLocs().size() < 4 || p.getStayLocs().size() > 40) {
 				it.remove();
+			}
+		}
+
+		FoursquareVenueDB venueDB = new FoursquareVenueDB();
+		FoursquareCategoryDB categoryDB = new FoursquareCategoryDB();
+		venueDB.readJsonVenues();
+		categoryDB.readJsonCategories();
+
+		for (DailyUserProfile d : dailyUserProfiles) {
+			for (StayLoc l : d.getStayLocs()) {
+				VenueResponse v = venueDB.findNearestVenue(new GPSLocation(l.getLat(), l.getLng()));
+
+				if (v != null) {
+					for (VenueCategory c : v.categories) {
+						if (c.primary == true) {
+							l.setUserLabel(c.name);
+							break;
+						} else {
+							l.setUserLabel("unknown");
+						}
+					}
+				} else {
+					l.setUserLabel("unknown");
+				}
+			}
+		}
+
+		for (DailyUserProfile d : dailyUserProfiles) {
+			for (StayLoc l : d.getStayLocs()) {
+				if (!l.isUserLabelAvailable()) {
+					l.setUserLabel("unknown");
+					System.out.println(l.toShortString());
+				}
 			}
 		}
 
@@ -138,6 +175,7 @@ public class Evaluation {
 
 							correctResult = p.getStayLocs().get(j + postPredictionLength).getUserLabel();
 							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
+
 							totalPredictions++;
 
 							if (predictionResult != null) {

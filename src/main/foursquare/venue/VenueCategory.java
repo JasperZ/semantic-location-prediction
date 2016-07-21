@@ -5,4 +5,5 @@ public class VenueCategory {
 	public String name;
 	public String pluralName;
 	public String shortName;
+	public boolean primary;
 }

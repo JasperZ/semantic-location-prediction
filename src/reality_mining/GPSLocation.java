@@ -3,14 +3,14 @@ package reality_mining;
 import java.util.Locale;
 
 public class GPSLocation {
-	private double lat;
-	private double lng;
+	private Double lat;
+	private Double lng;
 
 	public GPSLocation() {
 
 	}
 
-	public GPSLocation(double lat, double lng) {
+	public GPSLocation(Double lat, Double lng) {
 		this.lat = lat;
 		this.lng = lng;
 	}
@@ -61,6 +61,6 @@ public class GPSLocation {
 
 	@Override
 	public String toString() {
-		return String.format(Locale.ENGLISH, "%f,%f", getLatitude(), getLongitude());
+		return getLatitude() + "," + getLongitude();
 	}
 }
