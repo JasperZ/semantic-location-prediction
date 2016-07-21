@@ -99,7 +99,7 @@ public class Evaluation {
 			patternMinSupport = 0.0 + supp;
 
 			patternDB.generatePatterns(patternMinSupport);
-			// System.out.println("Pattern database size: " + patternDB.size());
+			System.out.println("Pattern database size: " + patternDB.size());
 
 			// build TPattern tree by inserting all patterns, starting with
 			// patterns

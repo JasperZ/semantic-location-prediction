@@ -27,7 +27,7 @@ public class Sequence {
 		this.sequence = new String[sequence.length];
 
 		for (int i = 0; i < sequence.length; i++) {
-			this.sequence[i] = sequence[i].getUserLabel();
+			this.sequence[i] = sequence[i].getPrimaryCategory().name;
 		}
 	}
 

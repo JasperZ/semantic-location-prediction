@@ -7,16 +7,13 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import foursquare.venue.VenueDB;
-import foursquare.venue.category.Category;
 import foursquare.venue.category.CategoryDB;
-import foursquare.venue.service.VenueResponse;
-import location_prediction.semantic.pattern_mining.PatternDB;
+import location_prediction.semantic.pattern_mining.STPPatternDB;
 import location_prediction.semantic.pattern_mining.Sequence;
 import location_prediction.semantic.pattern_tree.Path;
 import location_prediction.semantic.pattern_tree.Score;
-import location_prediction.semantic.pattern_tree.TPatternTree;
+import location_prediction.semantic.pattern_tree.STPTree;
 import reality_mining.DatasetPreparation;
-import reality_mining.GPSLocation;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.daily_user_profile.DailyUserProfileReader;
 import reality_mining.user_profile.StayLoc;
@@ -33,10 +30,10 @@ public class Evaluation {
 		// variables for pattern database
 		ArrayList<Sequence> trainingSequences;
 		double patternMinSupport;
-		PatternDB patternDB;
+		STPPatternDB patternDB;
 
 		// variables for TPattern tree
-		TPatternTree patternTree;
+		STPTree patternTree;
 
 		// load all daily user profiles from disk
 		dailyUserProfiles = DailyUserProfileReader
@@ -57,35 +54,6 @@ public class Evaluation {
 		CategoryDB categoryDB = new CategoryDB();
 		venueDB.readJsonVenues();
 		categoryDB.readJsonCategories();
-
-		for (DailyUserProfile d : dailyUserProfiles) {
-			for (StayLoc l : d.getStayLocs()) {
-				VenueResponse v = venueDB.findNearestVenue(new GPSLocation(l.getLat(), l.getLng()));
-
-				if (v != null) {
-					for (Category c : v.categories) {
-						if (c.primary == true) {
-							l.setUserLabel(c.name);
-							break;
-						}
-					}
-				} else {
-					l.setUserLabel("unknown");
-				}
-			}
-		}
-
-		for (DailyUserProfile d : dailyUserProfiles) {
-			Iterator<StayLoc> its = d.getStayLocs().iterator();
-
-			while (its.hasNext()) {
-				StayLoc l = its.next();
-
-				if (l.getUserLabel().equals("unknown")) {
-					its.remove();
-				}
-			}
-		}
 
 		// divide all available daily profiles of each user into training and
 		// test profiles
@@ -134,7 +102,7 @@ public class Evaluation {
 
 		for (double supp = 0.000; supp <= 0.04; supp += 0.001) {
 			// build pattern database from training sequences
-			patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
+			patternDB = new STPPatternDB(trainingSequences.toArray(new Sequence[0]));
 			patternMinSupport = 0.0 + supp;
 
 			patternDB.generatePatterns(patternMinSupport);
@@ -143,7 +111,7 @@ public class Evaluation {
 			// build TPattern tree by inserting all patterns, starting with
 			// patterns
 			// of size 1 up to the longest patterns available
-			patternTree = new TPatternTree();
+			patternTree = new STPTree();
 
 			for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
 				patternTree.build(patternDB.getPatterns(i));
@@ -174,7 +142,8 @@ public class Evaluation {
 								postPredictionStayLocs.add(p.getStayLocs().get(j + i));
 							}
 
-							correctResult = p.getStayLocs().get(j + postPredictionLength).getUserLabel();
+							correctResult = p.getStayLocs().get(j + postPredictionLength).getPrimaryCategory().name;
+
 							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
 
 							totalPredictions++;

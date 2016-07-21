@@ -3,14 +3,11 @@ package location_prediction.semantic.pattern_mining;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import reality_mining.user_profile.StayLoc;
-
 public class Pattern {
 	private static long idCounter = 0;
 
 	private long id;
 	private String[] pattern;
-	private Interval[] intervals;
 	private HashSet<Appearance> appearances;
 	private double support;
 
@@ -25,10 +22,9 @@ public class Pattern {
 	 * @param appearance
 	 *            The Sequence this pattern appears in
 	 */
-	public Pattern(String[] pattern, Interval[] intervals, Appearance appearance) {
+	public Pattern(String[] pattern, Appearance appearance) {
 		this.id = idCounter++;
 		this.pattern = pattern;
-		this.intervals = intervals;
 		this.appearances = new HashSet<>();
 		this.support = 0.0;
 
@@ -112,15 +108,6 @@ public class Pattern {
 	}
 
 	/**
-	 * Returns transition intervals between stay-locations,
-	 * 
-	 * @return Transition intervals
-	 */
-	public Interval[] getIntervals() {
-		return this.intervals;
-	}
-
-	/**
 	 * Returns the length of the pattern
 	 * 
 	 * @return Length of pattern
@@ -160,24 +147,5 @@ public class Pattern {
 	 */
 	public HashSet<Appearance> getAppearances() {
 		return appearances;
-	}
-
-	/**
-	 * Updates all transitions intervals of the pattern by comparing them one by
-	 * one
-	 * 
-	 * @param intervals
-	 *            Intervals used for updating. Length has to be equal to pattern
-	 *            length to take effect.
-	 */
-	public void updateIntervals(Interval[] intervals) {
-		if (intervals != null && this.intervals.length == intervals.length) {
-			for (int i = 0; i < intervals.length; i++) {
-				Interval oldI = this.intervals[i];
-				Interval newI = intervals[i];
-
-				oldI.update(newI);
-			}
-		}
 	}
 }

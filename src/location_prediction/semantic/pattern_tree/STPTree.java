@@ -4,22 +4,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import location_prediction.semantic.pattern_mining.Interval;
 import location_prediction.semantic.pattern_mining.Pattern;
 import reality_mining.user_profile.StayLoc;
 
-public class TPatternTree {
+public class STPTree {
 	private Node root;
 
 	/**
 	 * Creates an empty T-Pattern Tree
 	 */
-	public TPatternTree() {
-		root = new Node(null, null, 0.0);
+	public STPTree() {
+		root = new Node(null, 0.0);
 	}
 
 	/**
-	 * Builds the T-Pattern Tree using the given Patterns
+	 * Builds the STP-Tree using the given Patterns
 	 * 
 	 * @param patterns
 	 *            the patterns used to build the tree
@@ -27,14 +26,12 @@ public class TPatternTree {
 	public void build(Set<Pattern> patterns) {
 		for (Pattern tp : patterns) {
 			Node node = root;
-			int depth = 0;
 
 			for (String e : tp.getPattern()) {
 				Node n = node.findChild(e);
-				Interval interval = tp.getIntervals()[depth];
 
 				if (n == null) {
-					Node v = new Node(e, interval, tp.getSupport());
+					Node v = new Node(e, tp.getSupport());
 
 					node.appendChild(v);
 					node = v;
@@ -42,8 +39,6 @@ public class TPatternTree {
 					n.updateSupport(tp.getSupport());
 					node = n;
 				}
-
-				depth++;
 			}
 		}
 	}
@@ -120,7 +115,7 @@ public class TPatternTree {
 				for (Node c : prevNode.getChildren()) {
 					StayLoc cStayLoc = stayLocSequence.get(depth);
 
-					if (c.getStayLoc().equals(cStayLoc.getUserLabel())) {
+					if (c.getStayLoc().equals(cStayLoc.getPrimaryCategory().name)) {
 						Path p = new Path(path);
 
 						p.append(c, c.getSupport());
@@ -141,7 +136,7 @@ public class TPatternTree {
 							StayLoc cStayLoc = stayLocSequence.get(depth);
 							long duration = cStayLoc.getStartTimestamp() - pStayLoc.getEndTimestamp();
 
-							if (c.getStayLoc().equals(cStayLoc.getUserLabel())) {
+							if (c.getStayLoc().equals(cStayLoc.getPrimaryCategory().name)) {
 								Path p = new Path(path);
 
 								p.append(c, c.getSupport());

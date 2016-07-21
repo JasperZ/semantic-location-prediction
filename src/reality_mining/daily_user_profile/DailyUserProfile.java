@@ -243,6 +243,54 @@ public class DailyUserProfile {
 		return result;
 	}
 
+	public int countPrimaryCategoryStayLocs() {
+		int counter = 0;
+
+		if (areStayLocsAvailable()) {
+			for (StayLoc l : getStayLocs()) {
+				if (l.isPrimaryCategoryAvailable()) {
+					counter++;
+				}
+			}
+		}
+
+		return counter;
+	}
+
+	public double percentagePrimaryCategory() {
+		double result = 0.0;
+
+		if (areStayLocsAvailable()) {
+			result = 100.0 / stayLocs.size() * countPrimaryCategoryStayLocs();
+		}
+
+		return result;
+	}
+	
+	public int countTopCategoryStayLocs() {
+		int counter = 0;
+
+		if (areStayLocsAvailable()) {
+			for (StayLoc l : getStayLocs()) {
+				if (l.isTopCategoryAvailable()) {
+					counter++;
+				}
+			}
+		}
+
+		return counter;
+	}
+
+	public double percentageTopCategory() {
+		double result = 0.0;
+
+		if (areStayLocsAvailable()) {
+			result = 100.0 / stayLocs.size() * countTopCategoryStayLocs();
+		}
+
+		return result;
+	}
+
 	public int countUserLabeledLatLngStayLocs() {
 		int counter = 0;
 

@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 
 import reality_mining.user_profile.StayLoc;
 
-public class PatternDB {
+public class STPPatternDB {
 	public static final String PATTERN_DB_FILE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/patterns.txt";
 	private Sequence[] sequences;
 	private HashMap<Integer, HashMap<Integer, Pattern>> patterns;
@@ -24,7 +24,7 @@ public class PatternDB {
 	 * @param sequences
 	 *            Sequences this database uses to generate patterns
 	 */
-	public PatternDB(Sequence sequences[]) {
+	public STPPatternDB(Sequence sequences[]) {
 		this.sequences = sequences;
 		this.patterns = new HashMap<>();
 	}
@@ -126,8 +126,7 @@ public class PatternDB {
 
 				if (currentPatternLength == 0) {
 					for (int i = 0; i < sequence.length(); i++) {
-						Pattern pattern = new Pattern(new String[] { sequence.get(i) },
-								new Interval[] { new Interval(0, Long.MAX_VALUE) }, new Appearance(sequence, i, i));
+						Pattern pattern = new Pattern(new String[] { sequence.get(i) }, new Appearance(sequence, i, i));
 						Pattern pp = newPatterns.get(pattern.hashCode());
 
 						if (pp != null) {
@@ -147,13 +146,10 @@ public class PatternDB {
 										Pattern pattern;
 										Pattern pp;
 										String[] ll = Arrays.copyOf(p.getPattern(), p.length() + 1);
-										Interval[] intervals = Arrays.copyOf(p.getIntervals(),
-												p.getIntervals().length + 1);
 
 										ll[p.length()] = sequence.get(i);
 
-										pattern = new Pattern(ll, intervals,
-												new Appearance(sequence, a.getStartIndex(), i));
+										pattern = new Pattern(ll, new Appearance(sequence, a.getStartIndex(), i));
 										pp = newPatterns.get(pattern.hashCode());
 
 										if (pp != null) {

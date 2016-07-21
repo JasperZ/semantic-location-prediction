@@ -56,7 +56,7 @@ public class CategoryDB {
 			}
 		}
 
-		return null;
+		return Category.Unknown();
 	}
 
 	private Category getTopCategoryRecursive(Category category, String id) {
@@ -82,7 +82,7 @@ public class CategoryDB {
 			}
 		}
 
-		return null;
+		return Category.Unknown();
 	}
 
 	private Category findRecursive(Category category, String id) {

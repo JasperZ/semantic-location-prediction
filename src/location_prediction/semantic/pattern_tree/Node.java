@@ -3,7 +3,6 @@ package location_prediction.semantic.pattern_tree;
 import java.util.HashSet;
 import java.util.Locale;
 
-import location_prediction.semantic.pattern_mining.Interval;
 import reality_mining.user_profile.StayLoc;
 
 public class Node {
@@ -12,7 +11,6 @@ public class Node {
 	private String stayLoc;
 	private double support;
 	private HashSet<Node> children;
-	private Interval interval;
 
 	/**
 	 * Creates node with stay-location, interval and support
@@ -24,12 +22,11 @@ public class Node {
 	 * @param support
 	 *            Support of the node
 	 */
-	public Node(String stayLoc, Interval interval, double support) {
+	public Node(String stayLoc, double support) {
 		this.id = idCounter++;
 		this.stayLoc = stayLoc;
 		this.support = support;
 		this.children = new HashSet<>();
-		this.interval = interval;
 	}
 
 	@Override
@@ -59,8 +56,7 @@ public class Node {
 		String result = "\"" + id + " | ";
 
 		if (stayLoc != null) {
-			result += stayLoc + " | " + String.format(Locale.ENGLISH, "%.3f", support) + " | "
-					+ interval + "\"";
+			result += stayLoc + " | " + String.format(Locale.ENGLISH, "%.3f", support);
 		} else {
 			result += "root\"";
 		}
@@ -118,9 +114,9 @@ public class Node {
 	 *            Interval which has to be included
 	 * @return Node of child if found, otherwise null
 	 */
-	public Node findChild(StayLoc stayLoc, Interval interval) {
+	public Node findChild(StayLoc stayLoc) {
 		for (Node n : children) {
-			if (n.stayLoc.equals(stayLoc) && n.includes(interval)) {
+			if (n.stayLoc.equals(stayLoc)) {
 				return n;
 			}
 		}
@@ -156,44 +152,14 @@ public class Node {
 	}
 
 	/**
-	 * Checks whether the given interval is covered by this node
-	 * 
-	 * @param interval
-	 *            Interval to check
-	 * @return True if included in this node, otherwise false
-	 */
-	public boolean includes(Interval interval) {
-		return this.interval.includes(interval);
-	}
-
-	/**
-	 * Updates covered interval of this node
-	 * 
-	 * @param interval
-	 *            Interval to update with
-	 */
-	public void updateInterval(Interval interval) {
-		this.interval.update(interval);
-	}
-
-	/**
 	 * Updates support of node if passed support is grater
 	 * 
 	 * @param newSupport
-	 *            Suport to update if grater than current one
+	 *            Support to update if grater than current one
 	 */
 	public void updateSupport(double newSupport) {
 		if (newSupport > this.support) {
 			this.support = newSupport;
 		}
-	}
-
-	/**
-	 * Returns interval covered by this node
-	 * 
-	 * @return Covered interval by this node
-	 */
-	public Interval getInterval() {
-		return interval;
 	}
 }

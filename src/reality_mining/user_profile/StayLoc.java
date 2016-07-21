@@ -107,11 +107,19 @@ public class StayLoc {
 	}
 
 	public Category getPrimaryCategory() {
-		return this.primaryCategory;
+		if (isPrimaryCategoryAvailable()) {
+			return this.primaryCategory;
+		} else {
+			return Category.Unknown();
+		}
 	}
 
 	public Category getTopCategory() {
-		return this.topCategory;
+		if (isTopCategoryAvailable()) {
+			return this.topCategory;
+		} else {
+			return Category.Unknown();
+		}
 	}
 
 	public void setStartTimestamp(long startTimestamp) {
