@@ -27,19 +27,24 @@ public class STPTree {
 	public void build(Set<Pattern> patterns) {
 		for (Pattern tp : patterns) {
 			Node node = root;
+			int depth = 0;
 
 			for (Category e : tp.getPattern()) {
 				Node n = node.findChild(e);
 
-				if (n == null) {
-					Node v = new Node(e, tp.getSupport());
-
-					node.appendChild(v);
-					node = v;
-				} else {
-					n.updateSupport(tp.getSupport());
+				if (n != null) {
 					node = n;
+
+					if (depth == tp.getPattern().length - 1) {
+						node.updateSupport(tp.getSupport());
+					}
+				} else {
+					Node child = new Node(e, tp.getSupport());
+					node.appendChild(child);
+					node = child;
 				}
+
+				depth++;
 			}
 		}
 	}
