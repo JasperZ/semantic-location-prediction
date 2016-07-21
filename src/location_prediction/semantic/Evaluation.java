@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import foursquare.venue.VenueDB;
+import foursquare.venue.category.Category;
 import foursquare.venue.category.CategoryDB;
 import location_prediction.semantic.pattern_mining.STPPatternDB;
 import location_prediction.semantic.pattern_mining.Sequence;
@@ -133,8 +134,8 @@ public class Evaluation {
 							- 1; postPredictionLength++) {
 						for (int j = 0; j < p.getStayLocs().size() - postPredictionLength; j++) {
 							ArrayList<StayLoc> postPredictionStayLocs;
-							String correctResult;
-							String predictionResult;
+							Category correctResult;
+							Category predictionResult;
 
 							postPredictionStayLocs = new ArrayList<>();
 
@@ -142,7 +143,7 @@ public class Evaluation {
 								postPredictionStayLocs.add(p.getStayLocs().get(j + i));
 							}
 
-							correctResult = p.getStayLocs().get(j + postPredictionLength).getPrimaryCategory().name;
+							correctResult = p.getStayLocs().get(j + postPredictionLength).getPrimaryCategory();
 
 							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
 
@@ -157,7 +158,7 @@ public class Evaluation {
 									boolean inCanditades = false;
 
 									for (Path path : predictionCandidates) {
-										if (path.lastNode().getStayLoc().equals(correctResult)) {
+										if (path.lastNode().getSemantic().equals(correctResult)) {
 											inCanditades = true;
 											break;
 										}

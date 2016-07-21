@@ -3,11 +3,13 @@ package location_prediction.semantic.pattern_mining;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import foursquare.venue.category.Category;
+
 public class Pattern {
 	private static long idCounter = 0;
 
 	private long id;
-	private String[] pattern;
+	private Category[] pattern;
 	private HashSet<Appearance> appearances;
 	private double support;
 
@@ -22,7 +24,7 @@ public class Pattern {
 	 * @param appearance
 	 *            The Sequence this pattern appears in
 	 */
-	public Pattern(String[] pattern, Appearance appearance) {
+	public Pattern(Category[] pattern, Appearance appearance) {
 		this.id = idCounter++;
 		this.pattern = pattern;
 		this.appearances = new HashSet<>();
@@ -57,8 +59,8 @@ public class Pattern {
 	public String toString() {
 		String result = "id: " + id + " support: " + support + " pattern:";
 
-		for (String e : pattern) {
-			result += " " + e;
+		for (Category e : pattern) {
+			result += " " + e.name;
 		}
 
 		result += " appearances:";
@@ -103,7 +105,7 @@ public class Pattern {
 	 * 
 	 * @return Covered stay-locations
 	 */
-	public String[] getPattern() {
+	public Category[] getPattern() {
 		return pattern;
 	}
 

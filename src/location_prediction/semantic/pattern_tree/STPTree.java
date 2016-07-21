@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import foursquare.venue.category.Category;
 import location_prediction.semantic.pattern_mining.Pattern;
 import reality_mining.user_profile.StayLoc;
 
@@ -27,7 +28,7 @@ public class STPTree {
 		for (Pattern tp : patterns) {
 			Node node = root;
 
-			for (String e : tp.getPattern()) {
+			for (Category e : tp.getPattern()) {
 				Node n = node.findChild(e);
 
 				if (n == null) {
@@ -56,9 +57,9 @@ public class STPTree {
 	 * @return A stay-location which was predicted or null if no prediction was
 	 *         made
 	 */
-	public String whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
+	public Category whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
 		HashSet<Path> candidates = new HashSet<>(whereNextCandidates(stayLocSequence, score, thScore));
-		String result = null;
+		Category result = null;
 		Path bestPath = null;
 
 		for (Path p : candidates) {
@@ -82,7 +83,7 @@ public class STPTree {
 			}
 
 			if (counter == 1) {
-				result = bestPath.lastNode().getStayLoc();
+				result = bestPath.lastNode().getSemantic();
 			}
 		}
 
@@ -115,7 +116,7 @@ public class STPTree {
 				for (Node c : prevNode.getChildren()) {
 					StayLoc cStayLoc = stayLocSequence.get(depth);
 
-					if (c.getStayLoc().equals(cStayLoc.getPrimaryCategory().name)) {
+					if (c.getSemantic().equals(cStayLoc.getPrimaryCategory())) {
 						Path p = new Path(path);
 
 						p.append(c, c.getSupport());
@@ -136,7 +137,7 @@ public class STPTree {
 							StayLoc cStayLoc = stayLocSequence.get(depth);
 							long duration = cStayLoc.getStartTimestamp() - pStayLoc.getEndTimestamp();
 
-							if (c.getStayLoc().equals(cStayLoc.getPrimaryCategory().name)) {
+							if (c.getSemantic().equals(cStayLoc.getPrimaryCategory())) {
 								Path p = new Path(path);
 
 								p.append(c, c.getSupport());

@@ -3,12 +3,13 @@ package location_prediction.semantic.pattern_tree;
 import java.util.HashSet;
 import java.util.Locale;
 
+import foursquare.venue.category.Category;
 import reality_mining.user_profile.StayLoc;
 
 public class Node {
 	private static long idCounter = 0;
 	private long id;
-	private String stayLoc;
+	private Category semantic;
 	private double support;
 	private HashSet<Node> children;
 
@@ -22,9 +23,9 @@ public class Node {
 	 * @param support
 	 *            Support of the node
 	 */
-	public Node(String stayLoc, double support) {
+	public Node(Category semantic, double support) {
 		this.id = idCounter++;
-		this.stayLoc = stayLoc;
+		this.semantic = semantic;
 		this.support = support;
 		this.children = new HashSet<>();
 	}
@@ -55,8 +56,8 @@ public class Node {
 	public String toString() {
 		String result = "\"" + id + " | ";
 
-		if (stayLoc != null) {
-			result += stayLoc + " | " + String.format(Locale.ENGLISH, "%.3f", support);
+		if (semantic != null) {
+			result += semantic + " | " + String.format(Locale.ENGLISH, "%.3f", support);
 		} else {
 			result += "root\"";
 		}
@@ -74,12 +75,12 @@ public class Node {
 	}
 
 	/**
-	 * Returns stay-location associated with this node
+	 * Returns semantic information associated with this node
 	 * 
 	 * @return Associated stay-location
 	 */
-	public String getStayLoc() {
-		return this.stayLoc;
+	public Category getSemantic() {
+		return this.semantic;
 	}
 
 	/**
@@ -108,15 +109,13 @@ public class Node {
 	/**
 	 * Returns a children with equal stay-location and included interval
 	 * 
-	 * @param stayLoc
+	 * @param semantic
 	 *            Stay-location to match children against
-	 * @param interval
-	 *            Interval which has to be included
 	 * @return Node of child if found, otherwise null
 	 */
-	public Node findChild(StayLoc stayLoc) {
+	public Node findChild(Category semantic) {
 		for (Node n : children) {
-			if (n.stayLoc.equals(stayLoc)) {
+			if (n.semantic.equals(semantic)) {
 				return n;
 			}
 		}
@@ -133,7 +132,7 @@ public class Node {
 	 */
 	public Node findChild(String stayLoc) {
 		for (Node n : children) {
-			if (n.stayLoc.equals(stayLoc)) {
+			if (n.semantic.equals(stayLoc)) {
 				return n;
 			}
 		}

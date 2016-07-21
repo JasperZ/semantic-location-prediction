@@ -3,13 +3,14 @@ package location_prediction.semantic.pattern_mining;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import foursquare.venue.category.Category;
 import reality_mining.user_profile.StayLoc;
 
 public class Sequence {
 	private static long idCounter = 0;
 
 	private long id;
-	private String[] sequence;
+	private Category[] sequence;
 
 	/**
 	 * Creates a sequence containing stay-location
@@ -17,17 +18,17 @@ public class Sequence {
 	 * @param sequence
 	 *            Stay-locations contained in this sequence
 	 */
-	public Sequence(String[] sequence) {
+	public Sequence(Category[] sequence) {
 		this.id = idCounter++;
 		this.sequence = sequence;
 	}
 
 	public Sequence(StayLoc[] sequence) {
 		this.id = idCounter++;
-		this.sequence = new String[sequence.length];
+		this.sequence = new Category[sequence.length];
 
 		for (int i = 0; i < sequence.length; i++) {
-			this.sequence[i] = sequence[i].getPrimaryCategory().name;
+			this.sequence[i] = sequence[i].getPrimaryCategory();
 		}
 	}
 
@@ -39,7 +40,7 @@ public class Sequence {
 	 */
 	public Sequence(ArrayList<String> sequence) {
 		this.id = idCounter++;
-		this.sequence = sequence.toArray(new String[1]);
+		this.sequence = sequence.toArray(new Category[1]);
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class Sequence {
 	public String toString() {
 		String result = "id: " + id + " sequence: ";
 
-		for (String e : sequence) {
+		for (Category e : sequence) {
 			result += e + " ";
 		}
 
@@ -92,7 +93,7 @@ public class Sequence {
 	 * 
 	 * @return Stay-locations
 	 */
-	public String[] getSequence() {
+	public Category[] getSequence() {
 		return sequence;
 	}
 
@@ -112,7 +113,7 @@ public class Sequence {
 	 *            Index of stay-location in sequence, starting with 0
 	 * @return Stay-location at position index
 	 */
-	public String get(int index) {
+	public Category get(int index) {
 		return sequence[index];
 	}
 }

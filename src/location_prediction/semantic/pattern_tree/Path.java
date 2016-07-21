@@ -104,7 +104,7 @@ public class Path {
 		String result = "path: ";
 
 		for (Node n : nodes) {
-			result += n.getStayLoc() + ", ";
+			result += n.getSemantic() + ", ";
 		}
 
 		return result;

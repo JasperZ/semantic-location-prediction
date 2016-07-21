@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import foursquare.venue.category.Category;
 import reality_mining.user_profile.StayLoc;
 
 public class STPPatternDB {
@@ -126,7 +127,7 @@ public class STPPatternDB {
 
 				if (currentPatternLength == 0) {
 					for (int i = 0; i < sequence.length(); i++) {
-						Pattern pattern = new Pattern(new String[] { sequence.get(i) }, new Appearance(sequence, i, i));
+						Pattern pattern = new Pattern(new Category[] { sequence.get(i) }, new Appearance(sequence, i, i));
 						Pattern pp = newPatterns.get(pattern.hashCode());
 
 						if (pp != null) {
@@ -145,7 +146,7 @@ public class STPPatternDB {
 									for (int i = a.getEndIndex() + 1; i < sequence.length(); i++) {
 										Pattern pattern;
 										Pattern pp;
-										String[] ll = Arrays.copyOf(p.getPattern(), p.length() + 1);
+										Category[] ll = Arrays.copyOf(p.getPattern(), p.length() + 1);
 
 										ll[p.length()] = sequence.get(i);
 
