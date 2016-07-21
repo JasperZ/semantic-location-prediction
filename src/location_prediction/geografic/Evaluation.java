@@ -1,10 +1,15 @@
 package location_prediction.geografic;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map.Entry;
+
+import org.apache.commons.io.FileUtils;
 
 import location_prediction.geografic.pattern_mining.PatternDB;
 import location_prediction.geografic.pattern_mining.Sequence;
@@ -18,6 +23,7 @@ import reality_mining.user_profile.StayLoc;
 
 public class Evaluation {
 	public static final String SEQUENCE_FILE_PATH = "/home/jasper/EclipseWorkspace/PatternMining/sequences.txt";
+	public static final String EVALUATION_DIRECTORY = "/home/jasper/SemanticLocationPredictionData/RealityMining/evaluation";
 
 	public static void main(String args[]) {
 		// variables for profiles
@@ -93,7 +99,10 @@ public class Evaluation {
 			trainingSequences.add(new Sequence(p.getStayLocs()));
 		}
 
-		for (double supp = 0.005; supp <= 0.04; supp += 0.001) {
+		for (double supp = 0.000; supp <= 0.04; supp += 0.005) {
+			String outputBuffer = "score threshold, correct predictions, wrong predictions, wrong predictions but included in candidates, no predictions, total predictions\n";
+			Score thAgg = new Score.AvgScore();
+			
 			// build pattern database from training sequences
 			patternDB = new PatternDB(trainingSequences.toArray(new Sequence[0]));
 			patternMinSupport = 0.0 + supp;
@@ -117,7 +126,6 @@ public class Evaluation {
 				int wrongCounter = 0;
 				int wrongButContainedCounter = 0;
 				int noPredictionCounter = 0;
-				Score thAgg = new Score.AvgScore();
 				double thScore = 0.0 + th;
 				double accuracy;
 
@@ -168,26 +176,32 @@ public class Evaluation {
 				}
 
 				accuracy = (double) correctCounter / (double) (totalPredictions - noPredictionCounter);
+				outputBuffer += String.format(Locale.ENGLISH, "%f,%d,%d,%d,%d,%d,%f\n", thScore, correctCounter,
+						wrongCounter, wrongButContainedCounter, noPredictionCounter, totalPredictions, accuracy);
 
-				if (accuracy >= 0.5) {
-					System.out.println("thScore: " + thScore);
-					System.out.println("patternMinSupport: " + patternMinSupport);
-					System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
-							totalPredictions, (100.0 / totalPredictions * correctCounter)));
-					System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter,
-							totalPredictions, (100.0 / totalPredictions * wrongCounter)));
-					System.out.println(String.format(Locale.ENGLISH,
-							"wrong but in solution candidates: %d of %d (%.2f%%)", wrongButContainedCounter,
-							totalPredictions, (100.0 / totalPredictions * wrongButContainedCounter)));
-					System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
-							noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
-					System.out.println("accuracy: " + accuracy);
-					// System.out.println(String.format(Locale.ENGLISH,
-					// "%f,%f,%d,%d,%d,%f", thScore, patternMinSupport,
-					// correctCounter, wrongCounter, wrongCounter +
-					// wrongButContainedCounter, accuracy));
-					System.out.println();
-				}
+				System.out.println("thScore: " + thScore);
+				System.out.println("patternMinSupport: " + patternMinSupport);
+				System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
+						totalPredictions, (100.0 / totalPredictions * correctCounter)));
+				System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter,
+						totalPredictions, (100.0 / totalPredictions * wrongCounter)));
+				System.out.println(String.format(Locale.ENGLISH, "wrong but in solution candidates: %d of %d (%.2f%%)",
+						wrongButContainedCounter, totalPredictions,
+						(100.0 / totalPredictions * wrongButContainedCounter)));
+				System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
+						noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
+				System.out.println("accuracy: " + accuracy);
+				System.out.println();
+			}
+
+			try {
+				FileUtils
+						.writeStringToFile(
+								new File(String.format(Locale.ENGLISH, "%s/geographic_%s_minSup-%f.csv",
+										EVALUATION_DIRECTORY, thAgg.toString(), patternMinSupport)),
+								outputBuffer, StandardCharsets.UTF_8);
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		}
 	}
