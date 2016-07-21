@@ -12,13 +12,13 @@ import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
 import com.google.maps.model.RankBy;
 
+import foursquare.venue.service.FoursquareVenuesService;
+import foursquare.venue.service.VenueResponse;
+import foursquare.venue.service.VenueSearchRequest;
 import main.files.read.GeolifeReader;
 import main.files.read.GoogleLocationHistoryReader;
 import main.files.read.TrajectoryReader;
 import main.files.write.StayPointWriter;
-import main.foursquare.venue.FoursquareVenuesService;
-import main.foursquare.venue.VenueResponse;
-import main.foursquare.venue.VenueSearchRequest;
 import main.stay.GPSPoint;
 import main.stay.StayPoint;
 import main.stay.StayPointDetector;

@@ -1,6 +1,6 @@
 package reality_mining.user_profile;
 
-import main.foursquare.venue.VenueResponse;
+import foursquare.venue.category.Category;
 
 public class StayLoc {
 	private Long startTimestamp;
@@ -11,7 +11,8 @@ public class StayLoc {
 	private Double lng;
 	private Double accuracy;
 	private String userLabel;
-	private VenueResponse[] foursquare;
+	private Category primaryCategory;
+	private Category topCategory;
 
 	public StayLoc(long startTimestamp, long endTimestamp, Integer locationAreaCode, Integer cellId, Double lat,
 			Double lng, Double accuracy, String userLabel) {
@@ -23,7 +24,8 @@ public class StayLoc {
 		this.lng = lng;
 		this.accuracy = accuracy;
 		this.userLabel = userLabel;
-		this.foursquare = null;
+		this.primaryCategory = null;
+		this.topCategory = null;
 	}
 
 	public StayLoc(long startTimestamp, long endTimestamp, Integer locationAreaCode, Integer cellId) {
@@ -35,7 +37,8 @@ public class StayLoc {
 		this.lng = null;
 		this.accuracy = null;
 		this.userLabel = null;
-		this.foursquare = null;
+		this.primaryCategory = null;
+		this.topCategory = null;
 	}
 
 	public StayLoc(long startTimestamp, long endTimestamp, Loc loc) {
@@ -47,7 +50,8 @@ public class StayLoc {
 		this.lng = loc.getLng();
 		this.accuracy = loc.getAccuracy();
 		this.userLabel = loc.getUserLabel();
-		this.foursquare = loc.getFoursquare();
+		this.primaryCategory = null;
+		this.topCategory = null;
 	}
 
 	public StayLoc() {
@@ -59,7 +63,8 @@ public class StayLoc {
 		this.lng = null;
 		this.accuracy = null;
 		this.userLabel = null;
-		this.foursquare = null;
+		this.primaryCategory = null;
+		this.topCategory = null;
 	}
 
 	@Override
@@ -99,6 +104,14 @@ public class StayLoc {
 
 	public Long getEndTimestamp() {
 		return endTimestamp;
+	}
+
+	public Category getPrimaryCategory() {
+		return this.primaryCategory;
+	}
+
+	public Category getTopCategory() {
+		return this.topCategory;
 	}
 
 	public void setStartTimestamp(long startTimestamp) {
@@ -153,16 +166,16 @@ public class StayLoc {
 		return userLabel;
 	}
 
-	public VenueResponse[] getFoursquare() {
-		return foursquare;
-	}
-
-	public void setFoursquare(VenueResponse[] foursquareLabel) {
-		this.foursquare = foursquareLabel;
-	}
-
 	public void setUserLabel(String userLabel) {
 		this.userLabel = userLabel;
+	}
+
+	public void setPrimaryCategory(Category primaryCategory) {
+		this.primaryCategory = primaryCategory;
+	}
+
+	public void setTopCategory(Category topCategory) {
+		this.topCategory = topCategory;
 	}
 
 	public boolean isStartTimestampAvailable() {
@@ -229,8 +242,16 @@ public class StayLoc {
 		}
 	}
 
-	public boolean isFoursquareLabelAvailable() {
-		if (foursquare != null) {
+	public boolean isPrimaryCategoryAvailable() {
+		if (this.primaryCategory != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isTopCategoryAvailable() {
+		if (this.topCategory != null) {
 			return true;
 		} else {
 			return false;

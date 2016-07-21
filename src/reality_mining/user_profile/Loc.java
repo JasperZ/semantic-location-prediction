@@ -1,6 +1,6 @@
 package reality_mining.user_profile;
 
-import main.foursquare.venue.VenueResponse;
+import foursquare.venue.service.VenueResponse;
 
 public class Loc {
 	private Long timestamp;

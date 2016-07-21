@@ -2,12 +2,14 @@ package reality_mining;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
-import main.APIKeys;
-import main.foursquare.venue.FoursquareVenuesService;
-import main.foursquare.venue.VenueResponse;
+import foursquare.venue.VenueDB;
+import foursquare.venue.category.Category;
+import foursquare.venue.category.CategoryDB;
+import foursquare.venue.service.VenueResponse;
+import google.GoogleMobileCellDB;
+import open_cell_id.MobileCell;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.daily_user_profile.DailyUserProfileWriter;
 import reality_mining.user_profile.AttributeReader;
@@ -214,40 +216,32 @@ public class DatasetPreparation {
 	}
 
 	public static void foursquareFusion(ArrayList<UserProfile> userProfiles) {
-		HashMap<String, VenueResponse[]> foursquareCache = new HashMap<>();
+		VenueDB venueDB = new VenueDB();
+		CategoryDB categoryDB = new CategoryDB();
+
+		System.out.println("perform foursquare-category fusion");
+
+		venueDB.readJsonVenues();
+		categoryDB.readJsonCategories();
 
 		for (UserProfile p : userProfiles) {
 			if (p.areStayLocsAvailable()) {
-				for (StayLoc s : p.getStayLocs()) {
-					if (s.isLatitudeAvailable() && s.isLongitudeAvailable()) {
-						VenueResponse response[] = foursquareCache.get(String.format("%f,%f", s.getLat(), s.getLng()));
+				for (StayLoc l : p.getStayLocs()) {
+					if (l.isLatitudeAvailable() && l.isLongitudeAvailable()) {
+						VenueResponse v = venueDB.findNearestVenue(new GPSLocation(l.getLat(), l.getLng()));
 
-						if (response == null) {
-							response = FoursquareVenuesService
-									.search(APIKeys.FOURSQUARE_CLIENT_ID, APIKeys.FOURSQUARE_CLIENT_SECRET)
-									.latitudeLongitude(s.getLat(), s.getLng()).limit(50).radius(500).execute();
-
-							foursquareCache.put(String.format("%f,%f", s.getLat(), s.getLng()), response);
-						}
-
-						if (response != null && response.length > 0) {
-							int min = 0;
-
-							for (int i = 0; i < response.length; i++) {
-								if (response[i].location.distance < response[min].location.distance) {
-									min = i;
+						if (v != null) {
+							for (Category c : v.categories) {
+								if (c.primary == true) {
+									l.setPrimaryCategory(categoryDB.find(c.id));
+									l.setTopCategory(categoryDB.getTopCategory(c.id));
+									break;
 								}
 							}
-
-							VenueResponse[] v = { response[min] };
-
-							s.setFoursquare(v);
 						}
 					}
 				}
 			}
 		}
-
-		System.out.println("foursquareCache size: " + foursquareCache.size());
 	}
 }
