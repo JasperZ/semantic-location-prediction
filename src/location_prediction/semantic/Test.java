@@ -23,18 +23,20 @@ public class Test {
 		HashSet<String> cells = new HashSet<>();
 
 		for (DailyUserProfile d : dailyUserProfiles) {
-			if (d.areStayLocsAvailable()) {
-				for (StayLoc l : d.getStayLocs()) {
-					if (l.isPrimaryCategoryAvailable()) {
-						primaryCategories.add(l.getPrimaryCategory().id);
-					}
+			if (d.percentageLatLng() == 100.0 && d.getStayLocs().size() >= 4 && d.getStayLocs().size() <= 40) {
+				if (d.areStayLocsAvailable()) {
+					for (StayLoc l : d.getStayLocs()) {
+						if (l.isPrimaryCategoryAvailable()) {
+							primaryCategories.add(l.getPrimaryCategory().id);
+						}
 
-					if (l.isTopCategoryAvailable()) {
-						topCategories.add(l.getTopCategory().id);
-					}
+						if (l.isTopCategoryAvailable()) {
+							topCategories.add(l.getTopCategory().id);
+						}
 
-					if (l.isLocationAreaCodeAvailable() && l.isCellIdAvailable()) {
-						cells.add(String.format("%d.%d", l.getLocationAreaCode(), l.getCellId()));
+						if (l.isLocationAreaCodeAvailable() && l.isCellIdAvailable()) {
+							cells.add(String.format("%d.%d", l.getLocationAreaCode(), l.getCellId()));
+						}
 					}
 				}
 			}
