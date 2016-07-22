@@ -78,11 +78,11 @@ public class STPTree {
 		}
 
 		if (bestPath != null) {
-			double maxSore = bestPath.score(score);
+			double maxScore = bestPath.score(score);
 			int counter = 0;
 
 			for (Path p : candidates) {
-				if (p.score(score) == maxSore) {
+				if (p.score(score) == maxScore) {
 					counter++;
 				}
 			}
