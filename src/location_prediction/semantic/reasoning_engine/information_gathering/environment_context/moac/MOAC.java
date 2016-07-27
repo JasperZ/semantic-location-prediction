@@ -34,8 +34,8 @@ public class MOAC {
 		}
 	}
 
-	public ArrayList<Cell> getTargets(Position currentPosition) {
-		ArrayList<Cell> targets = new ArrayList<>();
+	public HashSet<StayLoc> getTargets(Position currentPosition) {
+		HashSet<StayLoc> targets = new HashSet<>();
 		HashSet<Position> positions = getPositions();
 
 		for (Position nextPosition : positions) {
@@ -43,7 +43,7 @@ public class MOAC {
 			Cell tmpCell = cells.get(tmpPosition);
 
 			if (tmpCell != null) {
-				targets.add(cells.get(new MOACPosition(nextPosition, nextPosition)));
+				targets.add(cells.get(new MOACPosition(nextPosition, nextPosition)).getStayLoc());
 			}
 		}
 

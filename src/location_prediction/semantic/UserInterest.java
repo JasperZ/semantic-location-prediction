@@ -7,11 +7,15 @@ import location_prediction.geografic.pattern_mining.Interval;
 
 public class UserInterest {
 	private Category category;
+	private long timeSum;
+	private int timeCounter;
 	private Interval interval;
 	private double importance;
 
-	public UserInterest(Category category, Interval interval, double importance) {
+	public UserInterest(Category category, long averageTime, Interval interval, double importance) {
 		this.category = category;
+		this.timeSum = averageTime;
+		this.timeCounter = 1;
 		this.interval = interval;
 		this.importance = importance;
 	}
@@ -43,11 +47,15 @@ public class UserInterest {
 
 	@Override
 	public String toString() {
-		return String.format(Locale.ENGLISH, "%s\t%s\t%.2f", category.name, interval, importance);
+		return String.format(Locale.ENGLISH, "%s\t%d\t%s\t%.2f", category.name, getAverageTime(), interval, importance);
 	}
 
 	public Category getCategory() {
 		return category;
+	}
+
+	public long getAverageTime() {
+		return timeSum / timeCounter;
 	}
 
 	public Interval getInterval() {
@@ -61,7 +69,12 @@ public class UserInterest {
 	public void setImportance(double importance) {
 		this.importance = importance;
 	}
-	
+
+	public void updateAverageTime(long newTime) {
+		this.timeSum += newTime;
+		this.timeCounter++;
+	}
+
 	public void setInterval(Interval interval) {
 		this.interval = interval;
 	}

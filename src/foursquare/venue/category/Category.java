@@ -62,4 +62,22 @@ public class Category {
 
 		return unknown;
 	}
+
+	public boolean includes(Category category) {
+		if (equals(category)) {
+			return true;
+		}
+
+		for (Category c : categories) {
+			if (c.includes(category)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public Category[] getNextSubCategories() {
+		return categories;
+	}
 }

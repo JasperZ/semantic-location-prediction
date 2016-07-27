@@ -61,6 +61,7 @@ public class UserContextDB {
 
 					userInterest.setImportance(userInterest.getImportance() + 1.0);
 					userInterest.setInterval(interval);
+					userInterest.updateAverageTime(l.getEndTimestamp() - l.getStartTimestamp());
 				} else {
 					Interval interval;
 
@@ -71,7 +72,8 @@ public class UserContextDB {
 						interval = new Interval(interval.getStart(), 1000 * 60 * 60 * 24 - 1);
 					}
 
-					userInterest = new UserInterest(l.getPrimaryCategory(), interval, 1.0);
+					userInterest = new UserInterest(l.getPrimaryCategory(), l.getEndTimestamp() - l.getStartTimestamp(),
+							interval, 1.0);
 					interests.put(l.getPrimaryCategory(), userInterest);
 
 				}
@@ -87,8 +89,8 @@ public class UserContextDB {
 			Integer stayLocCounter = stayLocCounterPerUser.get(c.getKey());
 
 			for (Entry<Category, UserInterest> e : c.getValue().entrySet()) {
-				UserInterest userInterest = new UserInterest(e.getValue().getCategory(), e.getValue().getInterval(),
-						1.0 / stayLocCounter * e.getValue().getImportance());
+				UserInterest userInterest = new UserInterest(e.getValue().getCategory(), e.getValue().getAverageTime(),
+						e.getValue().getInterval(), 1.0 / stayLocCounter * e.getValue().getImportance());
 
 				userContext.addUserInterest(userInterest);
 			}
@@ -110,5 +112,9 @@ public class UserContextDB {
 		}
 
 		return result;
+	}
+
+	public UserContext get(int id) {
+		return userContexts.get(id);
 	}
 }

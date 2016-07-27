@@ -10,6 +10,7 @@ public class VenueResponse {
 	public Contact contact;
 	public Location location;
 	public Category[] categories = null;
+	public String[] tags;
 
 	public String getCategories() {
 		String categories = "";

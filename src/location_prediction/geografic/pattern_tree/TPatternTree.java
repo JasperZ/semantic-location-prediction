@@ -63,7 +63,7 @@ public class TPatternTree {
 	 *         made
 	 */
 	public StayLoc whereNext(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
-		HashSet<Path> candidates = new HashSet<>(whereNextCandidates(stayLocSequence, score, thScore));
+		HashSet<Path> candidates = new HashSet<>(whereNextCandidatesIntern(stayLocSequence, score, thScore));
 		StayLoc result = null;
 		Path bestPath = null;
 
@@ -95,6 +95,17 @@ public class TPatternTree {
 		return result;
 	}
 
+	public ArrayList<StayLoc> whereNextCandidates(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
+		HashSet<Path> candidates = new HashSet<>(whereNextCandidatesIntern(stayLocSequence, score, thScore));
+		HashSet<StayLoc> resultSet = new HashSet<>();
+
+		for (Path path : candidates) {
+			resultSet.add(path.lastNode().getStayLoc());
+		}
+
+		return new ArrayList<StayLoc>(resultSet);
+	}
+
 	/**
 	 * Returns a list of possible candidates for prediction based on the
 	 * stay-location sequence, a score function, a time and score threshold
@@ -107,7 +118,7 @@ public class TPatternTree {
 	 *            Score threshold
 	 * @return A List of found paths in the tree, also known as candidates
 	 */
-	public ArrayList<Path> whereNextCandidates(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
+	private ArrayList<Path> whereNextCandidatesIntern(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
 		HashSet<Path> paths = new HashSet<>();
 		int depth = 0;
 

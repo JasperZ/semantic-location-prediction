@@ -76,6 +76,21 @@ public class Interval {
 		}
 	}
 
+	/**
+	 * Return whether the timestamp to test is included by the interval
+	 * 
+	 * @param timestamp
+	 *            timestamp to test
+	 * @return True if included, otherwise false
+	 */
+	public boolean includes(long timestamp) {
+		if (start <= timestamp && timestamp <= end) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	public String toString() {
 		return String.format("[%d, %d]", start, end);

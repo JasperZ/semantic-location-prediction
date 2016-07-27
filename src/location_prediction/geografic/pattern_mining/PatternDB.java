@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.user_profile.StayLoc;
 
 public class PatternDB {
@@ -24,8 +25,14 @@ public class PatternDB {
 	 * @param sequences
 	 *            Sequences this database uses to generate patterns
 	 */
-	public PatternDB(Sequence sequences[]) {
-		this.sequences = sequences;
+	public PatternDB(ArrayList<DailyUserProfile> triningProfiles) {
+		ArrayList<Sequence> trainingSequences = new ArrayList<>();
+
+		for (DailyUserProfile p : triningProfiles) {
+			trainingSequences.add(new Sequence(p.getStayLocs()));
+		}
+
+		this.sequences = trainingSequences.toArray(new Sequence[0]);
 		this.patterns = new HashMap<>();
 	}
 

@@ -1,19 +1,25 @@
 package location_prediction.semantic.reasoning_engine.information_gathering.environment_context;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import location_prediction.semantic.reasoning_engine.information_gathering.environment_context.moac.Cell;
 import location_prediction.semantic.reasoning_engine.information_gathering.environment_context.moac.MOAC;
 import location_prediction.semantic.reasoning_engine.information_gathering.environment_context.moac.Position;
+import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.user_profile.StayLoc;
 
 public class SCM {
 	private ArrayList<ArrayList<StayLoc>> trajectories;
 	private MOAC moac;
 
-	public SCM(ArrayList<ArrayList<StayLoc>> trajectories) {
-		this.trajectories = trajectories;
+	public SCM(ArrayList<DailyUserProfile> trainingProfiles) {
 		this.moac = new MOAC();
+		this.trajectories = new ArrayList<>();
+
+		for (DailyUserProfile p : trainingProfiles) {
+			trajectories.add(p.getStayLocs());
+		}
 
 		buildMOAC();
 	}
@@ -31,7 +37,7 @@ public class SCM {
 		System.out.println("moac size: " + moac.size());
 	}
 
-	public ArrayList<Cell> getTargets(Position currentPosition) {
+	public HashSet<StayLoc> getTargets(Position currentPosition) {
 		return moac.getTargets(currentPosition);
 	}
 }

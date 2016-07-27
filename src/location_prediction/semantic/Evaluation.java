@@ -1,27 +1,11 @@
 package location_prediction.semantic;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map.Entry;
 
-import org.apache.commons.io.FileUtils;
-
-import foursquare.venue.VenueDB;
-import foursquare.venue.category.Category;
-import foursquare.venue.category.CategoryDB;
-import location_prediction.semantic.pattern_mining.STPPatternDB;
-import location_prediction.semantic.pattern_mining.Sequence;
-import location_prediction.semantic.pattern_tree.Path;
-import location_prediction.semantic.pattern_tree.Score;
-import location_prediction.semantic.pattern_tree.STPTree;
+import location_prediction.semantic.reasoning_engine.information_gathering.environment_context.SCM;
 import reality_mining.DatasetPreparation;
 import reality_mining.daily_user_profile.DailyUserProfile;
-import reality_mining.daily_user_profile.DailyUserProfileReader;
 import reality_mining.user_profile.StayLoc;
 
 public class Evaluation {
@@ -29,190 +13,32 @@ public class Evaluation {
 	public static final String EVALUATION_DIRECTORY = "/home/jasper/SemanticLocationPredictionData/RealityMining/evaluation";
 
 	public static void main(String args[]) {
-		// variables for profiles
-		ArrayList<DailyUserProfile> dailyUserProfiles;
-		ArrayList<DailyUserProfile> trainingProfiles;
-		ArrayList<DailyUserProfile> testProfiles;
+		evaluation.Evaluation evaluation = new evaluation.Evaluation(
+				DatasetPreparation.FINAL_DAILY_USER_PROFILE_DIRECTORY, 10.0);
+		SCM scm = new SCM(evaluation.getTrainingProfiles());
+		UserContextDB userContextDB = new UserContextDB(evaluation.getAllProfiles());
 
-		// variables for pattern database
-		ArrayList<Sequence> trainingSequences;
-		double patternMinSupport;
-		STPPatternDB patternDB;
+		for (double maxTh = 0.00; maxTh < 1.0; maxTh += 0.1) {
+			for (DailyUserProfile u : evaluation.getTestProfiles()) {
+				for (int i = 0; i < u.getStayLocs().size() - 1; i++) {
+					StayLoc currentStayLoc = u.getStayLocs().get(i);
+					StayLoc correctResult = u.getStayLocs().get(i + 1);
+					StayLoc predictionResult;
+					UserContext context = userContextDB.get(u.getId());
 
-		// variables for TPattern tree
-		STPTree patternTree;
+					predictionResult = PredictionModule.predict(scm, context, currentStayLoc, maxTh);
 
-		// load all daily user profiles from disk
-		dailyUserProfiles = DailyUserProfileReader
-				.readJsonDailyUserProfiles(DatasetPreparation.FINAL_DAILY_USER_PROFILE_DIRECTORY);
-
-		// filter daily user profiles for 100% GPS-Coordinate coverage
-		Iterator<DailyUserProfile> it = dailyUserProfiles.iterator();
-
-		while (it.hasNext()) {
-			DailyUserProfile p = it.next();
-
-			if (p.percentageLatLng() != 100.0 || p.getStayLocs().size() < 4 || p.getStayLocs().size() > 40) {
-				it.remove();
-			}
-		}
-
-		VenueDB venueDB = new VenueDB();
-		CategoryDB categoryDB = new CategoryDB();
-		venueDB.readJsonVenues();
-		categoryDB.readJsonCategories();
-
-		// divide all available daily profiles of each user into training and
-		// test profiles
-		HashMap<Integer, ArrayList<DailyUserProfile>> profilesByUserId = new HashMap<>();
-
-		for (DailyUserProfile p : dailyUserProfiles) {
-			ArrayList<DailyUserProfile> userProfiles = profilesByUserId.get(p.getId());
-
-			if (userProfiles == null) {
-				userProfiles = new ArrayList<>();
-				profilesByUserId.put(p.getId(), userProfiles);
-			}
-
-			userProfiles.add(p);
-		}
-
-		trainingProfiles = new ArrayList<>();
-		testProfiles = new ArrayList<>();
-
-		for (Entry<Integer, ArrayList<DailyUserProfile>> e : profilesByUserId.entrySet()) {
-			ArrayList<DailyUserProfile> userProfiles = e.getValue();
-			double percentageOfTestProfiles = 10.0;
-			int numberOfTestProfiles = (int) Math.ceil(userProfiles.size() / 100.0 * percentageOfTestProfiles);
-
-			for (int j = 0; j < numberOfTestProfiles; j++) {
-				testProfiles.add(userProfiles.get(j));
-			}
-
-			for (int j = numberOfTestProfiles; j < userProfiles.size(); j++) {
-				trainingProfiles.add(userProfiles.get(j));
-			}
-		}
-		/*
-		 * trainingProfiles = DailyUserProfileReader.readJsonDailyUserProfiles(
-		 * "/home/jasper/SemanticLocationPredictionData/RealityMining/final_daily_user_profiles/training/"
-		 * ); testProfiles = DailyUserProfileReader.readJsonDailyUserProfiles(
-		 * "/home/jasper/SemanticLocationPredictionData/RealityMining/final_daily_user_profiles/test/"
-		 * );
-		 */
-		// add trajectories of training profiles to training sequences
-		trainingSequences = new ArrayList<>();
-
-		for (DailyUserProfile p : trainingProfiles) {
-			trainingSequences.add(new Sequence(p.getStayLocs().toArray(new StayLoc[0])));
-		}
-
-		for (double supp = 0.000; supp <= 0.04; supp += 0.005) {
-			String outputBuffer = "score threshold, correct predictions, wrong predictions, wrong predictions but included in candidates, no predictions, total predictions\n";
-			Score thAgg = new Score.AvgScore();
-
-			// build pattern database from training sequences
-			patternDB = new STPPatternDB(trainingSequences.toArray(new Sequence[0]));
-			patternMinSupport = 0.0 + supp;
-
-			patternDB.generatePatterns(patternMinSupport);
-			System.out.println("Pattern database size: " + patternDB.size());
-
-			// build TPattern tree by inserting all patterns, starting with
-			// patterns
-			// of size 1 up to the longest patterns available
-			patternTree = new STPTree();
-
-			for (int i = 1; i <= patternDB.getLongestPatternLength(); i++) {
-				patternTree.build(patternDB.getPatterns(i));
-			}
-
-			for (double th = 0.0; th <= 0.5; th += 0.01) {
-				// use test profiles to evaluate prediction
-				int totalPredictions = 0;
-				int correctCounter = 0;
-				int wrongCounter = 0;
-				int wrongButContainedCounter = 0;
-				int noPredictionCounter = 0;
-				double thScore = 0.0 + th;
-				double accuracy;
-
-				for (DailyUserProfile p : testProfiles) {
-					for (int postPredictionLength = 1; postPredictionLength < p.getStayLocs().size()
-							- 1; postPredictionLength++) {
-						for (int j = 0; j < p.getStayLocs().size() - postPredictionLength; j++) {
-							ArrayList<StayLoc> postPredictionStayLocs;
-							Category correctResult;
-							Category predictionResult;
-
-							postPredictionStayLocs = new ArrayList<>();
-
-							for (int i = 0; i < postPredictionLength; i++) {
-								postPredictionStayLocs.add(p.getStayLocs().get(j + i));
-							}
-
-							correctResult = p.getStayLocs().get(j + postPredictionLength).getPrimaryCategory();
-
-							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
-
-							totalPredictions++;
-
-							if (predictionResult != null) {
-								if (predictionResult.equals(correctResult)) {
-									correctCounter++;
-								} else {
-									ArrayList<Path> predictionCandidates = patternTree
-											.whereNextCandidates(postPredictionStayLocs, thAgg, thScore);
-									boolean inCanditades = false;
-
-									for (Path path : predictionCandidates) {
-										if (path.lastNode().getSemantic().equals(correctResult)) {
-											inCanditades = true;
-											break;
-										}
-									}
-
-									if (inCanditades) {
-										wrongButContainedCounter++;
-									} else {
-										wrongCounter++;
-									}
-								}
-							} else {
-								noPredictionCounter++;
-							}
-						}
-					}
+					evaluation.evaluatePrediction(correctResult, predictionResult,
+							PredictionModule.predictionCandidates(scm, context, currentStayLoc, maxTh));
 				}
-
-				accuracy = (double) correctCounter / (double) (totalPredictions - noPredictionCounter);
-				outputBuffer += String.format(Locale.ENGLISH, "%f,%d,%d,%d,%d,%d,%f\n", thScore, correctCounter,
-						wrongCounter, wrongButContainedCounter, noPredictionCounter, totalPredictions, accuracy);
-
-				System.out.println("thScore: " + thScore);
-				System.out.println("patternMinSupport: " + patternMinSupport);
-				System.out.println(String.format(Locale.ENGLISH, "correct: %d of %d (%.2f%%)", correctCounter,
-						totalPredictions, (100.0 / totalPredictions * correctCounter)));
-				System.out.println(String.format(Locale.ENGLISH, "wrong: %d of %d (%.2f%%)", wrongCounter,
-						totalPredictions, (100.0 / totalPredictions * wrongCounter)));
-				System.out.println(String.format(Locale.ENGLISH, "wrong but in solution candidates: %d of %d (%.2f%%)",
-						wrongButContainedCounter, totalPredictions,
-						(100.0 / totalPredictions * wrongButContainedCounter)));
-				System.out.println(String.format(Locale.ENGLISH, "no prediction: %d of %d (%.2f%%)",
-						noPredictionCounter, totalPredictions, (100.0 / totalPredictions * noPredictionCounter)));
-				System.out.println("accuracy: " + accuracy);
-				System.out.println();
 			}
 
-			try {
-				FileUtils
-						.writeStringToFile(
-								new File(String.format(Locale.ENGLISH, "%s/semantic_%s_minSup-%f.csv",
-										EVALUATION_DIRECTORY, thAgg.toString(), patternMinSupport)),
-								outputBuffer, StandardCharsets.UTF_8);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			System.out.println("accuracy: " + evaluation.getAccuracy());
+
+			evaluation.logCurrentStats(maxTh);
+			evaluation.resetCurrentStats();
 		}
+
+		evaluation.saveDataLogger(String.format(Locale.ENGLISH, "%s/semantic.csv", EVALUATION_DIRECTORY));
 	}
 }
