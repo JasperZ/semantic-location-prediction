@@ -268,9 +268,11 @@ public class StayLoc {
 
 	@Override
 	public String toString() {
-		return String.format(
-				"timestamp: %s,\tlac: %d,\tcellId: %d,\tlatitude: %f,\tlongitude: %f,\taccuracy: %f,\tuserLabel: %s",
-				startTimestamp, locationAreaCode, cellId, lat, lng, accuracy, userLabel);
+		return locationAreaCode + "." + cellId;
+		// return String.format(
+		// "timestamp: %s,\tlac: %d,\tcellId: %d,\tlatitude: %f,\tlongitude:
+		// %f,\taccuracy: %f,\tuserLabel: %s",
+		// startTimestamp, locationAreaCode, cellId, lat, lng, accuracy, userLabel);
 	}
 
 	public String toShortString() {

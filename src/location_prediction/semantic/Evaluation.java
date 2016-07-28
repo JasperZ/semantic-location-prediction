@@ -1,8 +1,8 @@
 package location_prediction.semantic;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
+import location_prediction.semantic.dempster_shafer.Hypothese;
 import location_prediction.semantic.reasoning_engine.information_gathering.environment_context.SCM;
 import reality_mining.DatasetPreparation;
 import reality_mining.daily_user_profile.DailyUserProfile;
@@ -23,17 +23,24 @@ public class Evaluation {
 				for (int i = 0; i < u.getStayLocs().size() - 1; i++) {
 					StayLoc currentStayLoc = u.getStayLocs().get(i);
 					StayLoc correctResult = u.getStayLocs().get(i + 1);
-					StayLoc predictionResult;
+					StayLoc predictedHypothese;
 					UserContext context = userContextDB.get(u.getId());
 
-					predictionResult = PredictionModule.predict(scm, context, currentStayLoc, maxTh);
+					predictedHypothese = PredictionModule.predict(scm, context, currentStayLoc, maxTh);
 
-					evaluation.evaluatePrediction(correctResult, predictionResult,
+					// System.out.println("predictedHypothese: " +
+					// predictedHypothese);
+					// System.out.println("correctResult: " +
+					// correctResult.toShortString());
+
+					evaluation.evaluatePrediction(correctResult, predictedHypothese,
 							PredictionModule.predictionCandidates(scm, context, currentStayLoc, maxTh));
 				}
 			}
 
+			// System.out.println(evaluation.currentStatsToString());
 			System.out.println("accuracy: " + evaluation.getAccuracy());
+			// System.out.println();
 
 			evaluation.logCurrentStats(maxTh);
 			evaluation.resetCurrentStats();
