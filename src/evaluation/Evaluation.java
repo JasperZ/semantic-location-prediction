@@ -3,6 +3,7 @@ package evaluation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import data_logger.DataEntry;
@@ -102,13 +103,26 @@ public class Evaluation {
 		noPredictions = 0;
 	}
 
+	public String currentStatsToString() {
+		String result = "";
+
+		result += String.format(Locale.ENGLISH, "correctPredictions: %d\n", correctPredictions);
+		result += String.format(Locale.ENGLISH, "wrongPredictions: %d\n", wrongPredictions);
+		result += String.format(Locale.ENGLISH, "wrongButPredictionCandidates: %d\n", wrongButPredictionCandidates);
+		result += String.format(Locale.ENGLISH, "triedPredictions: %d\n", triedPredictions);
+		result += String.format(Locale.ENGLISH, "noPredictions: %d\n", noPredictions);
+		result += String.format(Locale.ENGLISH, "totalPredictions: %d", totalPredictions);
+
+		return result;
+	}
+
 	public void logCurrentStats(double threshold) {
 		dataLogger.newEntry(new DataEntry(threshold, correctPredictions, wrongPredictions, wrongButPredictionCandidates,
 				noPredictions, triedPredictions));
 	}
 
 	public void saveDataLogger(String path) {
-		dataLogger.writeRelative(path);
+		dataLogger.writeAbsolute(path);
 	}
 
 	public void resetDataLogger() {
