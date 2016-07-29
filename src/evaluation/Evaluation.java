@@ -118,11 +118,11 @@ public class Evaluation {
 
 	public void logCurrentStats(double threshold) {
 		dataLogger.newEntry(new DataEntry(threshold, correctPredictions, wrongPredictions, wrongButPredictionCandidates,
-				noPredictions, triedPredictions));
+				noPredictions, triedPredictions, totalPredictions));
 	}
 
 	public void saveDataLogger(String path) {
-		dataLogger.writeAbsolute(path);
+		dataLogger.writeRelative(path);
 	}
 
 	public void resetDataLogger() {

@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import main.MatlabHelpers;
+import main.HelperFunctions;
 
 public class AttributeReader {
 	public final static String BASE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining";
@@ -195,7 +195,7 @@ public class AttributeReader {
 		if (splitLineCell.length == 2) {
 			locationAreaCode = Integer.valueOf(splitLineCell[0]);
 			cellId = Integer.valueOf(splitLineCell[1]);
-			result = new Loc(MatlabHelpers.serialDateToUnixtime(Double.valueOf(timestamp)), locationAreaCode, cellId);
+			result = new Loc(HelperFunctions.matlabSerialDateToUnixtime(Double.valueOf(timestamp)), locationAreaCode, cellId);
 		}
 
 		return result;

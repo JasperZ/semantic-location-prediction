@@ -41,6 +41,10 @@ public class PredictionModule {
 			counter = 0;
 		}
 
+		if (counter == 1 && prediction.size() != 1) {
+			System.out.println(prediction.size());
+		}
+
 		if (counter != 1 || prediction.size() != 1) {
 			predictionResult = null;
 
@@ -107,7 +111,7 @@ public class PredictionModule {
 			for (UserInterest interest : userContext.getInterests()) {
 				if (interest.getCategory().includes(l.getPrimaryCategory())
 						&& (interest.getInterval().includes(predictionTime)
-								|| interest.getAverageTime() < interest.getInterval().getStart() - predictionTime)) {
+								|| interest.getAverageTime() < interest.getInterval().getEnd() - predictionTime)) {
 					userInterests.add(interest);
 				}
 			}
@@ -116,69 +120,104 @@ public class PredictionModule {
 		for (UserInterest userInterest : userInterests) {
 			Hypotheses<StayLoc> hypos = new Hypotheses<>();
 			Hypothese<StayLoc> in = new Hypothese<>();
-			Hypothese<StayLoc> out = new Hypothese<>(frameOfdiscrement);
+			Hypothese<StayLoc> other = new Hypothese<>(frameOfdiscrement, 1.0 - userInterest.getImportance());
 
 			for (StayLoc location : frameOfdiscrement) {
-				if (location.getPrimaryCategory().equals(userInterest.getCategory())) {
+				if (userInterest.getCategory().includes(location.getPrimaryCategory())) {
 					in.addLocation(location);
 				}
 			}
 
 			in.setBelief(userInterest.getImportance());
-			out.setBelief(1.0 - in.getBelief());
+
 			hypos.add(in);
-			hypos.add(out);
+			hypos.add(other);
 
 			hyposInterests.add(hypos);
 		}
-
-		// System.out.println(hyposInterests);
 
 		return hyposInterests;
 	}
 
 	public static ArrayList<Hypotheses<StayLoc>> createUserScheduleHypos(HashSet<StayLoc> frameOfdiscrement,
 			UserContext userContext, StayLoc currentStayLoc) {
-		HashSet<UserInterest> userInterests = new HashSet<>();
-		ArrayList<Hypotheses<StayLoc>> hyposSchedule = new ArrayList();
+		UserInterest userInterest = null;
+		ArrayList<Hypotheses<StayLoc>> hyposSchedule = new ArrayList<>();
 		Date predictionDay = new Date(currentStayLoc.getEndTimestamp());
 		long predictionTime;
+		long tenMinutes = 1000 * 60 * 10;
+		double speed = 5000.0;
+		long ts;
 
 		predictionDay.setHours(0);
 		predictionDay.setMinutes(0);
 		predictionDay.setSeconds(0);
 		predictionTime = currentStayLoc.getEndTimestamp() - predictionDay.getTime();
 
-		for (StayLoc l : frameOfdiscrement) {
-			for (UserInterest interest : userContext.getInterests()) {
-				if (interest.getCategory().includes(l.getPrimaryCategory())
-						&& (interest.getInterval().includes(predictionTime)
-								|| interest.getAverageTime() < interest.getInterval().getStart() - predictionTime)) {
-					userInterests.add(interest);
+		for (UserInterest interest : userContext.getInterests()) {
+			if (interest.getInterval().getStart() > predictionTime) {
+				if (userInterest == null) {
+					userInterest = interest;
+				} else {
+					if (userInterest.getInterval().getStart() > interest.getInterval().getStart()) {
+						userInterest = interest;
+
+						if (userInterest != null) {
+							ts = userInterest.getInterval().getStart() - predictionTime;
+
+							for (StayLoc s : frameOfdiscrement) {
+								if (userInterest.getCategory().includes(s.getPrimaryCategory())) {
+									Hypotheses<StayLoc> hypos = new Hypotheses<>();
+									Hypothese<StayLoc> allHypo = new Hypothese<>(frameOfdiscrement, 0.0);
+									int n = (int) (ts / tenMinutes);
+
+									if (ts % tenMinutes != 0) {
+										n++;
+									}
+
+									for (int j = 1; j <= n; j++) {
+										Hypothese<StayLoc> hypothese = new Hypothese<>();
+										long intervalEnd;
+
+										if (j == n) {
+											intervalEnd = ts;
+										} else {
+											intervalEnd = j * ts / n;
+										}
+
+										for (StayLoc k : frameOfdiscrement) {
+											if (!s.equals(k)) {
+												if (currentStayLoc.distance(k) / speed
+														+ k.distance(s) / speed <= intervalEnd) {
+													hypothese.addLocation(k);
+												}
+											}
+										}
+
+										hypos.add(hypothese);
+									}
+
+									for (Hypothese<StayLoc> h : hypos) {
+										h.setBelief(1.0 / hypos.size() * (currentStayLoc.distance(s) / speed) / ts);
+									}
+
+									if (hypos.size() == 0) {
+										allHypo.setBelief(1.0);
+									} else {
+										allHypo.setBelief(
+												((currentStayLoc.distance(s) / speed) / ts) * allHypo.getBelief()
+														+ (1.0 - ((currentStayLoc.distance(s) / speed) / ts)));
+									}
+
+									hypos.add(allHypo);
+									hyposSchedule.add(hypos);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-
-		for (UserInterest userInterest : userInterests) {
-			Hypotheses<StayLoc> hypos = new Hypotheses<>();
-			Hypothese<StayLoc> in = new Hypothese<>();
-			Hypothese<StayLoc> out = new Hypothese<>(frameOfdiscrement);
-
-			for (StayLoc location : frameOfdiscrement) {
-				if (location.getPrimaryCategory().equals(userInterest.getCategory())) {
-					in.addLocation(location);
-				}
-			}
-
-			in.setBelief(userInterest.getImportance());
-			out.setBelief(1.0 - in.getBelief());
-			hypos.add(in);
-			hypos.add(out);
-
-			hyposSchedule.add(hypos);
-		}
-
-		// System.out.println(hyposInterests);
 
 		return hyposSchedule;
 	}

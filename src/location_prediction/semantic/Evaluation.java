@@ -18,7 +18,7 @@ public class Evaluation {
 		SCM scm = new SCM(evaluation.getTrainingProfiles());
 		UserContextDB userContextDB = new UserContextDB(evaluation.getAllProfiles());
 
-		for (double maxTh = 0.00; maxTh < 1.0; maxTh += 0.1) {
+		for (double maxTh = 0.00; maxTh < 1.0; maxTh += 0.01) {
 			for (DailyUserProfile u : evaluation.getTestProfiles()) {
 				for (int i = 0; i < u.getStayLocs().size() - 1; i++) {
 					StayLoc currentStayLoc = u.getStayLocs().get(i);
@@ -46,6 +46,6 @@ public class Evaluation {
 			evaluation.resetCurrentStats();
 		}
 
-		evaluation.saveDataLogger(String.format(Locale.ENGLISH, "%s/semantic.csv", EVALUATION_DIRECTORY));
+		evaluation.saveDataLogger(String.format(Locale.ENGLISH, "/home/jasper/nextcloud/KIT/Sommersemester 2016/Proseminar/Evaluation/semantic/stats.csv", EVALUATION_DIRECTORY));
 	}
 }

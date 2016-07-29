@@ -9,7 +9,7 @@ import java.util.Locale;
 import org.apache.commons.io.FileUtils;
 
 public class DataLogger {
-	private final static String FILE_HEAD = "threshold,correctPredictions,wrongPredictions,wrongButPredictionCandidates,noPredictions,triedPredictions,accuracy";
+	private final static String FILE_HEAD = "threshold,predictionRate,accuracy";
 	private ArrayList<DataEntry> entries;
 
 	public DataLogger() {
@@ -25,21 +25,7 @@ public class DataLogger {
 		int maxCounter = maxCounter();
 
 		for (DataEntry entry : entries) {
-			outputBuffer += String.format(Locale.ENGLISH, "\n%s", entry.toRelativeString(maxCounter));
-		}
-
-		try {
-			FileUtils.writeStringToFile(new File(path), outputBuffer, StandardCharsets.UTF_8);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-
-	public void writeAbsolute(String path) {
-		String outputBuffer = FILE_HEAD;
-
-		for (DataEntry entry : entries) {
-			outputBuffer += String.format(Locale.ENGLISH, "\n%s", entry.toAbsoluteString());
+			outputBuffer += String.format(Locale.ENGLISH, "\n%s", entry.toString(maxCounter));
 		}
 
 		try {

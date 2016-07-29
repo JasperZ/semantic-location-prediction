@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import main.HelperFunctions;
 import main.stay.GPSPoint;
 import main.stay.StayPoint;
 import main.stay.StayPointDetector;
@@ -69,7 +70,7 @@ public class StayPointDetectorTest {
 		double longitude = Math.random();
 		GPSPoint p1 = new GPSPoint(latitude, longitude, 0);
 		GPSPoint p2 = new GPSPoint(latitude, longitude, 0);
-		double distance = stayPointDetector.distance(p1, p2);
+		double distance = HelperFunctions.distance(p1, p2);
 
 		assertEquals(0.0, distance, 0.0);
 	}
@@ -86,7 +87,7 @@ public class StayPointDetectorTest {
 		double longitude2 = 8.416396;
 		GPSPoint p1 = new GPSPoint(latitude1, longitude1, 0);
 		GPSPoint p2 = new GPSPoint(latitude2, longitude2, 0);
-		double distance = stayPointDetector.distance(p1, p2);
+		double distance = HelperFunctions.distance(p1, p2);
 
 		assertEquals(613.0, distance, 1.0);
 	}
@@ -101,7 +102,7 @@ public class StayPointDetectorTest {
 		double longitude2 = 8.4216761;
 		GPSPoint p1 = new GPSPoint(latitude1, longitude1, 0);
 		GPSPoint p2 = new GPSPoint(latitude2, longitude2, 0);
-		double distance = stayPointDetector.distance(p1, p2);
+		double distance = HelperFunctions.distance(p1, p2);
 
 		assertEquals(200.0, distance, 1.0);
 	}
@@ -116,7 +117,7 @@ public class StayPointDetectorTest {
 		double longitude2 = 8.4235933;
 		GPSPoint p1 = new GPSPoint(latitude1, longitude1, 0);
 		GPSPoint p2 = new GPSPoint(latitude2, longitude2, 0);
-		double distance = stayPointDetector.distance(p1, p2);
+		double distance = HelperFunctions.distance(p1, p2);
 
 		assertEquals(50.0, distance, 1.0);
 	}
@@ -124,7 +125,7 @@ public class StayPointDetectorTest {
 	@Test
 	public void testDegreeToRadian90() {
 		double degree = 90.0;
-		double radian = stayPointDetector.degreeToRadian(degree);
+		double radian = HelperFunctions.degreeToRadian(degree);
 
 		assertEquals(Math.PI / 2.0, radian, 0.0);
 	}
@@ -132,7 +133,7 @@ public class StayPointDetectorTest {
 	@Test
 	public void testDegreeToRadianMinus90() {
 		double degree = -90.0;
-		double radian = stayPointDetector.degreeToRadian(degree);
+		double radian = HelperFunctions.degreeToRadian(degree);
 
 		assertEquals(-1.0 * Math.PI / 2.0, radian, 0.0);
 	}
@@ -140,7 +141,7 @@ public class StayPointDetectorTest {
 	@Test
 	public void testDegreeToRadian180() {
 		double degree = 180.0;
-		double radian = stayPointDetector.degreeToRadian(degree);
+		double radian = HelperFunctions.degreeToRadian(degree);
 
 		assertEquals(Math.PI, radian, 0.0);
 	}
@@ -148,7 +149,7 @@ public class StayPointDetectorTest {
 	@Test
 	public void testDegreeToRadianMinus180() {
 		double degree = -180.0;
-		double radian = stayPointDetector.degreeToRadian(degree);
+		double radian = HelperFunctions.degreeToRadian(degree);
 
 		assertEquals(-1.0 * Math.PI, radian, 0.0);
 	}

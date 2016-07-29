@@ -17,7 +17,7 @@ public class Evaluation {
 		evaluation.Evaluation evaluation = new evaluation.Evaluation(
 				DatasetPreparation.FINAL_DAILY_USER_PROFILE_DIRECTORY, 5.0);
 
-		for (double supp = 0.005; supp <= 0.04; supp += 0.005) {
+		for (double supp = 0.000; supp <= 0.04; supp += 0.005) {
 			Score thAgg = new Score.AvgScore();
 
 			// build pattern database from training sequences
@@ -71,8 +71,7 @@ public class Evaluation {
 
 			System.out.println();
 
-			evaluation.saveDataLogger(String.format(Locale.ENGLISH, "%s/geographic_%s_minSup-%f.csv",
-					EVALUATION_DIRECTORY, thAgg.toString(), patternMinSupport));
+			evaluation.saveDataLogger(String.format(Locale.ENGLISH, "/home/jasper/nextcloud/KIT/Sommersemester 2016/Proseminar/Evaluation/geographic/stats_%s_minSup-%f.csv", thAgg.toString(), patternMinSupport));
 			evaluation.resetDataLogger();
 		}
 	}

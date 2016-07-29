@@ -1,5 +1,6 @@
 package location_prediction.semantic;
 
+import java.util.HashSet;
 import java.util.Locale;
 
 import foursquare.venue.category.Category;
@@ -7,13 +8,25 @@ import location_prediction.geografic.pattern_mining.Interval;
 
 public class UserInterest {
 	private Category category;
+	private HashSet<String> characteristics;
 	private long timeSum;
 	private int timeCounter;
 	private Interval interval;
 	private double importance;
 
+	public UserInterest(Category category, HashSet<String> characteristics, long averageTime, Interval interval,
+			double importance) {
+		this.category = category;
+		this.characteristics = characteristics;
+		this.timeSum = averageTime;
+		this.timeCounter = 1;
+		this.interval = interval;
+		this.importance = importance;
+	}
+
 	public UserInterest(Category category, long averageTime, Interval interval, double importance) {
 		this.category = category;
+		this.characteristics = new HashSet<>();
 		this.timeSum = averageTime;
 		this.timeCounter = 1;
 		this.interval = interval;
@@ -47,11 +60,30 @@ public class UserInterest {
 
 	@Override
 	public String toString() {
-		return String.format(Locale.ENGLISH, "%s\t%d\t%s\t%.2f", category.name, getAverageTime(), interval, importance);
+		String result = "";
+		String characteristicsStr = "{";
+
+		for (String c : characteristics) {
+			characteristicsStr += c + ",";
+		}
+
+		characteristicsStr += "}";
+//		characteristicsStr = characteristicsStr.replaceAll(",}", "}");
+
+		return String.format(Locale.ENGLISH, "%s\t%s\t%d\t%s\t%.2f", category.name, characteristicsStr,
+				getAverageTime(), interval, importance);
 	}
 
 	public Category getCategory() {
 		return category;
+	}
+
+	public HashSet<String> getCharacteristics() {
+		return characteristics;
+	}
+
+	public void addCharacteristics(String characteristic) {
+		characteristics.add(characteristic.trim().toLowerCase());
 	}
 
 	public long getAverageTime() {

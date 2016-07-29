@@ -62,6 +62,10 @@ public class UserContextDB {
 					userInterest.setImportance(userInterest.getImportance() + 1.0);
 					userInterest.setInterval(interval);
 					userInterest.updateAverageTime(l.getEndTimestamp() - l.getStartTimestamp());
+
+					if (l.isUserLabelAvailable()) {
+						userInterest.addCharacteristics(l.getUserLabel());
+					}
 				} else {
 					Interval interval;
 
@@ -74,8 +78,12 @@ public class UserContextDB {
 
 					userInterest = new UserInterest(l.getPrimaryCategory(), l.getEndTimestamp() - l.getStartTimestamp(),
 							interval, 1.0);
-					interests.put(l.getPrimaryCategory(), userInterest);
 
+					if (l.isUserLabelAvailable()) {
+						userInterest.addCharacteristics(l.getUserLabel());
+					}
+
+					interests.put(l.getPrimaryCategory(), userInterest);
 				}
 
 				stayLocCounter++;
@@ -89,8 +97,9 @@ public class UserContextDB {
 			Integer stayLocCounter = stayLocCounterPerUser.get(c.getKey());
 
 			for (Entry<Category, UserInterest> e : c.getValue().entrySet()) {
-				UserInterest userInterest = new UserInterest(e.getValue().getCategory(), e.getValue().getAverageTime(),
-						e.getValue().getInterval(), 1.0 / stayLocCounter * e.getValue().getImportance());
+				UserInterest userInterest = new UserInterest(e.getValue().getCategory(),
+						e.getValue().getCharacteristics(), e.getValue().getAverageTime(), e.getValue().getInterval(),
+						1.0 / stayLocCounter * e.getValue().getImportance());
 
 				userContext.addUserInterest(userInterest);
 			}

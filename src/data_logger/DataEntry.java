@@ -9,15 +9,17 @@ public class DataEntry {
 	private int wrongButPredictionCandidates;
 	private int noPredictions;
 	private int triedPredictions;
+	private int totalPredictions;
 
 	public DataEntry(double threshold, int correctPredictions, int wrongPredictions, int wrongButPredictionCandidates,
-			int noPredictions, int triedPredictions) {
+			int noPredictions, int triedPredictions, int totalPredictions) {
 		this.threshold = threshold;
 		this.correctPredictions = correctPredictions;
 		this.wrongPredictions = wrongPredictions;
 		this.wrongButPredictionCandidates = wrongButPredictionCandidates;
 		this.noPredictions = noPredictions;
 		this.triedPredictions = triedPredictions;
+		this.totalPredictions = totalPredictions;
 	}
 
 	public double getThreshold() {
@@ -44,19 +46,15 @@ public class DataEntry {
 		return triedPredictions;
 	}
 
-	public String toAbsoluteString() {
-		return String.format(Locale.ENGLISH, "%f,%d,%d,%d,%d,%d,%f", threshold, correctPredictions, wrongPredictions,
-				wrongButPredictionCandidates, noPredictions, triedPredictions, accuracy());
-	}
-
-	public String toRelativeString(int maxTriedPredictions) {
-		return String.format(Locale.ENGLISH, "%f,%f,%f,%f,%f,%f,%f", threshold,
-				1.0 / maxTriedPredictions * correctPredictions, 1.0 / maxTriedPredictions * wrongPredictions,
-				1.0 / maxTriedPredictions * wrongButPredictionCandidates, 1.0 / maxTriedPredictions * noPredictions,
-				1.0 / maxTriedPredictions * triedPredictions, accuracy());
+	public String toString(int maxTriedPredictions) {
+		return String.format(Locale.ENGLISH, "%f,%f,%f", threshold, predictionRate(), accuracy());
 	}
 
 	public double accuracy() {
 		return (double) correctPredictions / (double) triedPredictions;
+	}
+
+	public double predictionRate() {
+		return (double) triedPredictions / (double) totalPredictions;
 	}
 }

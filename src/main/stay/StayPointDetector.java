@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import main.HelperFunctions;
+
 public class StayPointDetector {
 	// distance threshold in meter
 	private static final double RADIUS_THRESHOLD = 100.0;
@@ -22,7 +24,7 @@ public class StayPointDetector {
 			j = i + 1;
 
 			while (j < gpsTrajectory.size()) {
-				dist = distance(gpsTrajectory.get(i), gpsTrajectory.get(j));
+				dist = HelperFunctions.distance(gpsTrajectory.get(i), gpsTrajectory.get(j));
 
 				if (dist > RADIUS_THRESHOLD) {
 					deltaTime = gpsTrajectory.get(j).getTime() - gpsTrajectory.get(i).getTime();
@@ -85,27 +87,5 @@ public class StayPointDetector {
 				gpsTrajectory.get(j).getTime());
 
 		return stayPoint;
-	}
-
-	public double distance(GPSPoint p1, GPSPoint p2) {
-		double distance = 0.0;
-		// earth radius in meter
-		double r = 6378137.0;
-		double phi1 = degreeToRadian(p1.getLatitude());
-		double phi2 = degreeToRadian(p2.getLatitude());
-		double deltaPhi = degreeToRadian(p2.getLatitude() - p1.getLatitude());
-		double deltaLambda = degreeToRadian(p2.getLongitude() - p1.getLongitude());
-
-		double a = Math.sin(deltaPhi / 2.0) * Math.sin(deltaPhi / 2.0)
-				+ Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2.0) * Math.sin(deltaLambda / 2.0);
-		double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0 - a));
-
-		distance = r * c;
-
-		return distance;
-	}
-
-	public double degreeToRadian(double degree) {
-		return Math.PI / 180.0 * degree;
 	}
 }

@@ -44,15 +44,9 @@ public class VenueDB {
 				venueDB.venues.add(new VenueDBEntry(l, venueResponse));
 			}
 		}
-		/*
-		 * FoursquareCategoryDB categoryDB = new FoursquareCategoryDB();
-		 * categoryDB.readJsonCategories();
-		 * 
-		 * System.out.println(categoryDB.getTopCategory(
-		 * "4bf58dd8d48988d1fa9317356"));
-		 * 
-		 */
-		// venueDB.readJsonVenues();
+		
+		
+		
 		System.out.println(venueDB.getSize());
 		venueDB.writeVenuesToJson();
 

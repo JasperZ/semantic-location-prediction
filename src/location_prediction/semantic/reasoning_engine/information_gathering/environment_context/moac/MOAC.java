@@ -1,6 +1,5 @@
 package location_prediction.semantic.reasoning_engine.information_gathering.environment_context.moac;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -23,12 +22,36 @@ public class MOAC {
 			Cell prevCell = new Cell(prevPosition.getDirection(stayPosition));
 			Cell stayCell = new Cell(stay);
 
+			if (cells.containsKey(stayMOACPosition)) {
+				Cell tmp = cells.get(stayMOACPosition);
+				if (tmp.isStayLocSet()) {
+					for (String ch : tmp.getStayLoc().getCharacteristics()) {
+						stay.addCharacteristics(ch);
+					}
+				}
+
+			} else {
+				stay.addCharacteristics(stay.getUserLabel());
+			}
+
 			cells.put(prevMOACPosition, prevCell);
 			cells.put(stayMOACPosition, stayCell);
 		} else if (prevStay == null && stay != null) {
 			Position stayPosition = new Position(stay.getLat(), stay.getLng());
 			MOACPosition stayMOACPosition = new MOACPosition(stayPosition, stayPosition);
 			Cell stayCell = new Cell(stay);
+
+			if (cells.containsKey(stayMOACPosition)) {
+				Cell tmp = cells.get(stayMOACPosition);
+				if (tmp.isStayLocSet()) {
+					for (String ch : tmp.getStayLoc().getCharacteristics()) {
+						stay.addCharacteristics(ch);
+					}
+				}
+
+			} else {
+				stay.addCharacteristics(stay.getUserLabel());
+			}
 
 			cells.put(stayMOACPosition, stayCell);
 		}
