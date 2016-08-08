@@ -37,7 +37,8 @@ public class UserContextDB {
 			}
 
 			for (StayLoc l : d.getStayLocs()) {
-				UserInterest userInterest = interests.get(l.getPrimaryCategory());
+				Category category = l.getTopCategory();
+				UserInterest userInterest = interests.get(category);
 				Date startDate = new Date(l.getStartTimestamp());
 				Date endDate = new Date(l.getStartTimestamp());
 
@@ -76,14 +77,14 @@ public class UserContextDB {
 						interval = new Interval(interval.getStart(), 1000 * 60 * 60 * 24 - 1);
 					}
 
-					userInterest = new UserInterest(l.getPrimaryCategory(), l.getEndTimestamp() - l.getStartTimestamp(),
-							interval, 1.0);
+					userInterest = new UserInterest(category, l.getEndTimestamp() - l.getStartTimestamp(), interval,
+							1.0);
 
 					if (l.isUserLabelAvailable()) {
 						userInterest.addCharacteristics(l.getUserLabel());
 					}
 
-					interests.put(l.getPrimaryCategory(), userInterest);
+					interests.put(userInterest.getCategory(), userInterest);
 				}
 
 				stayLocCounter++;

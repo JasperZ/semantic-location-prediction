@@ -235,8 +235,9 @@ public class DatasetPreparation {
 								if (c.primary == true) {
 									l.setPrimaryCategory(categoryDB.find(c.id));
 									l.setTopCategory(categoryDB.getTopCategory(c.id));
-									break;
 								}
+
+								l.addCategory(c);
 							}
 						}
 					}
