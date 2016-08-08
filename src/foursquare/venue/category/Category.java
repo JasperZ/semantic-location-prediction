@@ -43,8 +43,14 @@ public class Category {
 
 	@Override
 	public String toString() {
+		int length = 0;
+
+		if (categories != null) {
+			length = categories.length;
+		}
+
 		return String.format("id: %s, name: %s, pluralName: %s, shortName: %s, categories: %d", id, name, pluralName,
-				shortName, categories.length);
+				shortName, length);
 	}
 
 	public String toShortString() {
@@ -68,9 +74,11 @@ public class Category {
 			return true;
 		}
 
-		for (Category c : categories) {
-			if (c.includes(category)) {
-				return true;
+		if (categories != null) {
+			for (Category c : categories) {
+				if (c.includes(category)) {
+					return true;
+				}
 			}
 		}
 
