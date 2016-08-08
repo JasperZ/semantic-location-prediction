@@ -2,8 +2,12 @@ package location_prediction.semantic;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
+import foursquare.venue.category.Category;
 import location_prediction.semantic.dempster_shafer.Hypothese;
 import location_prediction.semantic.dempster_shafer.Hypotheses;
 import location_prediction.semantic.reasoning_engine.information_gathering.environment_context.SCM;
@@ -11,45 +15,156 @@ import location_prediction.semantic.reasoning_engine.information_gathering.envir
 import reality_mining.user_profile.StayLoc;
 
 public class PredictionModule {
-	public static StayLoc predict(SCM scm, UserContext userContext, StayLoc currentStayLoc, double threshold) {
-		Hypotheses<StayLoc> hypotheses1 = predictIntern(scm, userContext, currentStayLoc);
-		Hypothese<StayLoc> prediction = null;
-		int counter = 0;
+	public static StayLoc predict(SCM scm, UserContext userContext, StayLoc currentStayLoc, double threshold,
+			Methode methode) {
+		Hypotheses<StayLoc> hypotheses = predictIntern(scm, userContext, currentStayLoc);
+		int counter;
 		StayLoc predictionResult = null;
 
-		for (Hypothese<StayLoc> hypothese : hypotheses1) {
-			if (hypothese.getBelief() < threshold) {
-				continue;
-			}
+		switch (methode) {
+		case THROW_AND_CHOSE_NEXT:
+			do {
+				Hypothese<StayLoc> prediction = null;
 
-			if (prediction == null) {
-				prediction = hypothese;
-			} else {
-				if (hypothese.getBelief() > prediction.getBelief()) {
-					prediction = hypothese;
+				for (Hypothese<StayLoc> hypothese : hypotheses) {
+					if (hypothese.getBelief() < threshold) {
+						continue;
+					}
+
+					if (prediction == null) {
+						prediction = hypothese;
+					} else {
+						if (hypothese.getBelief() > prediction.getBelief()) {
+							prediction = hypothese;
+						}
+					}
 				}
-			}
-		}
 
-		if (prediction != null) {
-			for (Hypothese<StayLoc> hypothese : hypotheses1) {
-				if (hypothese.getBelief() == prediction.getBelief()) {
-					counter++;
+				counter = 0;
+
+				if (prediction != null) {
+					for (Hypothese<StayLoc> hypothese : hypotheses) {
+						if (hypothese.getBelief() == prediction.getBelief()) {
+							counter++;
+						}
+					}
+				} else {
+					counter = 0;
 				}
-			}
-		} else {
-			counter = 0;
-		}
 
-		if (counter == 1 && prediction.size() != 1) {
-			System.out.println(prediction.size());
-		}
+				if (counter == 1) {
+					if (prediction.size() > 1) {
+						hypotheses.remove(prediction);
+					} else {
+						predictionResult = prediction.getLocations().iterator().next();
+					}
+				} else {
+					predictionResult = null;
+					break;
+				}
+			} while (predictionResult == null);
 
-		if (counter != 1 || prediction.size() != 1) {
-			predictionResult = null;
+			break;
 
-		} else {
-			predictionResult = prediction.getLocations().iterator().next();
+		case KEEP_CATEGORY_AND_CHOSE_NEXT:
+			int lastPredictionSize = -1;
+
+			do {
+				Hypothese<StayLoc> prediction = null;
+
+				for (Hypothese<StayLoc> hypothese : hypotheses) {
+					if (hypothese.getBelief() < threshold) {
+						continue;
+					}
+
+					if (prediction == null) {
+						prediction = hypothese;
+					} else {
+						if (hypothese.getBelief() > prediction.getBelief()) {
+							prediction = hypothese;
+						}
+					}
+				}
+
+				counter = 0;
+
+				if (prediction != null) {
+					for (Hypothese<StayLoc> hypothese : hypotheses) {
+						if (hypothese.getBelief() == prediction.getBelief()) {
+							counter++;
+						}
+					}
+
+					if (lastPredictionSize == prediction.size()) {
+						break;
+					} else {
+						lastPredictionSize = prediction.size();
+					}
+				} else {
+					counter = 0;
+				}
+
+				if (counter == 1) {
+					if (prediction.size() > 1) {
+						HashMap<Category, Integer> categoryCounter = new HashMap<>();
+						HashSet<Category> categoriesToKeep = new HashSet<>();
+
+						for (StayLoc loc : prediction) {
+							for (Category c : loc.getCategories()) {
+								Integer cCounter = categoryCounter.get(c);
+
+								if (cCounter == null) {
+									cCounter = 1;
+								} else {
+									cCounter++;
+								}
+
+								categoryCounter.put(c, cCounter);
+							}
+						}
+
+						for (Entry<Category, Integer> e : categoryCounter.entrySet()) {
+							if (e.getValue() == prediction.size()) {
+								categoriesToKeep.add(e.getKey());
+							}
+						}
+
+						hypotheses.remove(prediction);
+
+						Iterator<Hypothese<StayLoc>> it = hypotheses.iterator();
+
+						while (it.hasNext()) {
+							Hypothese<StayLoc> h = it.next();
+							boolean remove = true;
+
+							for (StayLoc stayLoc : h) {
+								for (Category c : categoriesToKeep) {
+									if (stayLoc.isInCategory(c)) {
+										remove = false;
+									}
+								}
+							}
+
+							if (remove == true) {
+								it.remove();
+							}
+						}
+
+						continue;
+					} else {
+						predictionResult = prediction.getLocations().iterator().next();
+					}
+				} else {
+					predictionResult = null;
+					break;
+				}
+
+				if (prediction.size() == 0) {
+					break;
+				}
+			} while (predictionResult == null);
+
+			break;
 		}
 
 		return predictionResult;
@@ -109,9 +224,8 @@ public class PredictionModule {
 
 		for (StayLoc l : frameOfdiscrement) {
 			for (UserInterest interest : userContext.getInterests()) {
-				if (interest.getCategory().includes(l.getPrimaryCategory())
-						&& (interest.getInterval().includes(predictionTime)
-								|| interest.getAverageTime() < interest.getInterval().getEnd() - predictionTime)) {
+				if (l.isInCategory(interest.getCategory()) && (interest.getInterval().includes(predictionTime)
+						|| interest.getAverageTime() < interest.getInterval().getEnd() - predictionTime)) {
 					userInterests.add(interest);
 				}
 			}
@@ -220,5 +334,9 @@ public class PredictionModule {
 		}
 
 		return hyposSchedule;
+	}
+
+	public enum Methode {
+		THROW_AND_CHOSE_NEXT, KEEP_CATEGORY_AND_CHOSE_NEXT
 	}
 }
