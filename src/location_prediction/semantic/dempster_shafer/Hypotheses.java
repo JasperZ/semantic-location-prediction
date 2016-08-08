@@ -17,6 +17,10 @@ public class Hypotheses<T> implements Iterable<Hypothese<T>> {
 		this.hypos.add(hypo);
 	}
 
+	public void remove(Hypothese<T> hypo) {
+		this.hypos.remove(hypo);
+	}
+
 	public int size() {
 		return hypos.size();
 	}
@@ -42,7 +46,7 @@ public class Hypotheses<T> implements Iterable<Hypothese<T>> {
 
 		return result;
 	}
-	
+
 	public Hypotheses<T> compbine(Hypotheses<T> hypos2) {
 		Hypotheses<T> hypos1 = this;
 		Hypotheses<T> result = new Hypotheses<>();
