@@ -5,13 +5,13 @@ import reality_mining.GPSLocation;
 
 public class VenueDBEntry {
 	private GPSLocation gpsLocation;
-	private VenueResponse[] venueResponse = null;
+	private VenueResponse venueResponse = null;
 
-	public VenueDBEntry(GPSLocation gpsLocation, VenueResponse[] venueResponse) {
+	public VenueDBEntry(GPSLocation gpsLocation, VenueResponse venueResponse) {
 		this.gpsLocation = gpsLocation;
 		this.venueResponse = venueResponse;
 	}
-	
+
 	public GPSLocation getGPSLocation() {
 		return this.gpsLocation;
 	}
@@ -41,7 +41,7 @@ public class VenueDBEntry {
 		return true;
 	}
 
-	public VenueResponse[] getResponses() {
+	public VenueResponse getResponse() {
 		return this.venueResponse;
 	}
 }

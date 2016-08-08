@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import foursquare.venue.service.CompleteVenueRequest;
 import foursquare.venue.service.FoursquareVenuesService;
 import foursquare.venue.service.VenueResponse;
 import main.APIKeys;
@@ -41,12 +42,22 @@ public class VenueDB {
 					.latitudeLongitude(l.getLatitude(), l.getLongitude()).limit(50).radius(100).execute();
 
 			if (venueResponse != null && venueResponse.length > 0) {
-				venueDB.venues.add(new VenueDBEntry(l, venueResponse));
+				VenueResponse minDistVenue = venueResponse[0];
+
+				for (int i = 1; i < venueResponse.length; i++) {
+					if (venueResponse[i].location.distance < minDistVenue.location.distance) {
+						minDistVenue = venueResponse[i];
+					}
+				}
+
+				CompleteVenueRequest completeVenueRequest = new CompleteVenueRequest(APIKeys.FOURSQUARE_CLIENT_ID,
+						APIKeys.FOURSQUARE_CLIENT_SECRET, minDistVenue.id);
+				VenueResponse response = completeVenueRequest.execute();
+
+				venueDB.venues.add(new VenueDBEntry(l, response));
 			}
 		}
-		
-		
-		
+
 		System.out.println(venueDB.getSize());
 		venueDB.writeVenuesToJson();
 
@@ -70,19 +81,13 @@ public class VenueDB {
 
 	public VenueResponse findNearestVenue(GPSLocation location) {
 		VenueResponse result = null;
-		VenueResponse[] possibleVenues = null;
 
 		for (VenueDBEntry e : venues) {
 			if (e.getGPSLocation().equals(location)) {
-				possibleVenues = e.getResponses();
-				break;
-			}
-		}
+				VenueResponse v = e.getResponse();
 
-		if (possibleVenues != null && possibleVenues.length > 0) {
-			result = null;
+				result = null;
 
-			for (VenueResponse v : possibleVenues) {
 				if (result == null && v.categories.length > 0) {
 					result = v;
 				}
