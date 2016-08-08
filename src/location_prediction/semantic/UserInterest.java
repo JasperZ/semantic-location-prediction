@@ -70,7 +70,7 @@ public class UserInterest {
 		characteristicsStr += "}";
 //		characteristicsStr = characteristicsStr.replaceAll(",}", "}");
 
-		return String.format(Locale.ENGLISH, "%s\t%s\t%d\t%s\t%.2f", category.name, characteristicsStr,
+		return String.format(Locale.ENGLISH, "%s\t%s\t%d\t%s\t%.3f", category.name, characteristicsStr,
 				getAverageTime(), interval, importance);
 	}
 
