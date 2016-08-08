@@ -1,6 +1,10 @@
 package reality_mining.user_profile;
 
+import java.util.HashSet;
+
 import foursquare.venue.category.Category;
+import main.HelperFunctions;
+import main.stay.GPSPoint;
 
 public class StayLoc {
 	private Long startTimestamp;
@@ -13,6 +17,7 @@ public class StayLoc {
 	private String userLabel;
 	private Category primaryCategory;
 	private Category topCategory;
+	private HashSet<Category> categories;
 
 	public StayLoc(long startTimestamp, long endTimestamp, Integer locationAreaCode, Integer cellId, Double lat,
 			Double lng, Double accuracy, String userLabel) {
@@ -26,6 +31,7 @@ public class StayLoc {
 		this.userLabel = userLabel;
 		this.primaryCategory = null;
 		this.topCategory = null;
+		this.categories = new HashSet<>();
 	}
 
 	public StayLoc(long startTimestamp, long endTimestamp, Integer locationAreaCode, Integer cellId) {
@@ -39,6 +45,7 @@ public class StayLoc {
 		this.userLabel = null;
 		this.primaryCategory = null;
 		this.topCategory = null;
+		this.categories = new HashSet<>();
 	}
 
 	public StayLoc(long startTimestamp, long endTimestamp, Loc loc) {
@@ -52,6 +59,7 @@ public class StayLoc {
 		this.userLabel = loc.getUserLabel();
 		this.primaryCategory = null;
 		this.topCategory = null;
+		this.categories = new HashSet<>();
 	}
 
 	public StayLoc() {
@@ -65,6 +73,7 @@ public class StayLoc {
 		this.userLabel = null;
 		this.primaryCategory = null;
 		this.topCategory = null;
+		this.categories = new HashSet<>();
 	}
 
 	@Override
@@ -266,16 +275,46 @@ public class StayLoc {
 		}
 	}
 
+	public boolean isInCategory(Category category) {
+		return this.categories.contains(category);
+	}
+
+	public HashSet<Category> getCategories() {
+		return categories;
+	}
+
+	public void addCategory(Category category) {
+		if (category != null) {
+			categories.add(category);
+		}
+	}
+
 	@Override
 	public String toString() {
 		return locationAreaCode + "." + cellId;
 		// return String.format(
 		// "timestamp: %s,\tlac: %d,\tcellId: %d,\tlatitude: %f,\tlongitude:
 		// %f,\taccuracy: %f,\tuserLabel: %s",
-		// startTimestamp, locationAreaCode, cellId, lat, lng, accuracy, userLabel);
+		// startTimestamp, locationAreaCode, cellId, lat, lng, accuracy,
+		// userLabel);
 	}
 
 	public String toShortString() {
 		return locationAreaCode + "." + cellId;
+	}
+
+	public double distance(StayLoc loc2) {
+		if (this.isLatitudeAvailable() && this.isLongitudeAvailable() && loc2.isLatitudeAvailable()
+				&& loc2.isLongitudeAvailable()) {
+			double distance = 0.0;
+			GPSPoint p1 = new GPSPoint(this.lat, this.lng, 0);
+			GPSPoint p2 = new GPSPoint(loc2.lat, loc2.lng, 0);
+
+			distance = HelperFunctions.distance(p1, p2);
+
+			return distance;
+		} else {
+			return -1.0;
+		}
 	}
 }
