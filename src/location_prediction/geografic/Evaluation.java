@@ -17,7 +17,7 @@ public class Evaluation {
 		evaluation.Evaluation evaluation = new evaluation.Evaluation(
 				DatasetPreparation.FINAL_DAILY_USER_PROFILE_DIRECTORY, 5.0);
 
-		for (double supp = 0.000; supp <= 0.04; supp += 0.005) {
+		for (double supp = 0.000; supp <= 0.04; supp += 0.002) {
 			Score thAgg = new Score.AvgScore();
 
 			// build pattern database from training sequences
@@ -25,7 +25,7 @@ public class Evaluation {
 			double patternMinSupport = 0.0 + supp;
 
 			patternDB.generatePatterns(patternMinSupport);
-			System.out.println("Pattern database size: " + patternDB.size());
+			System.out.println("minSupport: " + supp + " Pattern database size: " + patternDB.size());
 
 			// build TPattern tree by inserting all patterns, starting with
 			// patterns
@@ -63,7 +63,9 @@ public class Evaluation {
 					}
 				}
 
-				System.out.println("accuracy: " + evaluation.getAccuracy());
+				// System.out.println(evaluation.currentStatsToString());
+				// System.out.println("accuracy: " + evaluation.getAccuracy());
+				// System.out.println();
 
 				evaluation.logCurrentStats(thScore);
 				evaluation.resetCurrentStats();
@@ -71,7 +73,9 @@ public class Evaluation {
 
 			System.out.println();
 
-			evaluation.saveDataLogger(String.format(Locale.ENGLISH, "/home/jasper/nextcloud/KIT/Sommersemester 2016/Proseminar/Evaluation/geographic/stats_%s_minSup-%f.csv", thAgg.toString(), patternMinSupport));
+			evaluation.saveDataLogger(String.format(Locale.ENGLISH,
+					"/home/jasper/nextcloud/KIT/Sommersemester 2016/Proseminar/Evaluation/geographic/stats_%s_minSup-%f.csv",
+					thAgg.toString(), patternMinSupport));
 			evaluation.resetDataLogger();
 		}
 	}
