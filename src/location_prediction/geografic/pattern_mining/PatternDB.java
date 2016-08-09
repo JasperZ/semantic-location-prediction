@@ -1,9 +1,5 @@
 package location_prediction.geografic.pattern_mining;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,6 +9,12 @@ import java.util.Map.Entry;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * A pattern database to manage pattern generation and other common tasks
+ * 
+ * @author jasper
+ *
+ */
 public class PatternDB {
 	public static final String PATTERN_DB_FILE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/patterns.txt";
 	private Sequence[] sequences;
@@ -36,6 +38,13 @@ public class PatternDB {
 		this.patterns = new HashMap<>();
 	}
 
+	/**
+	 * Adds a pattern to this database if it isn't already contained. If so only
+	 * the appearance is added to the contained pattern.
+	 * 
+	 * @param pattern
+	 *            Pattern to add
+	 */
 	private void add(Pattern pattern) {
 		HashMap<Integer, Pattern> h = this.patterns.get(pattern.length());
 
@@ -64,6 +73,11 @@ public class PatternDB {
 		return patterns.isEmpty();
 	}
 
+	/**
+	 * Merges a set of patterns with this database
+	 * 
+	 * @param newPatterns
+	 */
 	private void merge(HashMap<Integer, Pattern> newPatterns) {
 		for (Entry<Integer, Pattern> e : newPatterns.entrySet()) {
 			add(e.getValue());
@@ -197,6 +211,12 @@ public class PatternDB {
 		}
 	}
 
+	/**
+	 * Calculates the support value for all patterns of the given length
+	 * 
+	 * @param patternLength
+	 *            Length of the patterns to calculate the updated support
+	 */
 	private void updateSupports(int patternLength) {
 		HashMap<Integer, Pattern> h = this.patterns.get(patternLength);
 
@@ -216,6 +236,15 @@ public class PatternDB {
 		}
 	}
 
+	/**
+	 * Removes all patterns with a given length and a support value below the
+	 * given one
+	 * 
+	 * @param patternLength
+	 *            Length of the potential patterns to remove
+	 * @param minSupport
+	 *            Support value for comparison
+	 */
 	private void removeBySupport(int patternLength, double minSupport) {
 		HashMap<Integer, Pattern> h = this.patterns.get(patternLength);
 
@@ -231,29 +260,6 @@ public class PatternDB {
 			for (Pattern p : toRemove) {
 				h.remove(p.hashCode());
 			}
-		}
-	}
-
-	/**
-	 * Saves content of database to file for debugging purposes
-	 */
-	public void saveToFile() {
-		File file = new File(PATTERN_DB_FILE_PATH);
-
-		try {
-			FileWriter writer = new FileWriter(file);
-			BufferedWriter bufferedWriter = new BufferedWriter(writer);
-
-			for (Entry<Integer, HashMap<Integer, Pattern>> e : patterns.entrySet()) {
-				for (Entry<Integer, Pattern> f : e.getValue().entrySet()) {
-					bufferedWriter.write(f.getValue().toString() + "\n");
-				}
-			}
-
-			writer.flush();
-			writer.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		}
 	}
 
@@ -276,7 +282,6 @@ public class PatternDB {
 	 */
 	public HashSet<Pattern> getPatterns(int patternLength) {
 		HashSet<Pattern> result = new HashSet<>();
-
 		HashMap<Integer, Pattern> p = patterns.get(patternLength);
 
 		if (p != null) {
@@ -284,30 +289,6 @@ public class PatternDB {
 				result.add(e.getValue());
 			}
 		}
-
-		return result;
-	}
-
-	/**
-	 * calculates the data-coverage of the pattern database
-	 * 
-	 * @return Data-coverage
-	 */
-	public double dataCoverage() {
-		double result;
-		HashSet<Sequence> supportedSequences = new HashSet<>();
-
-		for (Entry<Integer, HashMap<Integer, Pattern>> e : patterns.entrySet()) {
-			for (Entry<Integer, Pattern> f : e.getValue().entrySet()) {
-				Pattern p = f.getValue();
-
-				for (Appearance a : p.getAppearances()) {
-					supportedSequences.add(a.getSequence());
-				}
-			}
-		}
-
-		result = (double) supportedSequences.size() / (double) sequences.length;
 
 		return result;
 	}

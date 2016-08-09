@@ -5,6 +5,12 @@ import java.util.Arrays;
 
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * Sequence of stay-location with a unique id for identification
+ * 
+ * @author jasper
+ *
+ */
 public class Sequence {
 	private static long idCounter = 0;
 

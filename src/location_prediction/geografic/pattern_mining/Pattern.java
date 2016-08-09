@@ -5,6 +5,12 @@ import java.util.HashSet;
 
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * Pattern of stay-locations and interval annotations between them
+ * 
+ * @author jasper
+ *
+ */
 public class Pattern {
 	private static long idCounter = 0;
 
@@ -142,7 +148,7 @@ public class Pattern {
 	}
 
 	/**
-	 * Adds a set ov appearances where this pattern appears
+	 * Adds a set of appearances where this pattern appears
 	 * 
 	 * @param appearances
 	 *            Set of appearances to add
@@ -154,7 +160,7 @@ public class Pattern {
 	}
 
 	/**
-	 * Return set of appearances where the pattern appears
+	 * Return a set of appearances where the pattern appears
 	 * 
 	 * @return Set of appearances
 	 */
@@ -163,7 +169,7 @@ public class Pattern {
 	}
 
 	/**
-	 * Updates all transitions intervals of the pattern by comparing them one by
+	 * Update all transition intervals of the pattern by comparing them one by
 	 * one
 	 * 
 	 * @param intervals

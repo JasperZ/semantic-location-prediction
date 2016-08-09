@@ -1,17 +1,23 @@
 package location_prediction.geografic.pattern_mining;
 
+/**
+ * Denotes the appearance in a sequence with a start and end index
+ * 
+ * @author jasper
+ *
+ */
 public class Appearance {
 	private Sequence sequence;
 	private int startIndex;
 	private int endIndex;
 
 	/**
-	 * Creates a new appearance in a sequenze between the start and end index
+	 * Creates a new appearance in a sequence between the start and end index
 	 * 
 	 * @param sequence
-	 *            Sequence of appearence
+	 *            Sequence of appearance
 	 * @param startIndex
-	 *            Index where the appearnce starts
+	 *            Index where the appearance starts
 	 * @param endIndex
 	 *            Index where the appearance ends
 	 */
@@ -22,7 +28,7 @@ public class Appearance {
 	}
 
 	/**
-	 * Returns the seqquence of appearance
+	 * Returns the sequence of appearance
 	 * 
 	 * @return Sequence of appearance
 	 */
@@ -40,7 +46,7 @@ public class Appearance {
 	}
 
 	/**
-	 * Returns the index where the appearance end
+	 * Returns the index where the appearance ends
 	 * 
 	 * @return Index where appearance ends
 	 */

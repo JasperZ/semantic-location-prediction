@@ -1,5 +1,11 @@
 package location_prediction.geografic.pattern_mining;
 
+/**
+ * An time interval with a start and end timestamp
+ * 
+ * @author jasper
+ *
+ */
 public class Interval {
 	private long start;
 	private long end;
@@ -36,7 +42,7 @@ public class Interval {
 	}
 
 	/**
-	 * Returns the length of the interal
+	 * Returns the length of the interval
 	 * 
 	 * @return Length of the interval
 	 */
