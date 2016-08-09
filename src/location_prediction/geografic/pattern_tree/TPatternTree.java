@@ -8,6 +8,12 @@ import location_prediction.geografic.pattern_mining.Interval;
 import location_prediction.geografic.pattern_mining.Pattern;
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * T-Pattern tree
+ * 
+ * @author jasper
+ *
+ */
 public class TPatternTree {
 	private Node root;
 
@@ -95,17 +101,6 @@ public class TPatternTree {
 		return result;
 	}
 
-	public ArrayList<StayLoc> whereNextCandidates(ArrayList<StayLoc> stayLocSequence, Score score, double thScore) {
-		HashSet<Path> candidates = new HashSet<>(whereNextCandidatesIntern(stayLocSequence, score, thScore));
-		HashSet<StayLoc> resultSet = new HashSet<>();
-
-		for (Path path : candidates) {
-			resultSet.add(path.lastNode().getStayLoc());
-		}
-
-		return new ArrayList<StayLoc>(resultSet);
-	}
-
 	/**
 	 * Returns a list of possible candidates for prediction based on the
 	 * stay-location sequence, a score function, a time and score threshold
@@ -135,7 +130,7 @@ public class TPatternTree {
 					if (c.getStayLoc().equals(cStayLoc)) {
 						Path p = new Path(path);
 
-						p.append(c, c.getSupport());
+						p.append(c);
 						newPaths.add(p);
 					}
 				}
@@ -156,7 +151,7 @@ public class TPatternTree {
 							if (c.getStayLoc().equals(cStayLoc) && c.includes(new Interval(duration, duration))) {
 								Path p = new Path(path);
 
-								p.append(c, c.getSupport());
+								p.append(c);
 								newPaths.add(p);
 								pathExtended = true;
 							}
@@ -188,7 +183,7 @@ public class TPatternTree {
 				for (Node n : p.lastNode().getChildren()) {
 					Path newPath = new Path(p);
 
-					p.append(n, n.getSupport());
+					p.append(n);
 
 					if (newPath.score(score) >= thScore) {
 						pathCandidates.add(newPath);
@@ -200,35 +195,5 @@ public class TPatternTree {
 		}
 
 		return new ArrayList<>();
-	}
-
-	/**
-	 * Returns a string in graphviz format, representing the T-Pattern Tree
-	 * 
-	 * @return String containing the Tree
-	 */
-	public String toGraphviz() {
-		String result = "digraph G {";
-		ArrayList<Node> currentNodes = new ArrayList<>();
-		ArrayList<Node> nextNodes;
-
-		currentNodes.add(root);
-
-		while (!currentNodes.isEmpty()) {
-			nextNodes = new ArrayList<>();
-
-			for (Node n : currentNodes) {
-				for (Node c : n.getChildren()) {
-					result += "\t" + n.toString() + " -> " + c.toString() + ";\n";
-					nextNodes.add(c);
-				}
-			}
-
-			currentNodes = nextNodes;
-		}
-
-		result += "}";
-
-		return result;
 	}
 }

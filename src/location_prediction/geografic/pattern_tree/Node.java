@@ -6,6 +6,12 @@ import java.util.Locale;
 import location_prediction.geografic.pattern_mining.Interval;
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * Node for T-Pattern tree
+ * 
+ * @author jasper
+ *
+ */
 public class Node {
 	private static long idCounter = 0;
 	private long id;
@@ -103,11 +109,6 @@ public class Node {
 	public HashSet<Node> getChildren() {
 		return this.children;
 	}
-
-	/*
-	 * // returns interval for edge from parent to itselfe public Interval
-	 * getInterval() { return interval; }
-	 */
 
 	/**
 	 * Returns a children with equal stay-location and included interval
