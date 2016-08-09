@@ -1,4 +1,4 @@
-package location_prediction.geografic.pattern_tree;
+package location_prediction.geographic.pattern_tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;

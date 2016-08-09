@@ -1,11 +1,11 @@
-package location_prediction.geografic.pattern_tree;
+package location_prediction.geographic.pattern_tree;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import location_prediction.geografic.pattern_mining.Interval;
-import location_prediction.geografic.pattern_mining.Pattern;
+import location_prediction.geographic.pattern_mining.Interval;
+import location_prediction.geographic.pattern_mining.Pattern;
 import reality_mining.user_profile.StayLoc;
 
 /**

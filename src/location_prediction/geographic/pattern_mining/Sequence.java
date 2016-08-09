@@ -1,4 +1,4 @@
-package location_prediction.geografic.pattern_mining;
+package location_prediction.geographic.pattern_mining;
 
 import java.util.ArrayList;
 import java.util.Arrays;

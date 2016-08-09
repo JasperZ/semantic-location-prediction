@@ -1,4 +1,4 @@
-package location_prediction.geografic.pattern_tree;
+package location_prediction.geographic.pattern_tree;
 
 /**
  * Score for a path contained by a T-Pattern tree
