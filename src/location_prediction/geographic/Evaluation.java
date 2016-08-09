@@ -10,6 +10,12 @@ import reality_mining.DatasetPreparation;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * Program to evaluate the prediction capabilities of the geographic approach
+ * 
+ * @author jasper
+ *
+ */
 public class Evaluation {
 	public static final String EVALUATION_DIRECTORY = "data_directory/evaluation/geographic";
 
@@ -25,14 +31,13 @@ public class Evaluation {
 		double scoreThresholdEnd = 0.5;
 		double scoreThresholdStepWidth = 0.01;
 
-		for (double supp = supportStart; supp <= supportEnd; supp += supportStepWidth) {
+		for (double minSupport = supportStart; minSupport <= supportEnd; minSupport += supportStepWidth) {
 			Score thAgg = new Score.AvgScore();
 
 			// build pattern database from training sequences
 			PatternDB patternDB = new PatternDB(evaluation.getTrainingProfiles());
-			double patternMinSupport = 0.0 + supp;
 
-			patternDB.generatePatterns(patternMinSupport);
+			patternDB.generatePatterns(minSupport);
 
 			// build TPattern tree by inserting all patterns, starting with
 			// patterns
@@ -43,7 +48,7 @@ public class Evaluation {
 				patternTree.build(patternDB.getPatterns(i));
 			}
 
-			for (double thScore = scoreThresholdStart; thScore <= scoreThresholdEnd; thScore += scoreThresholdStepWidth) {
+			for (double scoreThreshold = scoreThresholdStart; scoreThreshold <= scoreThresholdEnd; scoreThreshold += scoreThresholdStepWidth) {
 				for (DailyUserProfile p : evaluation.getTestProfiles()) {
 					for (int postPredictionLength = 1; postPredictionLength < p.getStayLocs().size()
 							- 1; postPredictionLength++) {
@@ -59,19 +64,19 @@ public class Evaluation {
 							}
 
 							correctResult = p.getStayLocs().get(j + postPredictionLength);
-							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, thScore);
+							predictionResult = patternTree.whereNext(postPredictionStayLocs, thAgg, scoreThreshold);
 
 							evaluation.evaluatePrediction(correctResult, predictionResult);
 						}
 					}
 				}
 
-				evaluation.logCurrentStats(thScore);
+				evaluation.logCurrentStats(scoreThreshold);
 				evaluation.resetCurrentStats();
 			}
 
 			evaluation.saveDataLogger(String.format(Locale.ENGLISH, "%s/stats_%s_minSup-%f.csv", EVALUATION_DIRECTORY,
-					thAgg.toString(), patternMinSupport));
+					thAgg.toString(), minSupport));
 			evaluation.resetDataLogger();
 		}
 	}
