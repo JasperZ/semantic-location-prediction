@@ -50,6 +50,7 @@ public class Evaluation {
 
 			for (double scoreThreshold = scoreThresholdStart; scoreThreshold <= scoreThresholdEnd; scoreThreshold += scoreThresholdStepWidth) {
 				for (DailyUserProfile p : evaluation.getTestProfiles()) {
+					// Test all possible lengths
 					for (int postPredictionLength = 1; postPredictionLength < p.getStayLocs().size()
 							- 1; postPredictionLength++) {
 						for (int j = 0; j < p.getStayLocs().size() - postPredictionLength; j++) {
