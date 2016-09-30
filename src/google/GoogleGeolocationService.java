@@ -17,13 +17,36 @@ import main.APIKeys;
 import open_cell_id.MobileCell;
 import reality_mining.GeolocationRequest;
 
+/**
+ * A service to search for location area codes and cell ids in the googel
+ * geolocation API
+ * 
+ * @author jasper
+ *
+ */
 public class GoogleGeolocationService {
 	public static final String API_URL = "https://www.googleapis.com/geolocation/v1/geolocate?key=%s";
 
+	/**
+	 * Returns base url for API request with filled in API key
+	 * 
+	 * @return Base url vor geolocation request
+	 */
 	private static String getUrl() {
 		return String.format(API_URL, APIKeys.GOOGLE_API_KEY);
 	}
 
+	/**
+	 * Searches for given location area code and cell id in the google
+	 * geolocation database
+	 * 
+	 * @param locationAreaCode
+	 *            Location area code to search for
+	 * @param cellId
+	 *            Cell id to search for
+	 * @return The location of the mobile cell or null if no matching entry was
+	 *         found
+	 */
 	public static LocationResponse getCellTowerLocation(int locationAreaCode, int cellId) {
 		Gson gson = new GsonBuilder().create();
 		GeolocationRequest request = new GeolocationRequest();
