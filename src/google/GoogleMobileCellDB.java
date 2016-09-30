@@ -13,7 +13,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import open_cell_id.MobileCell;
-import reality_mining.DatasetPreparation;
+import reality_mining.DatasetPreparationStep1;
 import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
 import reality_mining.user_profile.UserProfileReader;
@@ -51,7 +51,7 @@ public class GoogleMobileCellDB {
 
 		if (cellDB.getSize() == 0) {
 			cellDB.mobileCells = cellDB.generateUniqueMobileCellSet(
-					UserProfileReader.readJsonUserProfiles(DatasetPreparation.FINAL_USER_PROFILE_DIRECTORY, 2, 106));
+					UserProfileReader.readJsonUserProfiles(DatasetPreparationStep1.FINAL_USER_PROFILE_DIRECTORY, 2, 106));
 		}
 
 		System.out.println(cellDB.getSize());

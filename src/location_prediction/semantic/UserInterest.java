@@ -1,6 +1,5 @@
 package location_prediction.semantic;
 
-import java.util.HashSet;
 import java.util.Locale;
 
 import foursquare.venue.category.Category;

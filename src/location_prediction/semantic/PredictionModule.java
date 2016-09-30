@@ -2,12 +2,8 @@ package location_prediction.semantic;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
-import foursquare.venue.category.Category;
 import location_prediction.semantic.dempster_shafer.Hypothese;
 import location_prediction.semantic.dempster_shafer.Hypotheses;
 import location_prediction.semantic.reasoning_engine.information_gathering.environment_context.SCM;
@@ -115,7 +111,7 @@ public class PredictionModule {
 			tmp = hyposAll.get(0);
 
 			for (int i = 1; i < hyposAll.size(); i++) {
-				tmp = tmp.compbine(hyposAll.get(i));
+				tmp = tmp.combine(hyposAll.get(i));
 			}
 		}
 
@@ -156,7 +152,7 @@ public class PredictionModule {
 
 		for (StayLoc l : frameOfdiscrement) {
 			for (UserInterest interest : userContext.getInterests()) {
-				if (l.isInCategory(interest.getCategory()) && (interest.getInterval().includes(predictionTime)
+				if (interest.getCategory().includes(l.getPrimaryCategory()) && (interest.getInterval().includes(predictionTime)
 						|| interest.getAverageTime() < interest.getInterval().getEnd() - predictionTime)) {
 					userInterests.add(interest);
 				}

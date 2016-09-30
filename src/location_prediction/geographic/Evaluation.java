@@ -6,7 +6,7 @@ import java.util.Locale;
 import location_prediction.geographic.pattern_mining.PatternDB;
 import location_prediction.geographic.pattern_tree.Score;
 import location_prediction.geographic.pattern_tree.TPatternTree;
-import reality_mining.DatasetPreparation;
+import reality_mining.DatasetPreparationStep3;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.user_profile.StayLoc;
 
@@ -21,7 +21,7 @@ public class Evaluation {
 
 	public static void main(String args[]) {
 		evaluation.Evaluation evaluation = new evaluation.Evaluation(
-				DatasetPreparation.FINAL_DAILY_USER_PROFILE_DIRECTORY, 5.0);
+				DatasetPreparationStep3.FINAL_DAILY_USER_PROFILE_DIRECTORY, 5.0);
 
 		double supportStart = 0.005;
 		double supportEnd = 0.04;

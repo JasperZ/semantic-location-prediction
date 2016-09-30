@@ -16,7 +16,7 @@ import foursquare.venue.service.CompleteVenueRequest;
 import foursquare.venue.service.FoursquareVenuesService;
 import foursquare.venue.service.VenueResponse;
 import main.APIKeys;
-import reality_mining.DatasetPreparation;
+import reality_mining.DatasetPreparationStep1;
 import reality_mining.GPSLocation;
 import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
@@ -42,7 +42,7 @@ public class VenueDB {
 		VenueDB venueDB = new VenueDB();
 
 		HashSet<GPSLocation> gpsSet = generateUniqueGPSSet(
-				UserProfileReader.readJsonUserProfiles(DatasetPreparation.FINAL_USER_PROFILE_DIRECTORY, 2, 106));
+				UserProfileReader.readJsonUserProfiles(DatasetPreparationStep1.FINAL_USER_PROFILE_DIRECTORY, 2, 106));
 
 		System.out.println(gpsSet.size());
 

@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import data_logger.DataEntry;
 import data_logger.DataLogger;
-import reality_mining.DatasetPreparation;
+import reality_mining.DatasetPreparationStep3;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.daily_user_profile.DailyUserProfileReader;
 import reality_mining.user_profile.StayLoc;
@@ -43,7 +43,7 @@ public class Evaluation {
 	 */
 	public Evaluation(String dailyUserProfileDirectoryPath, double percentageOfTestProfiles) {
 		dailyUserProfiles = DailyUserProfileReader
-				.readJsonDailyUserProfiles(DatasetPreparation.FINAL_DAILY_USER_PROFILE_DIRECTORY);
+				.readJsonDailyUserProfiles(DatasetPreparationStep3.FINAL_DAILY_USER_PROFILE_DIRECTORY);
 		dataLogger = new DataLogger();
 
 		filterProfiles();

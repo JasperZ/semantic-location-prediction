@@ -91,7 +91,7 @@ public class Hypotheses<T> implements Iterable<Hypothese<T>> {
 	 * @return Container of hypotheses containing the new calculated belief
 	 *         values
 	 */
-	public Hypotheses<T> compbine(Hypotheses<T> otherHypotheses) {
+	public Hypotheses<T> combine(Hypotheses<T> otherHypotheses) {
 		Hypotheses<T> hypos1 = this;
 		Hypotheses<T> result = new Hypotheses<>();
 		HashMap<Hypothese<T>, Double> hypos = new HashMap<>();
