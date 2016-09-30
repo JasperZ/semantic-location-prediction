@@ -20,11 +20,17 @@ import reality_mining.user_profile.UserProfile;
 import reality_mining.user_profile.UserProfileWriter;
 
 public class DatasetPreparation {
-	public static final String FINAL_USER_PROFILE_DIRECTORY = "/home/jasper/SemanticLocationPredictionData/RealityMining/final_user_profiles";
-	public static final String FINAL_DAILY_USER_PROFILE_DIRECTORY = "/home/jasper/SemanticLocationPredictionData/RealityMining/final_daily_user_profiles";
+	public static final String FINAL_USER_PROFILE_DIRECTORY = "data_directory/reality_mining/final_user_profiles";
+	public static final String FINAL_DAILY_USER_PROFILE_DIRECTORY = "data_directory/reality_mining/final_daily_user_profiles";
 	// time threshold in milliseconds
 	private static final long TIME_TRHESHOLD = 30 * 60 * 1000;
 
+	/**
+	 * Program to prepare data for use with the geographic and semantic
+	 * prediction
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		ArrayList<UserProfile> userProfiles;
 		ArrayList<DailyUserProfile> dailyUserProfiles;
@@ -42,6 +48,14 @@ public class DatasetPreparation {
 		DailyUserProfileWriter.writeDailyUserProfilesToJson(FINAL_DAILY_USER_PROFILE_DIRECTORY, dailyUserProfiles);
 	}
 
+	/**
+	 * Splits the given user profiles into daily profiles, which contain only
+	 * trajectories of a single day
+	 * 
+	 * @param userProfiles
+	 *            User profiles to split
+	 * @return Daily user Profiles
+	 */
 	public static ArrayList<DailyUserProfile> createDailyUserProfiles(ArrayList<UserProfile> userProfiles) {
 		ArrayList<DailyUserProfile> dailyUserProfiles = new ArrayList<>();
 
@@ -91,6 +105,15 @@ public class DatasetPreparation {
 
 	}
 
+	/**
+	 * Converts the exported folders from matlab from CSV to user profiles
+	 * 
+	 * @param startId
+	 *            User id to start with
+	 * @param endId
+	 *            Last user id to convert
+	 * @return ArrayList of user profiles
+	 */
 	public static ArrayList<UserProfile> convertCSVToUserProfiles(int startId, int endId) {
 		ArrayList<UserProfile> userProfiles = new ArrayList<>();
 
@@ -115,6 +138,12 @@ public class DatasetPreparation {
 		return userProfiles;
 	}
 
+	/**
+	 * Performs the stay location detection and adds them to the user profile
+	 * 
+	 * @param userProfiles
+	 *            ArrayList of user profiles to perform the detection on
+	 */
 	public static void stayLocDetection(ArrayList<UserProfile> userProfiles) {
 		System.out.println("perform stay-location detection");
 
@@ -125,7 +154,13 @@ public class DatasetPreparation {
 		}
 	}
 
-	public static void detectStayLocs(UserProfile userProfile) {
+	/**
+	 * Performs the actual stay location detection for a single user profile
+	 * 
+	 * @param userProfile
+	 *            User profile to use for detection
+	 */
+	private static void detectStayLocs(UserProfile userProfile) {
 		List<Loc> locTrajectory = userProfile.getLocs();
 		ArrayList<StayLoc> stayLocs = new ArrayList<>();
 		Loc a = null;
@@ -185,6 +220,12 @@ public class DatasetPreparation {
 		userProfile.setStayLocs(stayLocs);
 	}
 
+	/**
+	 * Adds user labels to the profile
+	 * 
+	 * @param userProfiles
+	 *            ArrayList of user profiles
+	 */
 	public static void cellnameFusion(ArrayList<UserProfile> userProfiles) {
 		System.out.println("perform cellname fusion");
 
@@ -193,6 +234,13 @@ public class DatasetPreparation {
 		}
 	}
 
+	/**
+	 * Adds the GPS coordinates to the stay locations in a user profile if these
+	 * are available
+	 * 
+	 * @param userProfiles
+	 *            ArrayList of user profiles for this task
+	 */
 	public static void mobileCellFusion(ArrayList<UserProfile> userProfiles) {
 		GoogleMobileCellDB cellDB = new GoogleMobileCellDB();
 
@@ -215,6 +263,12 @@ public class DatasetPreparation {
 		}
 	}
 
+	/**
+	 * Adds the foursquare category of a stay location if available
+	 * 
+	 * @param userProfiles
+	 *            ArrayList of user profiles for this task
+	 */
 	public static void foursquareFusion(ArrayList<UserProfile> userProfiles) {
 		VenueDB venueDB = new VenueDB();
 		CategoryDB categoryDB = new CategoryDB();

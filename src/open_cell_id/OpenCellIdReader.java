@@ -6,6 +6,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * THIS WAS ONLY USED FOR TESTING AND WAS REPLACED BY THE GOOGLE GEOLOCATION
+ * API!!!
+ * 
+ * @author jasper
+ *
+ */
 public class OpenCellIdReader {
 	public final static String PATH = "/home/jasper/SemanticLocationPredictionData/OpenCellId/cell_towers.csv";
 

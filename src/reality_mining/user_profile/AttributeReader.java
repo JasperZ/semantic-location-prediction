@@ -8,8 +8,14 @@ import java.util.ArrayList;
 
 import main.HelperFunctions;
 
+/**
+ * Lots of readers to read the reality mining dataset from CSV files
+ * 
+ * @author jasper
+ *
+ */
 public class AttributeReader {
-	public final static String BASE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining";
+	public final static String BASE_PATH = "data_directory/reality_mining/csv";
 
 	public static String readNeighborhood(int user) {
 		String neighborhood = "";
@@ -195,7 +201,8 @@ public class AttributeReader {
 		if (splitLineCell.length == 2) {
 			locationAreaCode = Integer.valueOf(splitLineCell[0]);
 			cellId = Integer.valueOf(splitLineCell[1]);
-			result = new Loc(HelperFunctions.matlabSerialDateToUnixtime(Double.valueOf(timestamp)), locationAreaCode, cellId);
+			result = new Loc(HelperFunctions.matlabSerialDateToUnixtime(Double.valueOf(timestamp)), locationAreaCode,
+					cellId);
 		}
 
 		return result;
@@ -269,7 +276,7 @@ public class AttributeReader {
 			userLabel = AttributeFilters.filterProviderFromStart(userLabel);
 			userLabel = AttributeFilters.filterStarFromString(userLabel);
 			userLabel = AttributeFilters.substituteCellnameUserLabel(userLabel);
-			
+
 			result = new Cellname(locationAreaCode, cellId, userLabel);
 		} else {
 			result = null;

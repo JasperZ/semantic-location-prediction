@@ -18,35 +18,16 @@ import com.google.gson.reflect.TypeToken;
 import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
 
+/**
+ * THIS WAS ONLY USED FOR TESTING AND WAS REPLACED BY THE GOOGLE GEOLOCATION API!!!
+ * @author jasper
+ *
+ */
 public class OpenCellIdMobileCellDB {
-	public static final String MOBILE_CELL_DATABASE_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/mobile_cells_databases/mobile_cells_opencellid.json";
+	public static final String MOBILE_CELL_DATABASE_PATH = "data_directory/opencellid/mobile_cells.json";
 	private HashSet<MobileCell> mobileCells;
 
 	public static void main(String[] args) {
-		/*
-		 * int i = 0; OpenCellIdMobileCellDB cellDB = new
-		 * OpenCellIdMobileCellDB();
-		 * 
-		 * cellDB.readJsonMobileCells();
-		 * 
-		 * System.out.println(cellDB.getSize());
-		 * 
-		 * for (MobileCell c : cellDB.mobileCells) { if
-		 * (!c.areGPSCoordinatesAvailable() && !c.getTriedToLocate()) {
-		 * LocationResponse response =
-		 * GoogleGeolocationService.getCellTowerLocation(c.getLocationAreaCode()
-		 * , c.getCellId());
-		 * 
-		 * if (response != null) { c.setLatitude(response.location.lat);
-		 * c.setLongitude(response.location.lng);
-		 * c.setAccuracy(response.accuracy); }
-		 * 
-		 * c.setTriedToLocate(true);
-		 * 
-		 * if (i++ == 1080) { break; } } }
-		 * 
-		 * cellDB.writeMobileCellsToJson();
-		 */
 		OpenCellIdMobileCellDB cellDB = new OpenCellIdMobileCellDB();
 
 		cellDB.readJsonMobileCells();

@@ -6,13 +6,30 @@ import java.util.Map.Entry;
 
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * Matrix of orientation, adjacency and characterizations
+ * 
+ * @author jasper
+ *
+ */
 public class MOAC {
 	private HashMap<MOACPosition, Cell> cells;
 
+	/**
+	 * Creates an empty MOAC
+	 */
 	public MOAC() {
 		this.cells = new HashMap<>();
 	}
 
+	/**
+	 * Adds an adjacency to the matrix, where stay is reachable from prevStay
+	 * 
+	 * @param prevStay
+	 *            Start stay location
+	 * @param stay
+	 *            End stay location
+	 */
 	public void add(StayLoc prevStay, StayLoc stay) {
 		if (prevStay != null && stay != null) {
 			Position prevPosition = new Position(prevStay.getLat(), prevStay.getLng());
@@ -33,6 +50,13 @@ public class MOAC {
 		}
 	}
 
+	/**
+	 * Returns all possible target locations for the given position
+	 * 
+	 * @param currentPosition
+	 *            Current position
+	 * @return Set of unique target locations
+	 */
 	public HashSet<StayLoc> getTargets(Position currentPosition) {
 		HashSet<StayLoc> targets = new HashSet<>();
 		HashSet<Position> positions = getPositions();
@@ -49,6 +73,11 @@ public class MOAC {
 		return targets;
 	}
 
+	/**
+	 * Set of all assigned positions in the MOAC
+	 * 
+	 * @return HashSet of all assigned positions in the MOAC
+	 */
 	private HashSet<Position> getPositions() {
 		HashSet<Position> positions = new HashSet<>();
 
@@ -60,55 +89,12 @@ public class MOAC {
 		return positions;
 	}
 
+	/**
+	 * Returns the number of full cells
+	 * 
+	 * @return Number of full cells
+	 */
 	public int size() {
 		return cells.size();
-	}
-
-	public String toCSVString() {
-		HashSet<Position> positions = new HashSet<>();
-		String out = "";
-
-		for (Entry<MOACPosition, Cell> e : cells.entrySet()) {
-			positions.add(e.getKey().getBegin());
-			positions.add(e.getKey().getEnd());
-		}
-
-		Cell[][] test = new Cell[positions.size()][positions.size()];
-
-		int y = 0;
-		int counter = 0;
-
-		for (Position pY : positions) {
-			int x = 0;
-
-			for (Position pX : positions) {
-				Cell c = cells.get(new MOACPosition(pX, pY));
-
-				if (c != null) {
-					counter++;
-				}
-
-				test[y][x] = c;
-				x++;
-			}
-
-			y++;
-		}
-
-		for (int i = 0; i < test.length; i++) {
-			for (int j = 0; j < test.length; j++) {
-				if (test[i][j] != null) {
-					out += test[i][j] + ";";
-				} else {
-					out += ";";
-				}
-			}
-
-			out += "\n";
-		}
-
-		System.out.println("counter: " + counter);
-
-		return out;
 	}
 }

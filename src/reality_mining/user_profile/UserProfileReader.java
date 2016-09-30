@@ -9,8 +9,25 @@ import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
 
+/**
+ * Methods to read user profiles from json file
+ * 
+ * @author jasper
+ *
+ */
 public class UserProfileReader {
 
+	/**
+	 * Reads user profiles from directory
+	 * 
+	 * @param directoryPath
+	 *            Directory containing user profiles
+	 * @param startId
+	 *            Id of the first profile to read
+	 * @param endId
+	 *            Id of the last profile to read
+	 * @return ArrayList of user Profiles
+	 */
 	public static ArrayList<UserProfile> readJsonUserProfiles(String directoryPath, int startId, int endId) {
 		ArrayList<UserProfile> userProfiles = new ArrayList<>();
 
@@ -25,6 +42,15 @@ public class UserProfileReader {
 		return userProfiles;
 	}
 
+	/**
+	 * Reads a single user profile from json file
+	 * 
+	 * @param directoryPath
+	 *            Directory containing the user profile
+	 * @param userId
+	 *            Id of the user profile to read
+	 * @return User profile if found, otherwise null
+	 */
 	public static UserProfile readJsonToUserProfile(String directoryPath, int userId) {
 		UserProfile user = null;
 

@@ -1,5 +1,11 @@
 package reality_mining.user_profile;
 
+/**
+ * Methods to trim strings from dataset provided
+ * 
+ * @author jasper
+ *
+ */
 public class AttributeFilters {
 	private final static String AVAILABLE_PROVIDERS[] = { "AT&TWirel", "AT&T", "T-Mobile", "TMO", "SONERA", "PANNONGSM",
 			"WESTEL", "VodafoneG", "VodafoneH", "Cingular", "verizon", "METEOR" };

@@ -12,7 +12,21 @@ import com.google.gson.GsonBuilder;
 
 import reality_mining.user_profile.UserProfile;
 
+/**
+ * Methods to write user profiles in json format to files
+ * 
+ * @author jasper
+ *
+ */
 public class UserProfileWriter {
+	/**
+	 * Write the provided user profiles to json files
+	 * 
+	 * @param directoryPath
+	 *            Directory where the profiles will be saved
+	 * @param userProfiles
+	 *            User profiles to write
+	 */
 	public static void writeUserProfilesToJson(String directoryPath, ArrayList<UserProfile> userProfiles) {
 		for (UserProfile p : userProfiles) {
 			String path = String.format("%s/user_%d.json", directoryPath, p.getId());
@@ -21,6 +35,14 @@ public class UserProfileWriter {
 		}
 	}
 
+	/**
+	 * Write a single user profile to a json file
+	 * 
+	 * @param path
+	 *            Path of the file to write to
+	 * @param user
+	 *            User profile to write
+	 */
 	public static void writeUserProfileToJson(String path, UserProfile user) {
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();

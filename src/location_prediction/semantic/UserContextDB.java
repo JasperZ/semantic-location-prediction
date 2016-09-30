@@ -6,19 +6,38 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import foursquare.venue.category.Category;
-import location_prediction.geografic.pattern_mining.Interval;
+import location_prediction.geographic.pattern_mining.Interval;
 import reality_mining.daily_user_profile.DailyUserProfile;
 import reality_mining.user_profile.StayLoc;
 
+/**
+ * A user context database
+ * 
+ * @author jasper
+ *
+ */
 public class UserContextDB {
 	private HashMap<Integer, UserContext> userContexts;
 
+	/**
+	 * Creates an new user context database
+	 * 
+	 * @param dailyUserProfiles
+	 *            Daily user profiles for building the database
+	 */
 	public UserContextDB(ArrayList<DailyUserProfile> dailyUserProfiles) {
 		this.userContexts = new HashMap<>();
 
 		buildUserContexts(dailyUserProfiles);
 	}
 
+	/**
+	 * Build the user context database by using statistics to get information
+	 * about the uses interests
+	 * 
+	 * @param dailyUserProfiles
+	 *            Daily user profiles to extract data from
+	 */
 	private void buildUserContexts(ArrayList<DailyUserProfile> dailyUserProfiles) {
 		HashMap<Integer, HashMap<Category, UserInterest>> userInterests = new HashMap<>();
 		HashMap<Integer, Integer> stayLocCounterPerUser = new HashMap<>();
@@ -63,10 +82,6 @@ public class UserContextDB {
 					userInterest.setImportance(userInterest.getImportance() + 1.0);
 					userInterest.setInterval(interval);
 					userInterest.updateAverageTime(l.getEndTimestamp() - l.getStartTimestamp());
-
-					if (l.isUserLabelAvailable()) {
-						userInterest.addCharacteristics(l.getUserLabel());
-					}
 				} else {
 					Interval interval;
 
@@ -79,10 +94,6 @@ public class UserContextDB {
 
 					userInterest = new UserInterest(category, l.getEndTimestamp() - l.getStartTimestamp(), interval,
 							1.0);
-
-					if (l.isUserLabelAvailable()) {
-						userInterest.addCharacteristics(l.getUserLabel());
-					}
 
 					interests.put(userInterest.getCategory(), userInterest);
 				}
@@ -98,9 +109,8 @@ public class UserContextDB {
 			Integer stayLocCounter = stayLocCounterPerUser.get(c.getKey());
 
 			for (Entry<Category, UserInterest> e : c.getValue().entrySet()) {
-				UserInterest userInterest = new UserInterest(e.getValue().getCategory(),
-						e.getValue().getCharacteristics(), e.getValue().getAverageTime(), e.getValue().getInterval(),
-						1.0 / stayLocCounter * e.getValue().getImportance());
+				UserInterest userInterest = new UserInterest(e.getValue().getCategory(), e.getValue().getAverageTime(),
+						e.getValue().getInterval(), 1.0 / stayLocCounter * e.getValue().getImportance());
 
 				userContext.addUserInterest(userInterest);
 			}
@@ -124,6 +134,13 @@ public class UserContextDB {
 		return result;
 	}
 
+	/**
+	 * Returns user context of user with id
+	 * 
+	 * @param id
+	 *            User id
+	 * @return User context
+	 */
 	public UserContext get(int id) {
 		return userContexts.get(id);
 	}

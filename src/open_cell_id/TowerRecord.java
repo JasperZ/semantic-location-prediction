@@ -1,5 +1,12 @@
 package open_cell_id;
 
+/**
+ * THIS WAS ONLY USED FOR TESTING AND WAS REPLACED BY THE GOOGLE GEOLOCATION
+ * API!!!
+ * 
+ * @author jasper
+ *
+ */
 public class TowerRecord {
 	private String radio;
 	private int mcc;

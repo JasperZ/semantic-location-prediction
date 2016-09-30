@@ -1,15 +1,31 @@
 package reality_mining;
 
-import java.util.Locale;
-
+/**
+ * GPS location specified by latitude and longitude
+ * 
+ * @author jasper
+ *
+ */
 public class GPSLocation {
 	private Double lat;
 	private Double lng;
 
+	/**
+	 * Create GPS location without coordinates
+	 */
 	public GPSLocation() {
-
+		lat = null;
+		lng = null;
 	}
 
+	/**
+	 * Create GPS location from given latitude and longitude
+	 * 
+	 * @param lat
+	 *            Latitude
+	 * @param lng
+	 *            Longitude
+	 */
 	public GPSLocation(Double lat, Double lng) {
 		this.lat = lat;
 		this.lng = lng;
@@ -43,18 +59,40 @@ public class GPSLocation {
 		return true;
 	}
 
+	/**
+	 * Set latitude for this location
+	 * 
+	 * @param lat
+	 *            Latitude
+	 */
 	public void setLatitude(double lat) {
 		this.lat = lat;
 	}
 
+	/**
+	 * Set longitude for this location
+	 * 
+	 * @param lng
+	 *            Longitude
+	 */
 	public void setLongitude(double lng) {
 		this.lng = lng;
 	}
 
+	/**
+	 * Returns latitude of this location
+	 * 
+	 * @return Latitude
+	 */
 	public double getLatitude() {
 		return lat;
 	}
 
+	/**
+	 * Returns Longitude of this location
+	 * 
+	 * @return Longitude
+	 */
 	public double getLongitude() {
 		return lng;
 	}

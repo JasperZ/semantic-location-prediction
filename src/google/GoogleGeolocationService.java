@@ -15,7 +15,6 @@ import com.google.gson.GsonBuilder;
 
 import main.APIKeys;
 import open_cell_id.MobileCell;
-import reality_mining.GeolocationRequest;
 
 /**
  * A service to search for location area codes and cell ids in the googel

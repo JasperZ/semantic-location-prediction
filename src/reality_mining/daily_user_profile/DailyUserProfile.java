@@ -82,6 +82,7 @@ public class DailyUserProfile {
 		}
 	}
 
+	/* Getter und setter methods for the attributes */
 	public ArrayList<StayLoc> getStayLocs() {
 		return stayLocs;
 	}
@@ -209,7 +210,12 @@ public class DailyUserProfile {
 		return counter;
 	}
 
-	public double percentageUserLabeld() {
+	/**
+	 * Returns the percentage of user labeled stay location
+	 * 
+	 * @return Percentage
+	 */
+	public double percentageUserLabeled() {
 		double result = 0.0;
 
 		if (areStayLocsAvailable()) {
@@ -219,6 +225,11 @@ public class DailyUserProfile {
 		return result;
 	}
 
+	/**
+	 * Returns the number of stay locations with GPS coordinates
+	 * 
+	 * @return Number of stay locations with GPS coordinates
+	 */
 	public int countLatLngStayLocs() {
 		int counter = 0;
 
@@ -233,6 +244,11 @@ public class DailyUserProfile {
 		return counter;
 	}
 
+	/**
+	 * Calculates the percentage of the stay locations with GPS coordinates
+	 * 
+	 * @return Percentage of the stay locations with GPS coordinates
+	 */
 	public double percentageLatLng() {
 		double result = 0.0;
 
@@ -243,6 +259,11 @@ public class DailyUserProfile {
 		return result;
 	}
 
+	/**
+	 * Returns the number of stay locations with foursquare categories
+	 * 
+	 * @return Number of stay locations with foursquare categories
+	 */
 	public int countPrimaryCategoryStayLocs() {
 		int counter = 0;
 
@@ -257,6 +278,12 @@ public class DailyUserProfile {
 		return counter;
 	}
 
+	/**
+	 * Calculates the percentage of the stay locations with foursquare
+	 * categories
+	 * 
+	 * @return Percentage of the stay locations with foursquare categories
+	 */
 	public double percentagePrimaryCategory() {
 		double result = 0.0;
 
@@ -266,55 +293,12 @@ public class DailyUserProfile {
 
 		return result;
 	}
-	
-	public int countTopCategoryStayLocs() {
-		int counter = 0;
 
-		if (areStayLocsAvailable()) {
-			for (StayLoc l : getStayLocs()) {
-				if (l.isTopCategoryAvailable()) {
-					counter++;
-				}
-			}
-		}
-
-		return counter;
-	}
-
-	public double percentageTopCategory() {
-		double result = 0.0;
-
-		if (areStayLocsAvailable()) {
-			result = 100.0 / stayLocs.size() * countTopCategoryStayLocs();
-		}
-
-		return result;
-	}
-
-	public int countUserLabeledLatLngStayLocs() {
-		int counter = 0;
-
-		if (areStayLocsAvailable()) {
-			for (StayLoc l : getStayLocs()) {
-				if ((l.isLatitudeAvailable() && l.isLongitudeAvailable()) || l.isUserLabelAvailable()) {
-					counter++;
-				}
-			}
-		}
-
-		return counter;
-	}
-
-	public double percentageLatLngUserLabel() {
-		double result = 0.0;
-
-		if (areStayLocsAvailable()) {
-			result = 100.0 / stayLocs.size() * countUserLabeledLatLngStayLocs();
-		}
-
-		return result;
-	}
-
+	/**
+	 * Returns the date of the daily user profile
+	 * 
+	 * @return Date
+	 */
 	public Date getDay() {
 		if (areStayLocsAvailable()) {
 			Date date = new Date(getStayLocs().get(0).getStartTimestamp());
@@ -327,7 +311,7 @@ public class DailyUserProfile {
 
 	@Override
 	public String toString() {
-		return String.format(Locale.ENGLISH, "id: %d, day: %s, lat&lng: %.2f%%, label: %.2f%%, lat&lng|label: %.2f%%",
-				getId(), getDay(), percentageLatLng(), percentageLatLngUserLabel(), percentageLatLngUserLabel());
+		return String.format(Locale.ENGLISH, "id: %d, day: %s, lat&lng: %.2f%%, label: %.2f%%", getId(), getDay(),
+				percentageLatLng(), percentageUserLabeled());
 	}
 }

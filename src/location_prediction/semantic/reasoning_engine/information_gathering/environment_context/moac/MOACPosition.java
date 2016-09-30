@@ -1,5 +1,10 @@
 package location_prediction.semantic.reasoning_engine.information_gathering.environment_context.moac;
 
+/**
+ * Position in the MOAC
+ * @author jasper
+ *
+ */
 public class MOACPosition {
 	private Position begin;
 	private Position end;

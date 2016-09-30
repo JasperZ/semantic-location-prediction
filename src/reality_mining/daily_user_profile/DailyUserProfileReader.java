@@ -10,13 +10,26 @@ import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
 
+/**
+ * Methods to read daily user profiles from file
+ * 
+ * @author jasper
+ *
+ */
 public class DailyUserProfileReader {
 
+	/**
+	 * Reads daily user profiles from json files
+	 * 
+	 * @param directoryPath
+	 *            Directory containing the profiles
+	 * @return ArrayList of the daily user profiles
+	 */
 	public static ArrayList<DailyUserProfile> readJsonDailyUserProfiles(String directoryPath) {
 		ArrayList<DailyUserProfile> userProfiles = new ArrayList<>();
 		File folder = new File(directoryPath);
 		File[] files = folder.listFiles();
-		
+
 		Arrays.sort(files);
 
 		for (final File fileEntry : files) {
@@ -30,6 +43,13 @@ public class DailyUserProfileReader {
 		return userProfiles;
 	}
 
+	/**
+	 * Reads a single daily user profile from a json file
+	 * 
+	 * @param file
+	 *            Json daily user profile
+	 * @return Daily user profile read from file
+	 */
 	public static DailyUserProfile readJsonToDailyUserProfile(File file) {
 		DailyUserProfile user = null;
 

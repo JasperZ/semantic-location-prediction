@@ -1,45 +1,77 @@
 package location_prediction.semantic.reasoning_engine.information_gathering.environment_context.moac;
 
+/**
+ * A position composed of latitude and longitude
+ * 
+ * @author jasper
+ *
+ */
 public class Position {
 	private double lat;
 	private double lng;
 
+	/**
+	 * Creates a new position from the given latitude and longitude
+	 * 
+	 * @param lat
+	 *            Latitude
+	 * @param lng
+	 *            Longitude
+	 */
 	public Position(double lat, double lng) {
 		this.lat = lat;
 		this.lng = lng;
 	}
 
+	/**
+	 * Returns x which is represented by the latitude
+	 * 
+	 * @return Latitude
+	 */
 	public double getX() {
 		return this.lat;
 	}
 
+	/**
+	 * Returns y which is represented by the longitude
+	 * 
+	 * @return Longitude
+	 */
 	public double getY() {
 		return this.lng;
 	}
 
-	public Direction getDirection(Position nextPosition) {
+	/**
+	 * Returns the direction from this position to another one
+	 * 
+	 * @param otherPosition
+	 *            The other position
+	 * @return The cardinal direction to from this position to the other
+	 *         position
+	 */
+	public Direction getDirection(Position otherPosition) {
 		Direction result;
 
-		if (this.lat == nextPosition.lat) {
-			if (this.lng == nextPosition.lng) {
+		if (this.lat == otherPosition.lat) {
+			if (this.lng == otherPosition.lng) {
 				result = Direction.NONE;
-			} else if (this.lng < nextPosition.lng) {
+			} else if (this.lng < otherPosition.lng) {
 				result = Direction.EAST;
 			} else {
 				result = Direction.WEST;
 			}
-		} else if (this.lat < nextPosition.lat) {
-			if (this.lng == nextPosition.lng) {
+		} else if (this.lat < otherPosition.lat) {
+			if (this.lng == otherPosition.lng) {
 				result = Direction.NORTH;
-			} else if (this.lng < nextPosition.lng) {
+			} else if (this.lng < otherPosition.lng) {
 				result = Direction.NORTHEAST;
 			} else {
 				result = Direction.NORTHWEST;
 			}
 		} else {
-			if (this.lng == nextPosition.lng) {
+			if (this.lng == otherPosition.lng) {
 				result = Direction.SOUTH;
-			} else if (this.lng < nextPosition.lng) {
+			} else if (this.lng < otherPosition.lng) {
 				result = Direction.SOUTHEAST;
 			} else {
 				result = Direction.SOUTHWEST;

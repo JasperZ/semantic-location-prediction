@@ -4,29 +4,38 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import foursquare.venue.category.Category;
-import location_prediction.geografic.pattern_mining.Interval;
+import location_prediction.geographic.pattern_mining.Interval;
 
+/**
+ * Interest of a user, in this case a category like hotel, restaurant, movie
+ * theater ...
+ * 
+ * @author jasper
+ *
+ */
 public class UserInterest {
 	private Category category;
-	private HashSet<String> characteristics;
 	private long timeSum;
 	private int timeCounter;
 	private Interval interval;
 	private double importance;
 
-	public UserInterest(Category category, HashSet<String> characteristics, long averageTime, Interval interval,
-			double importance) {
-		this.category = category;
-		this.characteristics = characteristics;
-		this.timeSum = averageTime;
-		this.timeCounter = 1;
-		this.interval = interval;
-		this.importance = importance;
-	}
-
+	/**
+	 * Creates a new User interest for a category
+	 * 
+	 * @param category
+	 *            Category the user is interested in
+	 * @param averageTime
+	 *            The average time the user is
+	 * @param interval
+	 *            An interval which starts at the earliest time the user pursued
+	 *            the interest in the past and ends at the latest time he
+	 *            stopped pursuing it
+	 * @param importance
+	 *            A importance value between 0 and 1
+	 */
 	public UserInterest(Category category, long averageTime, Interval interval, double importance) {
 		this.category = category;
-		this.characteristics = new HashSet<>();
 		this.timeSum = averageTime;
 		this.timeCounter = 1;
 		this.interval = interval;
@@ -60,53 +69,72 @@ public class UserInterest {
 
 	@Override
 	public String toString() {
-		String result = "";
-		String characteristicsStr = "{";
-
-		for (String c : characteristics) {
-			characteristicsStr += c + ",";
-		}
-
-		characteristicsStr += "}";
-//		characteristicsStr = characteristicsStr.replaceAll(",}", "}");
-
-		return String.format(Locale.ENGLISH, "%s\t%s\t%d\t%s\t%.3f", category.name, characteristicsStr,
-				getAverageTime(), interval, importance);
+		return String.format(Locale.ENGLISH, "%s\t%d\t%s\t%.3f", category.name, getAverageTime(), interval, importance);
 	}
 
+	/**
+	 * Returns the category of this interest
+	 * 
+	 * @return Category of interest
+	 */
 	public Category getCategory() {
 		return category;
 	}
 
-	public HashSet<String> getCharacteristics() {
-		return characteristics;
-	}
-
-	public void addCharacteristics(String characteristic) {
-		characteristics.add(characteristic.trim().toLowerCase());
-	}
-
+	/**
+	 * Returns the average time spend for this interest
+	 * 
+	 * @return Average time
+	 */
 	public long getAverageTime() {
 		return timeSum / timeCounter;
 	}
 
+	/**
+	 * Returns the interval this interest was pursued in the past
+	 * 
+	 * @return Interval
+	 */
 	public Interval getInterval() {
 		return interval;
 	}
 
+	/**
+	 * The importance of the interest to the user
+	 * 
+	 * @return Importance
+	 */
 	public double getImportance() {
 		return importance;
 	}
 
+	/**
+	 * Sets the importance for this interest
+	 * 
+	 * @param importance
+	 *            Importance
+	 */
 	public void setImportance(double importance) {
 		this.importance = importance;
 	}
 
+	/**
+	 * Updates the average time spend on this interest
+	 * 
+	 * @param newTime
+	 *            New average time
+	 */
 	public void updateAverageTime(long newTime) {
 		this.timeSum += newTime;
 		this.timeCounter++;
 	}
 
+	/**
+	 * Sets interval for persuing this interest
+	 * 
+	 * @param interval
+	 *            Interval
+	 */
 	public void setInterval(Interval interval) {
 		this.interval = interval;
 	}

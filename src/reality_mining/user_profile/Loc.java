@@ -2,6 +2,13 @@ package reality_mining.user_profile;
 
 import foursquare.venue.service.VenueResponse;
 
+/**
+ * Location with lots of self explaining attributes and their setter and getter
+ * methods
+ * 
+ * @author jasper
+ *
+ */
 public class Loc {
 	private Long timestamp;
 	private Integer locationAreaCode;
