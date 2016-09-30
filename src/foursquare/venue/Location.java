@@ -1,5 +1,11 @@
 package foursquare.venue;
 
+/**
+ * A Location from the foursquare api
+ * 
+ * @author jasper
+ *
+ */
 public class Location {
 	public String address;
 	public double lat;

@@ -22,10 +22,22 @@ import reality_mining.user_profile.StayLoc;
 import reality_mining.user_profile.UserProfile;
 import reality_mining.user_profile.UserProfileReader;
 
+/**
+ * Database to store foursquare venues
+ * 
+ * @author jasper
+ *
+ */
 public class VenueDB {
-	public static final String FOURSQUARE_VENUES_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/foursquare_venues_db.json";
+	public static final String FOURSQUARE_VENUES_PATH = "data_directory/foursquare/venue_db.json";
 	private HashSet<VenueDBEntry> venues;
 
+	/**
+	 * Programm to build a database of foursquare venues and save them as a json
+	 * file for later reuse
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		VenueDB venueDB = new VenueDB();
 
@@ -63,6 +75,13 @@ public class VenueDB {
 
 	}
 
+	/**
+	 * Generates a unique set of GPS locations from the given user profiles
+	 * 
+	 * @param userProfiles
+	 *            ArrayList of user profiles
+	 * @return HashSet of unique GPS locations
+	 */
 	public static HashSet<GPSLocation> generateUniqueGPSSet(ArrayList<UserProfile> userProfiles) {
 		HashSet<GPSLocation> gpsSet = new HashSet<>();
 
@@ -79,6 +98,13 @@ public class VenueDB {
 		return gpsSet;
 	}
 
+	/**
+	 * Finds the nearest venue at a given GPS location
+	 * 
+	 * @param location
+	 *            GPS location
+	 * @return Nearest venue found, null if not found
+	 */
 	public VenueResponse findNearestVenue(GPSLocation location) {
 		VenueResponse result = null;
 
@@ -101,6 +127,11 @@ public class VenueDB {
 		return result;
 	}
 
+	/**
+	 * Returns the current size of this database
+	 * 
+	 * @return Current size
+	 */
 	public long getSize() {
 		if (venues != null) {
 			return venues.size();
@@ -109,6 +140,9 @@ public class VenueDB {
 		}
 	}
 
+	/**
+	 * Reads the database from a json file
+	 */
 	public void readJsonVenues() {
 		venues = new HashSet<>();
 
@@ -123,6 +157,9 @@ public class VenueDB {
 		}
 	}
 
+	/**
+	 * Writes the database to a json file
+	 */
 	public void writeVenuesToJson() {
 		if (venues != null) {
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();

@@ -3,15 +3,35 @@ package foursquare.venue;
 import foursquare.venue.service.VenueResponse;
 import reality_mining.GPSLocation;
 
+/**
+ * Entry for the VenueDB to store the foursquare response for a specified GPS
+ * location
+ * 
+ * @author jasper
+ *
+ */
 public class VenueDBEntry {
 	private GPSLocation gpsLocation;
 	private VenueResponse venueResponse = null;
 
+	/**
+	 * Creates a new entry for a GPS location including a foursquare response
+	 * 
+	 * @param gpsLocation
+	 *            GPS location of the entry
+	 * @param venueResponse
+	 *            Foursquare response to associate with the location
+	 */
 	public VenueDBEntry(GPSLocation gpsLocation, VenueResponse venueResponse) {
 		this.gpsLocation = gpsLocation;
 		this.venueResponse = venueResponse;
 	}
 
+	/**
+	 * Returns the GPS location of the entry
+	 * 
+	 * @return GPS location
+	 */
 	public GPSLocation getGPSLocation() {
 		return this.gpsLocation;
 	}
@@ -41,6 +61,11 @@ public class VenueDBEntry {
 		return true;
 	}
 
+	/**
+	 * Returns the foursquare response associated with this entry
+	 * 
+	 * @return Foursquare response
+	 */
 	public VenueResponse getResponse() {
 		return this.venueResponse;
 	}
