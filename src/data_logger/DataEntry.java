@@ -88,7 +88,8 @@ public class DataEntry {
 	 * 
 	 * @return String of the format: "threshold, prediction rate, accuracy"
 	 */
-	public String toString(int maxTriedPredictions) {
+	@Override
+	public String toString() {
 		return String.format(Locale.ENGLISH, "%f,%f,%f", threshold, predictionRate(), accuracy());
 	}
 
