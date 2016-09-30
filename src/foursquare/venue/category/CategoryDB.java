@@ -16,13 +16,40 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import main.APIKeys;
+
+/**
+ * Database of all available foursquare categories with an update method to
+ * fetch the latest version
+ * 
+ * @author jasper
+ *
+ */
 public class CategoryDB {
-	public static final String FOURSQUARE_CATEGORIES_PATH = "/home/jasper/SemanticLocationPredictionData/RealityMining/foursquare_categories_db.json";
+	public static final String FOURSQUARE_CATEGORIES_PATH = "data_directory/foursquare/categorie_db.json";
 
 	private Category[] categories;
 
+	/**
+	 * Program to fetch the latest version of the foursquare categories and to
+	 * write them into a json file
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		CategoryDB db = new CategoryDB();
+
+		db.update();
+
+		db.writeCategoriesToJson();
+	}
+
+	/**
+	 * Retrieves the latest version of the foursquare categories
+	 */
 	public void update() {
-		String https_url = "https://api.foursquare.com/v2/venues/categories?oauth_token=AE3P404X3ELS4WGGTXAIEXZC43NBIJCFWW5GPMTPEGGX30TQ&v=20160720";
+		String https_url = "https://api.foursquare.com/v2/venues/categories?oauth_token="
+				+ APIKeys.FOURSQUARE_OAUTH_TOKEN + "&v=20160720";
 		URL url;
 
 		try {
@@ -49,6 +76,13 @@ public class CategoryDB {
 		}
 	}
 
+	/**
+	 * Returns the highest top category of a given category-id if there is one
+	 * 
+	 * @param id
+	 *            Category-id to find the top category for
+	 * @return Top category if found, otherwise an unknown category object
+	 */
 	public Category getTopCategory(String id) {
 		for (Category c : categories) {
 			if (getTopCategoryRecursive(c, id) != null) {
@@ -73,6 +107,13 @@ public class CategoryDB {
 		return null;
 	}
 
+	/**
+	 * Find Category for a given id
+	 * 
+	 * @param id
+	 *            Category-id to search for
+	 * @return Found category, otherwise an unknown category object
+	 */
 	public Category find(String id) {
 		for (Category c : categories) {
 			Category f = findRecursive(c, id);
@@ -101,6 +142,9 @@ public class CategoryDB {
 		return null;
 	}
 
+	/**
+	 * Reads database content from json file
+	 */
 	public void readJsonCategories() {
 		try {
 			String json = FileUtils.readFileToString(new File(FOURSQUARE_CATEGORIES_PATH), StandardCharsets.UTF_8);
@@ -112,6 +156,9 @@ public class CategoryDB {
 		}
 	}
 
+	/**
+	 * Writes database content to json file
+	 */
 	public void writeCategoriesToJson() {
 		if (categories != null) {
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();

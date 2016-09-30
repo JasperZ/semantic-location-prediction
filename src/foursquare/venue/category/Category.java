@@ -1,5 +1,11 @@
 package foursquare.venue.category;
 
+/**
+ * Category from the foursquare API
+ * 
+ * @author jasper
+ *
+ */
 public class Category {
 	public String id;
 	public String name;
@@ -8,6 +14,11 @@ public class Category {
 	public boolean primary;
 	public Category[] categories;
 
+	/**
+	 * Returns whether this category has sub-categories or not
+	 * 
+	 * @return True if sub-categories are there, otherwise false
+	 */
 	public boolean hasCategories() {
 		if (categories != null && categories.length > 0) {
 			return true;
@@ -53,10 +64,20 @@ public class Category {
 				shortName, length);
 	}
 
+	/**
+	 * Returns the short name of the category as string
+	 * 
+	 * @return Short name of this category
+	 */
 	public String toShortString() {
 		return String.format("name: %s", name);
 	}
 
+	/**
+	 * A method to create a unknown category for dummy usage
+	 * 
+	 * @return Unknown category
+	 */
 	public static Category Unknown() {
 		Category unknown = new Category();
 
@@ -69,6 +90,14 @@ public class Category {
 		return unknown;
 	}
 
+	/**
+	 * Tests whether a given category is equal to this one or contained in the
+	 * sub-categories
+	 * 
+	 * @param category
+	 *            The category to test
+	 * @return True if included, otherwise false
+	 */
 	public boolean includes(Category category) {
 		if (equals(category)) {
 			return true;
@@ -85,6 +114,11 @@ public class Category {
 		return false;
 	}
 
+	/**
+	 * Returns an array of sub-categories of this one
+	 * 
+	 * @return Array of sub-categories
+	 */
 	public Category[] getNextSubCategories() {
 		return categories;
 	}
