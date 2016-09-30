@@ -5,77 +5,148 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+/**
+ * A generic hypothese for the Dempster-Shafer theory
+ * 
+ * @author jasper
+ *
+ * @param <T>
+ *            The type of the elements that are part of the hypothese
+ */
 public class Hypothese<T> implements Iterable<T> {
-	private HashSet<T> locations;
+	private HashSet<T> elements;
 	private double belief;
 
-	public Hypothese(T[] locations, double belief) {
-		this.locations = new HashSet<>();
+	/**
+	 * Creates a hypothese with the given set of elements and belief
+	 * 
+	 * @param elements
+	 *            Elements to be included in this hypothese
+	 * @param belief
+	 *            Belief of this hypothese
+	 */
+	public Hypothese(T[] elements, double belief) {
+		this.elements = new HashSet<>();
 		this.belief = belief;
 
-		for (T l : locations) {
-			this.locations.add(l);
+		for (T l : elements) {
+			this.elements.add(l);
 		}
 	}
 
-	public Hypothese(T[] locations) {
-		this.locations = new HashSet<>();
+	/**
+	 * Creates a hypothese with the given set of elements and zero belief
+	 * 
+	 * @param elements
+	 *            Elements to be included in this hypothese
+	 */
+	public Hypothese(T[] elements) {
+		this.elements = new HashSet<>();
 		this.belief = 0.0;
 
-		for (T l : locations) {
-			this.locations.add(l);
+		for (T l : elements) {
+			this.elements.add(l);
 		}
 	}
 
-	public Hypothese(HashSet<T> locations, double belief) {
-		this.locations = locations;
+	/**
+	 * Creates a hypothese with the given set of elements and belief
+	 * 
+	 * @param elements
+	 *            Elements to be included in this hypothese
+	 * @param belief
+	 *            Belief of this hypothese
+	 */
+	public Hypothese(HashSet<T> elements, double belief) {
+		this.elements = elements;
 		this.belief = belief;
 	}
 
-	public Hypothese(HashSet<T> locations) {
-		this.locations = locations;
+	/**
+	 * Creates a hypothese with the given set of elements and zero belief
+	 * 
+	 * @param elements
+	 *            Elements to be included in this hypothese
+	 */
+	public Hypothese(HashSet<T> elements) {
+		this.elements = elements;
 		this.belief = 0.0;
 	}
 
+	/**
+	 * Creates a hypothese without any elements and belief
+	 */
 	public Hypothese() {
-		this.locations = new HashSet<>();
+		this.elements = new HashSet<>();
 		this.belief = 0.0;
 	}
 
+	/**
+	 * Sets the belief of this hypothese to the given value
+	 * 
+	 * @param belief
+	 *            Belief value to set
+	 */
 	public void setBelief(double belief) {
 		this.belief = belief;
 	}
 
+	/**
+	 * Returns the belief of the hypothese
+	 * 
+	 * @return Belief
+	 */
 	public double getBelief() {
 		return belief;
 	}
 
-	public void addLocation(T location) {
-		locations.add(location);
+	/**
+	 * adds an element to this hypothese
+	 * 
+	 * @param element
+	 *            Element to add
+	 */
+	public void addElement(T element) {
+		elements.add(element);
 	}
 
-	public HashSet<T> getLocations() {
-		return locations;
+	/**
+	 * Returns the set of elements that are part of the hypothese
+	 * 
+	 * @return Set of included elements
+	 */
+	public HashSet<T> getElements() {
+		return elements;
 	}
 
+	/**
+	 * Returns the number of elements in this hypothese
+	 * 
+	 * @return Number of elements
+	 */
 	public int size() {
-		return locations.size();
+		return elements.size();
 	}
 
+	/**
+	 * Returns whether the hypothese includes any elements
+	 * 
+	 * @return True is it includes elements, otherwise false
+	 */
 	public boolean isEmpty() {
-		return locations.isEmpty();
+		return elements.isEmpty();
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return locations.iterator();
+		return elements.iterator();
 	}
 
 	@Override
 	public String toString() {
 		String result = "{";
 
-		for (T l : locations) {
+		for (T l : elements) {
 			result += l + ",";
 		}
 
@@ -89,7 +160,7 @@ public class Hypothese<T> implements Iterable<T> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((locations == null) ? 0 : locations.hashCode());
+		result = prime * result + ((elements == null) ? 0 : elements.hashCode());
 		return result;
 	}
 
@@ -102,15 +173,22 @@ public class Hypothese<T> implements Iterable<T> {
 		if (getClass() != obj.getClass())
 			return false;
 		Hypothese other = (Hypothese) obj;
-		if (locations == null) {
-			if (other.locations != null)
+		if (elements == null) {
+			if (other.elements != null)
 				return false;
-		} else if (!locations.equals(other.locations))
+		} else if (!elements.equals(other.elements))
 			return false;
 		return true;
 	}
 
-	public Hypothese<T> cut(Hypothese<T> hypo2) {
+	/**
+	 * Computes the cut of this and another hypothese which is returned
+	 * 
+	 * @param otherHypothese
+	 *            The other hypothese to cut with
+	 * @return The result of the cut
+	 */
+	public Hypothese<T> cut(Hypothese<T> otherHypothese) {
 		Hypothese<T> hypo1 = this;
 		HashSet<T> result = new HashSet<>();
 		HashMap<T, Integer> counter = new HashMap<>();
@@ -127,7 +205,7 @@ public class Hypothese<T> implements Iterable<T> {
 			counter.put(e, c);
 		}
 
-		for (T e : hypo2) {
+		for (T e : otherHypothese) {
 			Integer c = counter.get(e);
 
 			if (c == null) {
@@ -145,6 +223,6 @@ public class Hypothese<T> implements Iterable<T> {
 			}
 		}
 
-		return new Hypothese<T>(result, hypo1.getBelief() * hypo2.getBelief());
+		return new Hypothese<T>(result, hypo1.getBelief() * otherHypothese.getBelief());
 	}
 }
