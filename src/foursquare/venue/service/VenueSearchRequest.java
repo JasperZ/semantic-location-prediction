@@ -13,6 +13,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+/**
+ * A venue search request for the foursquare API
+ * 
+ * @author jasper
+ *
+ */
 public class VenueSearchRequest {
 	private static final String BASE_URL = "https://api.foursquare.com/v2/venues/search";
 
@@ -26,17 +32,31 @@ public class VenueSearchRequest {
 	private int radius;
 	private boolean limitSet = false;
 	private int limit;
-	private boolean nearSet = false;
-	private String near;
-	private boolean querySet = false;
-	private String query;
 
+	/**
+	 * Creates a request without search parameters, as base for further
+	 * parametrization
+	 * 
+	 * @param clientId
+	 *            Foursquare client id for authentication
+	 * @param clientSecret
+	 *            Foursquare client secret for authentication
+	 */
 	public VenueSearchRequest(String clientId, String clientSecret) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		this.version = "20130815";
 	}
 
+	/**
+	 * Adds a GPS location for the search
+	 * 
+	 * @param latitude
+	 *            Latitude of the location
+	 * @param longitude
+	 *            Longitude of the location
+	 * @return The modified request
+	 */
 	public VenueSearchRequest latitudeLongitude(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -45,6 +65,13 @@ public class VenueSearchRequest {
 		return this;
 	}
 
+	/**
+	 * Adds a search for the search
+	 * 
+	 * @param radius
+	 *            Radius for the search are in meters
+	 * @return The modified request
+	 */
 	public VenueSearchRequest radius(int radius) {
 		this.radius = radius;
 		this.radiusSet = true;
@@ -52,23 +79,16 @@ public class VenueSearchRequest {
 		return this;
 	}
 
+	/**
+	 * Adds a limit to the number of venues in the response
+	 * 
+	 * @param limit
+	 *            Max number of venues in response
+	 * @return The modified request
+	 */
 	public VenueSearchRequest limit(int limit) {
 		this.limit = limit;
 		this.limitSet = true;
-
-		return this;
-	}
-
-	public VenueSearchRequest near(String near) {
-		this.near = near;
-		this.nearSet = true;
-
-		return this;
-	}
-
-	public VenueSearchRequest query(String query) {
-		this.query = query;
-		this.querySet = true;
 
 		return this;
 	}
@@ -89,19 +109,16 @@ public class VenueSearchRequest {
 			query += String.format(Locale.ENGLISH, "&limit=%d", limit);
 		}
 
-		if (nearSet) {
-			query += String.format(Locale.ENGLISH, "&near=%s", near);
-		}
-
-		if (querySet) {
-			query += String.format(Locale.ENGLISH, "&query=%s", this.query);
-		}
-
 		System.out.println("query: " + query);
 
 		return query;
 	}
 
+	/**
+	 * Executes the request and returns an array of venues found by the search
+	 * 
+	 * @return Array of found venues
+	 */
 	public VenueResponse[] execute() {
 		String https_url = buildQuery();
 		URL url;
